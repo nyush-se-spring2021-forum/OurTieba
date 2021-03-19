@@ -1,4 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy.orm import relationship
 from ..database import Base
 import hashlib
 import datetime
@@ -11,6 +12,8 @@ class User(Base):
     password = Column(String(200))
     uname = Column(String(50), unique=True)
     timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
+
+    posts = relationship("Post", back_populates="owner")
 
     def __init__(self, password, uname, timestamp=None):
         self.password = hashlib.sha3_512(password.encode()).hexdigest()

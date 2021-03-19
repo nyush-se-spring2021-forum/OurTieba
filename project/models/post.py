@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from ..database import Base
 import datetime
@@ -14,11 +14,15 @@ class Post(Base):
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
+    Uid = Column(Integer, ForeignKey("user.Uid"))
 
-    def __init__(self, title, content, timestamp=None):
+    owner = relationship("User", back_populates="posts")
+
+    def __init__(self, Uid, title, content, timestamp=None):
+        self.Uid = Uid
         self.title = title
         self.content = content
         self.timestamp = timestamp
 
     def __repr__(self):
-        return '<User %r>' % self.Pid
+        return '<Post %r>' % self.Pid

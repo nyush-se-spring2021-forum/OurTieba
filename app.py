@@ -14,9 +14,15 @@ def add_user():
     u2 = User("guess", "Bob")
     db_session.add(u1)
     db_session.add(u2)
-    p = Post("AA", "bbb")
+    db_session.commit()
+
+    p = Post(1, "AA", "bbb")
     db_session.add(p)
     db_session.commit()
+
+    John = db_session.query(User).filter(User.Uid == 1).first()
+    print(John.posts.title)
+
     db_session.close()
     return "success!", 200
 
