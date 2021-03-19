@@ -8,11 +8,16 @@ def hello():
     return render_template("index.html")
 
 
-@app.route("/add_user")
+@app.route("/test")
 def add_user():
-    u = User(Uid="0003", password="all")
-    db_session.add(u)
+    u1 = User("secret", "John")
+    u2 = User("guess", "Bob")
+    db_session.add(u1)
+    db_session.add(u2)
+    p = Post("AA", "bbb")
+    db_session.add(p)
     db_session.commit()
+    db_session.close()
     return "success!", 200
 
 
