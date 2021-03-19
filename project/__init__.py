@@ -1,5 +1,7 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 from .views import *
+from .database import *
+from .models import *
 
 
 def create_app():
@@ -8,5 +10,6 @@ def create_app():
         "DEBUG": True,
         "TEMPLATES_AUTO_RELOAD": True
     })
+    init_db()
     register_blue(app)
     return app
