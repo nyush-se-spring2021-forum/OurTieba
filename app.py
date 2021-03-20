@@ -24,7 +24,7 @@ def sql_test():
     db_session.commit()
 
     John = db_session.query(User).filter(User.Uid == 1).first()
-    print(f"John's post: {John.posts}")
+    print(f"John's posts: {John.posts}")
 
     db_session.close()
     return "success!", 200
