@@ -9,19 +9,22 @@ def hello():
 
 
 @app.route("/test")
-def add_user():
+def sql_test():
     u1 = User("secret", "John")
     u2 = User("guess", "Bob")
     db_session.add(u1)
     db_session.add(u2)
     db_session.commit()
 
+    count = db_session.query(func.count(User.Uid)).scalar()
+    print(f"There are {count} users.")
+
     p = Post(1, "AA", "bbb")
     db_session.add(p)
     db_session.commit()
 
     John = db_session.query(User).filter(User.Uid == 1).first()
-    print(John.posts.title)
+    print(f"John's post: {John.posts}")
 
     db_session.close()
     return "success!", 200

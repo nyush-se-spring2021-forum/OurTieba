@@ -1,7 +1,8 @@
-from flask import Flask, render_template, jsonify
-from .views import *
+from flask import Flask
+
 from .database import *
 from .models import *
+from .views import *
 
 
 def create_app():

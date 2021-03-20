@@ -1,5 +1,5 @@
-from ..views.user import *
 from ..views.guest import *
+from ..views.user import *
 
 
 def register_blue(app):
