@@ -13,4 +13,5 @@ Base.query = DB_session.query_property()
 
 def init_db():
     # import all models here (only the class name)
+    from .models import Admin, Comment, Post, User
     Base.metadata.create_all(bind=engine)

@@ -6,24 +6,23 @@ from sqlalchemy.orm import relationship
 from ..database import Base
 
 
-class Post(Base):
-    __tablename__ = "post"
+class Comment(Base):
+    __tablename__ = "comment"
 
-    Pid = Column(Integer, primary_key=True)
-    title = Column(String(100))
+    Cid = Column(Integer, primary_key=True)
     content = Column(String(500))
     timestamp = Column(DateTime, default=datetime.datetime.now())
-    commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
     Uid = Column(Integer, ForeignKey("user.Uid"))
+    Pid = Column(Integer, ForeignKey("post.Pid"))
 
-    owner = relationship("User", back_populates="posts")
-    comments = relationship("Comment", back_populates="comment_in")
+    comment_by = relationship("User", back_populates="comments")
+    comment_in = relationship("Post", back_populates="comments")
 
-    def __init__(self, Uid, title, content, timestamp=None):
+    def __init__(self, Uid, Pid, content, timestamp=None):
         self.Uid = Uid
-        self.title = title
+        self.Pid = Pid
         self.content = content
         self.timestamp = timestamp
 

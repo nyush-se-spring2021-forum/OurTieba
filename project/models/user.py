@@ -16,6 +16,7 @@ class User(Base):
     timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
 
     posts = relationship("Post", back_populates="owner")
+    comments = relationship("Comment", back_populates="comment_by")
 
     def __init__(self, password, uname, timestamp=None):
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
