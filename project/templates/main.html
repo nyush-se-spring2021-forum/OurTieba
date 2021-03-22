@@ -7,11 +7,11 @@
 <meta name="author" content="">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<link type="text/css" rel="stylesheet" href="/static/css/bootstrap-3.1.1.min.css">
+<link type="text/css" rel="stylesheet" href="/static/css/bootstrap.min.css">
 
 <link rel="shortcut icon" href="/static/ico/favicon.ico">
 
-<script src="/static/js/libs/modernizr-2.8.2.min.js"></script>
+<script src="/static/js/modernizr-2.8.2.min.js"></script>
 <!--[if lt IE 9]><script src="/static/js/libs/respond-1.4.2.min.js"></script><![endif]-->
 
 </head>
@@ -29,12 +29,10 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="/">Project name</a>
+          <a class="navbar-brand" href="/">OurTieba</a>
         </div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li {% if request.endpoint == 'home' %} class="active" {% endif %}><a href="{{ url_for('home') }}">Home</a></li>
-            <li {% if request.endpoint == 'about' %} class="active" {% endif %}><a href="{{ url_for('about') }}">About</a></li>
             <li class="dropdown">
               <a class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
               <ul class="dropdown-menu">
@@ -49,8 +47,8 @@
             </li>
           </ul>
           <ul class="nav navbar-nav pull-right">
-            <li><a href="{{ url_for('register') }}">Signup</a></li>
-            <li><a href="{{ url_for('login') }}">Login</a></li>
+            <li><a href="">Signup</a></li>
+            <li><a href="">Login</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -78,23 +76,14 @@
 
   <div id="footer">
     <div class="container">
-      <p>Your Company &copy; All Rights Reserved.</p>
+      <p>OurTieba &copy; All Rights Reserved.</p>
       {% block footer %}{% endblock %}
     </div>
   </div>
 
-  <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script type="text/javascript" src="/static/js/libs/jquery-1.11.1.min.js"><\/script>')</script>
-  <script type="text/javascript" src="/static/js/libs/bootstrap-3.1.1.min.js" defer></script>
-  <script type="text/javascript" src="/static/js/plugins.js" defer></script>
-  <script type="text/javascript" src="/static/js/script.js" defer></script>
-  <!-- Google Analytics - Change UA-XXXXX-X to be your site's ID -->
-  <script>
-  window._gaq = [['_setAccount','UAXXXXXXXX1'],['_trackPageview'],['_trackPageLoadTime']];
-  Modernizr.load({
-    load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
-  });
-  </script>
+  <!-- <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> -->
+  <script>window.jQuery || document.write('<script type="text/javascript" src="../static/js/jquery-3.6.0.min.js"><\/script>')</script>
+  <script type="text/javascript" src="../static/js/bootstrap.min.js" defer></script>
 
 </body>
 </html>

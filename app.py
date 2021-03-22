@@ -29,6 +29,9 @@ def sql_test():
     db_session.close()
     return "success!", 200
 
+@app.route("/frontendtest")
+def frontendtest():
+    return render_template("main.html")
 
 if __name__ == '__main__':
     app.run()
