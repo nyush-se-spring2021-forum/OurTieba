@@ -29,9 +29,16 @@ def sql_test():
     db_session.close()
     return "success!", 200
 
+
 @app.route("/frontendtest")
 def frontendtest():
     return render_template("main.html")
+
+
+@app.route("/getsomething")
+def getsth():
+    return jsonify({"data": "Replacement"})
+
 
 if __name__ == '__main__':
     app.run()

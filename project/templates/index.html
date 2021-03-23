@@ -4,8 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hello</title>
+    <script src="/js/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 <h1>Hey, there!</h1>
+<button>AJAX REQUEST</button>
+<script>
+    $("button").on("click", () => {
+        $.ajax({
+            url: "/getsomething",
+            success: function (data) {
+                $("h1").text(data.data);
+            }
+        })
+    })
+
+</script>
 </body>
 </html>
