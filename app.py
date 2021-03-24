@@ -37,7 +37,11 @@ def frontendtest():
 
 @app.route("/getsomething")
 def getsth():
-    return jsonify({"data": "Replacement"})
+    John = db_session.query(User).filter(User.Uid == 1).first()
+    uname = John.uname
+    db_session.commit()
+    db_session.close()
+    return jsonify({"data": [{"name": uname}]})
 
 
 if __name__ == '__main__':

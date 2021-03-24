@@ -14,7 +14,7 @@
         $.ajax({
             url: "/getsomething",
             success: function (data) {
-                $("h1").text(data.data);
+                $("h1").text(data.data[0].name);
             }
         })
     })
