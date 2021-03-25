@@ -11,6 +11,7 @@ def create_app():
         "DEBUG": True,
         "TEMPLATES_AUTO_RELOAD": True
     })
-    init_db()
+    with app.app_context():
+        init_db()
     register_blue(app)
     return app

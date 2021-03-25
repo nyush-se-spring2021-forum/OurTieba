@@ -3,6 +3,11 @@ from project import *
 app = create_app()
 
 
+@app.teardown_appcontext
+def teardown_session(e):
+    DB_session.remove()
+
+
 @app.route('/')
 def hello():
     return render_template("index.html")
