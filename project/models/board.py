@@ -10,7 +10,7 @@ class Board(Base):
     __tablename__ = "board"
 
     Bid = Column(Integer, primary_key=True)
-    name = Column(String(100))
+    name = Column(String)
     hot = Column(Integer, default=0)
     postCount = Column(Integer, default=0)
     timestamp = Column(DateTime, default=datetime.datetime.now())

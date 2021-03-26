@@ -10,16 +10,18 @@ class Admin(Base):
     __tablename__ = 'admin'
 
     Aid = Column(Integer, primary_key=True)
-    password = Column(String(200))
-    aname = Column(String(50), unique=True)
-    avatar = Column(String(100), default="")  # upon uploading, link=hash(Aid + timestamp) + ".png"
+    password = Column(String)
+    aname = Column(String, unique=True)
+    nickname = Column(String)
+    avatar = Column(String)  # upon uploading, link=hash(Aid + timestamp) + ".png"
     timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
 
-    def __init__(self, password, aname=None, avatar=None, timestamp=None):
+    def __init__(self, password, aname=None, nickname=None, avatar=None, timestamp=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
         self.aname = aname if aname else "admin" + str(self.Aid)
+        self.nickname = nickname if nickname else "admin" + str(self.Aid)
         self.avatar = avatar
         self.timestamp = timestamp
 

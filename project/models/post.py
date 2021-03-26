@@ -10,8 +10,8 @@ class Post(Base):
     __tablename__ = "post"
 
     Pid = Column(Integer, primary_key=True)
-    title = Column(String(100))
-    content = Column(String(500))
+    title = Column(String)
+    content = Column(String)
     timestamp = Column(DateTime, default=datetime.datetime.now())
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
