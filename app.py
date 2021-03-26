@@ -10,7 +10,15 @@ def teardown_session(e):
 
 @app.route('/')
 def hello():
-    return render_template("index.html")
+    hot_articles = get_hot_news(num=RECOMMEND_NUM_NEWS)
+    hot_news = [{"title": a["title"], "abstract": a["description"], "link": a["url"],
+                 "img": a["urlToImage"]} for a in hot_articles]
+    boards = db_session.query(Board).order_by(Board.hot.desc()).all()[:RECOMMEND_NUM_BOARD]
+    recommend_boards = [{"name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
+    data = {"boards": recommend_boards, "news": hot_news}
+    db_session.commit()
+    return render_template("index.html", data=data)
+
 
 @app.route("/board/<Bid>")
 def get_posts_in_board(Bid):
@@ -31,10 +39,11 @@ def get_posts_in_board(Bid):
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     posts = [{"title": p.title, "summary": p.content[:100] + '...', "publish_time": p.timestamp,
               "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount}
-              for p in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+             for p in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts}
     db_session.commit()
     return render_template("board.html", data=data)
+
 
 @app.route("/search_board")
 def search_board():
@@ -49,7 +58,7 @@ def search_board():
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     boards = [{"name": b.name, "hot": b.hot, "post_count": b.postCount}
-              for b in match_result[(page-1)*PAGE_SIZE:page*PAGE_SIZE]]
+              for b in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "boards": boards}
     db_session.commit()
     return render_template("search_result.html", data=data)
