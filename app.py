@@ -12,6 +12,13 @@ def teardown_session(e):
 def hello():
     return render_template("index.html")
 
+@app.route("/board/<Bid>")
+def get_posts_in_board(Bid):
+    order = request.args.get("order", "latest_reply")
+    page = request.args.get("page", 1)
+    order = Post.timestamp.desc() if order == "latest_reply" else Post.hot.desc()
+
+
 
 @app.route("/search_board")
 def search_board():
@@ -19,7 +26,7 @@ def search_board():
     if not keyword:
         return render_template("search_result.html", error="Please enter a keyword!")
     order = request.args.get("order", "popular")
-    page = request.args.get("page", "latest")
+    page = request.args.get("page", 1)
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
     match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
     num_match = len(match_result)
