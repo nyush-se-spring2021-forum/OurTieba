@@ -14,11 +14,27 @@ def hello():
 
 @app.route("/board/<Bid>")
 def get_posts_in_board(Bid):
-    order = request.args.get("order", "latest_reply")
+    order = request.args.get("order", "latest_comment")
     page = request.args.get("page", 1)
-    order = Post.timestamp.desc() if order == "latest_reply" else Post.hot.desc()
+    if order == "latest_comment":
+        order = Post.latestCommentTime.desc()
+    elif order == "newest":
+        order = Post.timestamp.desc()
+    elif order == "like_count":
+        order = Post.likeCount.desc()
+    else:
+        order = Post.commentCount.desc()
 
-
+    match_result = db_session.query(Post).filter(Post.Bid == Bid).order_by(order).all()
+    num_match = len(match_result)
+    num_page = (num_match - 1) // PAGE_SIZE + 1
+    page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
+    posts = [{"title": p.title, "summary": p.content[:100] + '...', "publish_time": p.timestamp,
+              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount}
+              for p in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts}
+    db_session.commit()
+    return render_template("board.html", data=data)
 
 @app.route("/search_board")
 def search_board():
