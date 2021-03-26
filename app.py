@@ -12,12 +12,12 @@ def teardown_session(e):
 def hello():
     return render_template("index.html")
 
+
 @app.route("/board/<Bid>")
 def get_posts_in_board(Bid):
     order = request.args.get("order", "latest_reply")
     page = request.args.get("page", 1)
     order = Post.timestamp.desc() if order == "latest_reply" else Post.hot.desc()
-
 
 
 @app.route("/search_board")
@@ -33,7 +33,7 @@ def search_board():
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     boards = [{"name": b.name, "hot": b.hot, "post_count": b.postCount}
-              for b in match_result[(page-1)*PAGE_SIZE:page*PAGE_SIZE]]
+              for b in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "boards": boards}
     db_session.commit()
     return render_template("search_result.html", data=data)
