@@ -16,7 +16,7 @@ class Post(Base):
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
-    latestreply = Column(DateTime, default=datetime.datetime.now())
+    latestCommentTime = Column(DateTime, default=datetime.datetime.now())
     Uid = Column(Integer, ForeignKey("user.Uid"))
     Bid = Column(Integer, ForeignKey("board.Bid"))
 
