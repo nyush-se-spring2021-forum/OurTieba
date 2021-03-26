@@ -21,6 +21,8 @@ class Comment(Base):
     comment_in = relationship("Post", back_populates="comments")
 
     def __init__(self, Uid, Pid, content, timestamp=None):
+        if isinstance(timestamp, str):
+            timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Pid = Pid
         self.content = content

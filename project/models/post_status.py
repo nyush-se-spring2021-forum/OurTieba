@@ -16,6 +16,8 @@ class PostStatus(Base):
     lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
 
     def __init__(self, Uid, Pid, liked=None, disliked=None, lastModified=None):
+        if isinstance(lastModified, str):
+            lastModified = datetime.datetime.strptime(lastModified, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Pid = Pid
         self.liked = liked

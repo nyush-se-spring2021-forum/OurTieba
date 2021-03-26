@@ -19,6 +19,8 @@ class User(Base):
     comments = relationship("Comment", back_populates="comment_by")
 
     def __init__(self, password, uname, timestamp=None):
+        if isinstance(timestamp, str):
+            timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
         self.uname = uname
         self.timestamp = timestamp

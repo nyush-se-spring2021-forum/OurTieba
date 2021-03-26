@@ -17,12 +17,17 @@ class Post(Base):
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
     Uid = Column(Integer, ForeignKey("user.Uid"))
+    Bid = Column(Integer, ForeignKey("board.Bid"))
 
+    under = relationship("Board", back_populates="posts")
     owner = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="comment_in")
 
-    def __init__(self, Uid, title, content, timestamp=None):
+    def __init__(self, Uid, Bid, title, content, timestamp=None):
+        if isinstance(timestamp, str):
+            timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
+        self.Bid = Bid
         self.title = title
         self.content = content
         self.timestamp = timestamp
