@@ -1,8 +1,11 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, redirect, request
 
 from .database import *
 from .models import *
 from .views import *
+
+# Macros
+PAGE_SIZE = 10
 
 
 def create_app():
