@@ -13,7 +13,7 @@ class User(Base):
     Uid = Column(Integer, primary_key=True)
     password = Column(String(200))
     uname = Column(String(50), unique=True)
-    timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))  # time of account creation
 
     posts = relationship("Post", back_populates="owner")
     comments = relationship("Comment", back_populates="comment_by")

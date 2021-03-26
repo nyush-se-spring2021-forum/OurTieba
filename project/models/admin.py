@@ -12,7 +12,7 @@ class Admin(Base):
     Aid = Column(Integer, primary_key=True)
     password = Column(String(200))
     aname = Column(String(50), unique=True)
-    timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))  # time of account creation
 
     def __init__(self, password, aname=None, timestamp=None):
         if isinstance(timestamp, str):

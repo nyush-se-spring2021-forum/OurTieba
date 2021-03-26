@@ -12,7 +12,7 @@ class Post(Base):
     Pid = Column(Integer, primary_key=True)
     title = Column(String(100))
     content = Column(String(500))
-    timestamp = Column(DateTime, default=datetime.datetime.now())
+    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)

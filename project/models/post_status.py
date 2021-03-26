@@ -13,7 +13,7 @@ class PostStatus(Base):
     Pid = Column(Integer, primary_key=True)
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
-    lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
+    lastModified = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))  # timestamp of last action
 
     def __init__(self, Uid, Pid, liked=None, disliked=None, lastModified=None):
         if isinstance(lastModified, str):
