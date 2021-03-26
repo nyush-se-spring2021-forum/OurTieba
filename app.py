@@ -18,7 +18,7 @@ def search_board():
     keyword = request.args.get("kw")
     if not keyword:
         return render_template("search_result.html", error="Please enter a keyword!")
-    order = request.args.get("sort", "popular")
+    order = request.args.get("order", "popular")
     page = request.args.get("page", "latest")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
     match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
