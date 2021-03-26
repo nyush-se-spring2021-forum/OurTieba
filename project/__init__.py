@@ -3,9 +3,12 @@ from flask import Flask, jsonify, redirect, request
 from .database import *
 from .models import *
 from .views import *
+from .scrapper import *
 
 # Macros
 PAGE_SIZE = 10
+RECOMMEND_NUM_BOARD = 10
+RECOMMEND_NUM_NEWS = 3
 
 
 def create_app():
@@ -17,4 +20,5 @@ def create_app():
     with app.app_context():
         init_db()
     register_blue(app)
+    # init_scheduler(app)
     return app
