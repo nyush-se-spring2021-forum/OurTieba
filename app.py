@@ -11,6 +11,7 @@ def teardown_session(e):
 @app.route('/')
 def hello():
     return render_template("index.html")
+    wewewewewewe
 
 
 @app.route("/search_board")
