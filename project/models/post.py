@@ -16,7 +16,7 @@ class Post(Base):
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
-    latestCommentTime = Column(DateTime, default=datetime.datetime.now())
+    latestCommentTime = Column(DateTime)
     Uid = Column(Integer, ForeignKey("user.Uid"))
     Bid = Column(Integer, ForeignKey("board.Bid"))
 
@@ -24,14 +24,21 @@ class Post(Base):
     owner = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="comment_in")
 
-    def __init__(self, Uid, Bid, title, content, timestamp=None):
+    def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None,
+                 commentCount=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        if isinstance(LCT, str):
+            LCT = datetime.datetime.strptime(LCT, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Bid = Bid
         self.title = title
         self.content = content
         self.timestamp = timestamp
+        self.latestCommentTime = LCT if LCT else self.timestamp
+        self.commentCount = commentCount
+        self.likeCount = likeCount
+        self.dislikeCount = dislikeCount
 
     def __repr__(self):
         return '<Post %r>' % self.Pid
