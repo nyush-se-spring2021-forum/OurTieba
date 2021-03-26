@@ -13,7 +13,7 @@ class Board(Base):
     name = Column(String(100))
     hot = Column(Integer, default=0)
     postCount = Column(Integer, default=0)
-    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))
+    timestamp = Column(DateTime, default=datetime.datetime.now())
 
     posts = relationship("Post", back_populates="under")
 

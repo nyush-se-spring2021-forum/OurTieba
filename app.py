@@ -24,10 +24,12 @@ def search_board():
     match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
     num_match = len(match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
-    page = 1 if not page.isnumeric() or page <= 0 else int(page) if int(page) <= num_page else num_page
+    page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     boards = [{"name": b.name, "hot": b.hot, "post_count": b.postCount}
               for b in match_result[(page-1)*PAGE_SIZE:page*PAGE_SIZE]]
-    data = {"match": num_match, "page": num_page, "boards": boards}
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "boards": boards}
+    print(data)
+    db_session.commit()
     return render_template("search_result.html", data=data)
 
 
@@ -36,6 +38,7 @@ def sql_test():
     u1 = User("secret", "John")
     u2 = User("guess", "Bob")
     db_session.add(u1)
+    db_session.commit()
     db_session.add(u2)
     db_session.commit()
 
@@ -45,6 +48,7 @@ def sql_test():
     b1 = Board("Game")
     b2 = Board("E-sports")
     db_session.add(b1)
+    db_session.commit()
     db_session.add(b2)
     db_session.commit()
 

@@ -13,7 +13,7 @@ class Admin(Base):
     password = Column(String(200))
     aname = Column(String(50), unique=True)
     avatar = Column(String(100), default="")  # upon uploading, link=hash(Aid + timestamp) + ".png"
-    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
 
     def __init__(self, password, aname=None, avatar=None, timestamp=None):
         if isinstance(timestamp, str):

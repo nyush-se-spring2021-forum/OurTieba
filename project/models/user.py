@@ -14,7 +14,7 @@ class User(Base):
     password = Column(String(200))
     uname = Column(String(50), unique=True)
     avatar = Column(String(100), default="")  # upon uploading, link=hash(Uid + timestamp) + ".png"
-    timestamp = Column(DateTime, default=datetime.datetime.now().replace(microsecond=0))  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
 
     posts = relationship("Post", back_populates="owner")
     comments = relationship("Comment", back_populates="comment_by")
