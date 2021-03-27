@@ -37,6 +37,8 @@ class User(Base):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         if isinstance(dateOfBirth, str):
             dateOfBirth = datetime.datetime.strptime(dateOfBirth, "%Y-%m-%d %H:%M:%S")
+        if isinstance(banDuration, str):
+            banDuration = datetime.datetime.strptime(banDuration, "%Y-%m-%d %H:%M:%S")
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
         self.uname = uname
         self.nickname = nickname if nickname else uname
