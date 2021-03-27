@@ -93,6 +93,24 @@ def get_comments_in_post(Pid):
     db_session.commit()
     return render_template("post.html", Post=Post, data=data)
 
+@app.route("/report")
+def report():
+    target = request.args.get("target", 0)
+    id = request.args.get("id")
+    if target == "comment":
+        match_result = db_session.query(Comment).filter(Comment.Cid == id).all()
+        if len(match_result) == 0:
+            return "Not Found", 404
+        return render_template("report.html", id=id, target="comment")
+    elif target == "post":
+        match_result = db_session.query(Post).filter(Post.pid == id).all()
+        if len(match_result) == 0:
+            return "Not Found", 404
+        return render_template("report.html", id=id, target="post")
+    else:
+        return "Invalid URL", 404
+
+
 @app.route("/test")
 def sql_test():
     u1 = User(uname="U1", password="111", nickname="user1")
