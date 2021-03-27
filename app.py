@@ -27,9 +27,8 @@ def get_posts_in_board(Bid):
         return "Not Found!", 404
     board = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "postcount": b.postCount, "time": b.timestamp}]
 
-
     order = request.args.get("order", "latest_comment")
-    page = request.args.get("page", 1)
+    page = request.args.get("page", "1")
     if order == "latest_comment":
         order = Post.latestCommentTime.desc()
     elif order == "newest":
@@ -48,17 +47,21 @@ def get_posts_in_board(Bid):
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts}
 
-
     db_session.commit()
     return render_template("board.html", board=board, data=data)
+
 
 @app.route("/board/create")
 def create_post():
     Bid = request.args.get("Bid")
-    match_result = db_session.query(Board).filter(Board.Bid == Bid).all()
-    if len(match_result) == 0:  #It means we cannot find a board whose Bid is Bid.
-        return "Not Found!", 404
-    return render_template("create.html", Bid=Bid)
+    if not Bid or not Bid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 404
+    Uid = session.get("Uid")
+    data = {"Bid": Bid}
+    if not Uid:
+        return render_template("create.html", data=data, error="Not logged in!")
+    return render_template("create.html", data=data)
+
 
 @app.route("/search_board")
 def search_board():
@@ -66,7 +69,7 @@ def search_board():
     if not keyword:
         return render_template("search_result.html", error="Please enter a keyword!")
     order = request.args.get("order", "popular")
-    page = request.args.get("page", 1)
+    page = request.args.get("page", "1")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
     match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
     num_match = len(match_result)
@@ -84,7 +87,7 @@ def get_comments_in_post(Pid):
     p = db_session.query(Post).filter(Post.Pid == Pid).all()
     if len(p) == 0:
         return "Not Found", 404
-    Post = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+    Posts = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
              "owner": p.owner.nickname, "avatar": p.owner.avatar}]
 
@@ -97,12 +100,13 @@ def get_comments_in_post(Pid):
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     Comments = [{"Cid": c.Cid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
-                "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
+                 "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
                  "user_avatar": c.comment_by.avatar}
                 for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
-    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments}
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "posts": Posts}
     db_session.commit()
     return render_template("post.html", Post=Post, data=data)
+
 
 @app.route("/report")
 def report():
@@ -114,7 +118,7 @@ def report():
             return "Not Found", 404
         return render_template("report.html", id=id, target="comment")
     elif target == "post":
-        match_result = db_session.query(Post).filter(Post.pid == id).all()
+        match_result = db_session.query(Post).filter(Post.Pid == id).all()
         if len(match_result) == 0:
             return "Not Found", 404
         return render_template("report.html", id=id, target="post")
