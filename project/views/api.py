@@ -53,7 +53,7 @@ def like():
 
 
 @api.route("/dislike", methods=["POST"])
-def like():
+def dislike():
     Uid = session.get("Uid")
     if not Uid:
         return jsonify({"error": {"msg": "Not logged in!"}}), 403
