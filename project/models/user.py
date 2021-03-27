@@ -5,6 +5,7 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from ..database import Base
+from .user_report import user_report_table
 
 
 class User(Base):
@@ -22,24 +23,32 @@ class User(Base):
     email = Column(String)
     address = Column(String)
     dateOfBirth = Column(DateTime)
+    # ban status
+    banned = Column(Integer, default=0)  # 0=False, 1=True
+    banDuration = Column(DateTime, default=datetime.datetime.now())  # banned until
 
     posts = relationship("Post", back_populates="owner")
     comments = relationship("Comment", back_populates="comment_by")
+    reports = relationship("Report", secondary=lambda: user_report_table, back_populates="report_by")
 
     def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, gender=None,
-                 phoneNumber=None, email=None, address=None, dateOfBirth=None):
+                 phone_number=None, email=None, address=None, dateOfBirth=None, banned=None, banDuration=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        if isinstance(dateOfBirth, str):
+            dateOfBirth = datetime.datetime.strptime(dateOfBirth, "%Y-%m-%d %H:%M:%S")
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
         self.uname = uname
         self.nickname = nickname if nickname else uname
         self.avatar = avatar
         self.timestamp = timestamp
         self.gender = gender
-        self.phoneNumber = phoneNumber
+        self.phoneNumber = phone_number
         self.email = email
         self.address = address
         self.dateOfBirth = dateOfBirth
+        self.banned = banned
+        self.banDuration = banDuration
 
     def __repr__(self):
         return '<User %r>' % self.Uid
