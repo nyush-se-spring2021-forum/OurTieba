@@ -25,7 +25,7 @@ def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(b) == 0:
         return "Not Found!", 404
-    board_info = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "postcount": b.postCount, "time": b.timestamp}]
+    board_info = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}]
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
