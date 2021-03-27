@@ -97,5 +97,6 @@ def report():
 
     Pid = match_target[0].Pid
     # insert into db
-
+    new_report = Report(Uid, target, int(target_id), reason)
+    db_session.add(new_report)
     return redirect("/post/" + str(Pid))
