@@ -22,9 +22,9 @@ def create_post():
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
     title = request.form.get("title")
     content = request.form.get("content")
-    new_post = Post(Uid, Bid, title, content)
-    DB_session.add(new_post)
-    DB_session.commit()
+    new_post = Post(Uid, int(Bid), title, content)
+    db_session.add(new_post)
+    db_session.commit()
     return redirect("/board/" + Bid)
 
 
@@ -38,15 +38,16 @@ def like():
     action = request.form.get("like")
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or action not in ["0", "1"]:
         return jsonify({"error": {"msg": "invalid data"}}), 403
-    target_id = int(target_id)  # convert target_id to integer
+
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = db_session.query(query_from).filter(filter_cond).all()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
+
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, target_id, 0, 0, now) if action == "0" else status(Uid, target_id, 1, 0, now)
+    new_status = status(Uid, int(target_id), 0, 0, now) if action == "0" else status(Uid, int(target_id), 1, 0, now)
     db_session.merge(new_status)
     db_session.commit()
     return jsonify({"success": 1}), 200
@@ -63,7 +64,6 @@ def dislike():
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or action not in ["0", "1"]:
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    target_id = int(target_id)  # convert target_id to integer
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = db_session.query(query_from).filter(filter_cond).all()
@@ -72,13 +72,13 @@ def dislike():
 
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, target_id, 0, 0, now) if action == "0" else status(Uid, target_id, 0, 1, now)
+    new_status = status(Uid, int(target_id), 0, 0, now) if action == "0" else status(Uid, int(target_id), 0, 1, now)
     db_session.merge(new_status)
     db_session.commit()
     return jsonify({"success": 1}), 200
 
 
-@api.route('/report')
+@api.route('/report/add')
 def report():
     Uid = session.get("Uid")
     if not Uid:
@@ -89,13 +89,13 @@ def report():
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    target_id = int(target_id)  # convert target_id to integer
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = db_session.query(query_from).filter(filter_cond).all()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
 
-    if target == "comment":
-        Pid = match_target[0].Pid
+    Pid = match_target[0].Pid
     # insert into db
+
+    return redirect("/post/" + str(Pid))
