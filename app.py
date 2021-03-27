@@ -88,8 +88,8 @@ def get_comments_in_post(Pid):
     if len(p) == 0:
         return "Not Found", 404
     post_info = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
-              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
-              "owner": p.owner.nickname, "avatar": p.owner.avatar}]
+                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
+                  "owner": p.owner.nickname, "avatar": p.owner.avatar}]
 
     order = request.args.get("order", "most_like")
     page = request.args.get("page", "1")
