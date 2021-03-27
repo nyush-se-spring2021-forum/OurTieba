@@ -12,11 +12,11 @@ api = Blueprint("api", __name__, url_prefix="/api")
 def create_post():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+        return jsonify({"error": {"msg": "Not logged in!"}}), 403  # redirect("/login")
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
-    data = {"Bid": Bid}
+
     match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
@@ -25,7 +25,7 @@ def create_post():
     new_post = Post(Uid, int(Bid), title, content)
     db_session.add(new_post)
     db_session.commit()
-    return redirect("/board/" + Bid)
+    return redirect(f"/board/{Bid}")
 
 
 @api.route("/like", methods=["POST"])
@@ -78,8 +78,8 @@ def dislike():
     return jsonify({"success": 1}), 200
 
 
-@api.route('/report/add')
-def report():
+@api.route('/report/add', methods=["POST"])
+def add_report():
     Uid = session.get("Uid")
     if not Uid:
         return jsonify({"error": {"msg": "Not logged in!"}}), 403
@@ -99,4 +99,25 @@ def report():
     # insert into db
     new_report = Report(Uid, target, int(target_id), reason)
     db_session.add(new_report)
-    return redirect("/post/" + str(Pid))
+    db_session.commit()
+    return redirect(f"/post/{Pid}")
+
+
+@api.route('/comment/add', methods=["POST"])
+def add_comment():
+    Uid = session.get("Uid")
+    if not Uid:
+        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+    Pid = request.form.get("Pid")
+    content = request.form.get("content")
+    if not Pid or not Pid.isnumeric() or not content:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    match_post = db_session.query(Post).filter(Post.Pid == Pid).all()
+    if not match_post:
+        return jsonify({"error": {"msg": "invalid post ID"}}), 403
+
+    new_comment = Comment(Uid, Pid, content)
+    db_session.add(new_comment)
+    db_session.commit()
+    return redirect(f"/post/{Pid}?order=newest")
