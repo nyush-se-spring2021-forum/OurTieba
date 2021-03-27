@@ -44,6 +44,13 @@ def get_posts_in_board(Bid):
     db_session.commit()
     return render_template("board.html", data=data)
 
+@app.route("/board/create")
+def create_post():
+    Bid = request.args.get("Bid")
+    match_result = db_session.query(Board).filter(Board.Bid == Bid).all()
+    if len(match_result) == 0: #It means we cannot find a board whose Bid is Bid.
+        return "Not Found!", 404
+    return render_template("create.html", Bid = Bid)
 
 @app.route("/search_board")
 def search_board():
