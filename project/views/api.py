@@ -40,7 +40,7 @@ def like():
         return jsonify({"error": {"msg": "invalid data"}}), 403
     target_id = int(target_id)  # convert target_id to integer
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
-    Post, Post.Pid == target_id)
+        Post, Post.Pid == target_id)
     match_target = db_session.query(query_from).filter(filter_cond).all()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
@@ -62,15 +62,40 @@ def like():
     action = request.form.get("like")
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or action not in ["0", "1"]:
         return jsonify({"error": {"msg": "invalid data"}}), 403
+
     target_id = int(target_id)  # convert target_id to integer
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
-    Post, Post.Pid == target_id)
+        Post, Post.Pid == target_id)
     match_target = db_session.query(query_from).filter(filter_cond).all()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
+
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
     new_status = status(Uid, target_id, 0, 0, now) if action == "0" else status(Uid, target_id, 0, 1, now)
     db_session.merge(new_status)
     db_session.commit()
     return jsonify({"success": 1}), 200
+
+
+@api.route('/report')
+def report():
+    Uid = session.get("Uid")
+    if not Uid:
+        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+    target = request.form.get("target")
+    target_id = request.form.get("id")
+    reason = request.form.get("reason")
+    if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    target_id = int(target_id)  # convert target_id to integer
+    query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
+        Post, Post.Pid == target_id)
+    match_target = db_session.query(query_from).filter(filter_cond).all()
+    if not match_target:
+        return jsonify({"error": {"msg": "invalid target ID"}}), 403
+
+    if target == "comment":
+        Pid = match_target[0].Pid
+    # insert into db
