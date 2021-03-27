@@ -20,15 +20,15 @@ class Comment(Base):
     comment_by = relationship("User", back_populates="comments")
     comment_in = relationship("Post", back_populates="comments")
 
-    def __init__(self, Uid, Pid, content, timestamp=None, like_count=None, dislike_count=None):
+    def __init__(self, Uid, Pid, content, timestamp=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Pid = Pid
         self.content = content
         self.timestamp = timestamp
-        self.likeCount = like_count
-        self.dislikeCount = dislike_count
+        self.likeCount = likeCount
+        self.dislikeCount = dislikeCount
 
     def __repr__(self):
         return '<Post %r>' % self.Pid

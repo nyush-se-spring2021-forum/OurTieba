@@ -17,12 +17,12 @@ class Board(Base):
 
     posts = relationship("Post", back_populates="under")
 
-    def __init__(self, name, hot=None, post_count=None, timestamp=None):
+    def __init__(self, name, hot=None, postCount=None, timestamp=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.name = name
         self.hot = hot
-        self.postCount = post_count
+        self.postCount = postCount
         self.timestamp = timestamp
 
     def __repr__(self):
