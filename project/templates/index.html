@@ -1,24 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello</title>
-    <script src="/js/jquery-3.6.0.min.js"></script>
-</head>
-<body>
-<h1>Hey, there!</h1>
-<button>AJAX REQUEST</button>
-<script>
-    $("button").on("click", () => {
-        $.ajax({
-            url: "/getsomething",
-            success: function (data) {
-                $("h1").text(data.data[0].name);
-            }
-        })
-    })
+{% extends "base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
 
-</script>
-</body>
-</html>
+{% block title %}OurTieba{% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <script src="/js/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block page_content %}
+    <div class="page-header">
+        <h1>Hey, there!</h1>
+        <button>AJAX REQUEST</button>
+    </div>
+    <script>
+        $("button").on("click", () => {
+            $.ajax({
+                url: "/getsomething",
+                success: function (data) {
+                    $("h1").text(data.data[0].name);
+                }
+            })
+        })
+    </script>
+{% endblock %}

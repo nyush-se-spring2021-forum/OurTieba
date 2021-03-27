@@ -1,4 +1,6 @@
 from flask import Flask, jsonify, redirect, request
+from flask_bootstrap import Bootstrap
+from flask_moment import Moment
 
 from .config import *
 from .database import *
@@ -14,6 +16,9 @@ RECOMMEND_NUM_NEWS = 3
 
 def create_app():
     app = Flask(__name__, static_url_path="/")
+    bootstrap = Bootstrap(app)
+    moment = Moment(app)
+
     config_app(app)
     with app.app_context():
         init_db()

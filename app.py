@@ -9,7 +9,7 @@ def teardown_session(e):
 
 
 @app.route('/')
-def hello():
+def index():
     hot_articles = get_hot_news(num=RECOMMEND_NUM_NEWS)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": a["url"],
                  "img_src": a["urlToImage"]} for a in hot_articles]
@@ -196,7 +196,7 @@ def sql_test():
 
 @app.route("/frontendtest")
 def frontendtest():
-    return render_template("main.html")
+    return render_template("test.html")
 
 
 @app.route("/getsomething")
