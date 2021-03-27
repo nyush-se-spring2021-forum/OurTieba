@@ -12,7 +12,7 @@ def teardown_session(e):
 def hello():
     hot_articles = get_hot_news(num=RECOMMEND_NUM_NEWS)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": a["url"],
-                 "img": a["urlToImage"]} for a in hot_articles]
+                 "img_src": a["urlToImage"]} for a in hot_articles]
     boards = db_session.query(Board).order_by(Board.hot.desc()).all()[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
     data = {"boards": recommend_boards, "news": hot_news}
