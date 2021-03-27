@@ -5,3 +5,4 @@ from ..models.post import Post
 from ..models.post_status import PostStatus
 from ..models.user import User
 from ..models.board import Board
+from ..models.report import Report

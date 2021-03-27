@@ -13,5 +13,5 @@ Base.query = DB_session.query_property()
 
 def init_db():
     # import all models here (only the class name)
-    from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, User
+    from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, User
     Base.metadata.create_all(bind=engine)
