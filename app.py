@@ -48,9 +48,9 @@ def get_posts_in_board(Bid):
 def create_post():
     Bid = request.args.get("Bid")
     match_result = db_session.query(Board).filter(Board.Bid == Bid).all()
-    if len(match_result) == 0: #It means we cannot find a board whose Bid is Bid.
+    if len(match_result) == 0:  #It means we cannot find a board whose Bid is Bid.
         return "Not Found!", 404
-    return render_template("create.html", Bid = Bid)
+    return render_template("create.html", Bid=Bid)
 
 @app.route("/search_board")
 def search_board():
@@ -70,6 +70,28 @@ def search_board():
     db_session.commit()
     return render_template("search_result.html", data=data)
 
+
+@app.route("/post/<Pid>")
+def get_comments_in_post(Pid):
+    order = request.args.get("order", "most_like")
+    page = request.args.get("page", 1)
+
+    order = Comment.likeCount.desc() if order == "most_like" else Comment.timestamp.desc()
+    comment_match_result = db_session.query(Comment).filter(Comment.Pid == Pid).order_by(order).all()
+    num_match = len(comment_match_result)
+    num_page = (num_match - 1) // PAGE_SIZE + 1
+    page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
+    Comments = [{"Cid": c.Cid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
+                "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
+                 "user_avatar": c.comment_by.avatar}
+                for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    p = db_session.query(Post).filter(Post.Pid == Pid).all()
+    Post = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
+             "owner": p.owner.nickname, "avatar": p.owner.avatar}]
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments}
+    db_session.commit()
+    return render_template("post.html", Post=Post, data=data)
 
 @app.route("/test")
 def sql_test():
