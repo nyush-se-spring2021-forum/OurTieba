@@ -16,9 +16,8 @@ RECOMMEND_NUM_NEWS = 3
 
 def create_app():
     app = Flask(__name__, static_url_path="/")
-    bootstrap = Bootstrap(app)
-    moment = Moment(app)
-
+    Bootstrap(app)
+    Moment(app)
     config_app(app)
     with app.app_context():
         init_db()
