@@ -25,7 +25,7 @@ class Post(Base):
     comments = relationship("Comment", back_populates="comment_in")
 
     def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None,
-                 commentCount=None, likeCount=None, dislikeCount=None):
+                 comment_count=None, like_count=None, dislike_count=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         if isinstance(LCT, str):
@@ -36,9 +36,9 @@ class Post(Base):
         self.content = content
         self.timestamp = timestamp
         self.latestCommentTime = LCT if LCT else self.timestamp
-        self.commentCount = commentCount
-        self.likeCount = likeCount
-        self.dislikeCount = dislikeCount
+        self.commentCount = comment_count
+        self.likeCount = like_count
+        self.dislikeCount = dislike_count
 
     def __repr__(self):
         return '<Post %r>' % self.Pid
