@@ -25,7 +25,7 @@ def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(b) == 0:
         return "Not Found!", 404
-    board = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "postcount": b.postCount, "time": b.timestamp}]
+    board_info = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "postcount": b.postCount, "time": b.timestamp}]
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
@@ -45,10 +45,10 @@ def get_posts_in_board(Bid):
     posts = [{"Pid": p.Pid, "title": p.title, "summary": p.content[:100] + '...', "publish_time": p.timestamp,
               "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount}
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
-    data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts}
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
     db_session.commit()
-    return render_template("board.html", board=board, data=data)
+    return render_template("board.html", data=data)
 
 
 @app.route("/board/create")
@@ -87,12 +87,12 @@ def get_comments_in_post(Pid):
     p = db_session.query(Post).filter(Post.Pid == Pid).all()
     if len(p) == 0:
         return "Not Found", 404
-    Posts = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
-             "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
-             "owner": p.owner.nickname, "avatar": p.owner.avatar}]
+    post_info = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
+              "owner": p.owner.nickname, "avatar": p.owner.avatar}]
 
     order = request.args.get("order", "most_like")
-    page = request.args.get("page", 1)
+    page = request.args.get("page", "1")
 
     order = Comment.likeCount.desc() if order == "most_like" else Comment.timestamp.desc()
     comment_match_result = db_session.query(Comment).filter(Comment.Pid == Pid).order_by(order).all()
@@ -103,9 +103,9 @@ def get_comments_in_post(Pid):
                  "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
                  "user_avatar": c.comment_by.avatar}
                 for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
-    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "posts": Posts}
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "post_info": post_info}
     db_session.commit()
-    return render_template("post.html", Post=Post, data=data)
+    return render_template("post.html", data=data)
 
 
 @app.route("/report")
