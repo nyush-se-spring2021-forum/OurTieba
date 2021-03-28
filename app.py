@@ -15,17 +15,22 @@ def index():
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = db_session.query(Board).order_by(Board.hot.desc()).all()[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
-    data = {"boards": recommend_boards, "news": hot_news}
+    user_info = {}
+    Uid = session.get("Uid")
+    if Uid:
+        match_user = db_session.query(User).filter(User.Uid == Uid).first()
+        user_info = {"Uid": Uid, "nickname": match_user.nickname, "avatar": match_user.avatar}
+    data = {"boards": recommend_boards, "news": hot_news, "user_info": user_info}
     db_session.commit()
     return render_template("index.html", data=data)
 
 
-@app.route("/board/<Bid>")
+@app.route("/board/<int:Bid>")
 def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(b) == 0:
         return "Not Found!", 404
-    board_info = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}]
+    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
@@ -85,14 +90,14 @@ def search_board():
     return render_template("search_result.html", data=data)
 
 
-@app.route("/post/<Pid>")
+@app.route("/post/<int:Pid>")
 def get_comments_in_post(Pid):
     p = db_session.query(Post).filter(Post.Pid == Pid).all()
     if len(p) == 0:
         return "Not Found", 404
-    post_info = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
-                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
-                  "owner": p.owner.nickname, "avatar": p.owner.avatar}]
+    post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+                 "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
+                 "owner": p.owner.nickname, "avatar": p.owner.avatar}
 
     order = request.args.get("order", "most_like")
     page = request.args.get("page", "1")
@@ -119,35 +124,67 @@ def report():
     if target == "comment":
         match_result = db_session.query(Comment).filter(Comment.Cid == id).all()
         if len(match_result) == 0:
+            db_session.commit()
             return "Not Found", 404
+        db_session.commit()
         return render_template("report.html", data=data)
     elif target == "post":
         match_result = db_session.query(Post).filter(Post.Pid == id).all()
         if len(match_result) == 0:
+            db_session.commit()
             return "Not Found", 404
+        db_session.commit()
         return render_template("report.html", data=data)
     else:
         return "Invalid URL", 404
+
 
 @app.route("/register")
 def register_interface():
     return render_template("register.html")
 
+
 @app.route("/login")
 def login_interface():
     return render_template("login.html")
 
+
 @app.route("/profile/<Uid>")
 def get_personal_profile(Uid):
-    u = db_session.query(User).filter(User.Uid == Uid).first()
+    u = db_session.query(User).filter(User.Uid == Uid).all()
     if len(u) == 0:
         return "Not Found", 404
-    user = [{
+    user_info = {
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
         "banned": u.banned, "banDuration": u.banDuration
-    }]
-    return render_template("profile.html", data=user)
+    }
+    db_session.commit()
+    return render_template("profile.html", data=user_info)
+
+
+@app.route("/admin/login")
+def admin_login():
+    return render_template("admin_login.html")
+
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    page = request.args.get("page", "1")
+    order = Report.timestamp.desc()
+
+    reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
+    num_reports = len(reports)
+    num_page = (num_reports - 1) // PAGE_SIZE + 1
+    page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
+    Allreports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
+                   "timestamp": r.timestamp, "resolved": r.resolved,
+                   "Uid": r.Uid}
+                  for r in reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": Allreports}
+    db_session.commit()
+    return render_template("admin_dashboard.html", data=data)
+
 
 @app.route("/test")
 def sql_test():
