@@ -62,6 +62,11 @@ def admin_auth_login():
     session["type"] = "admin"
     return redirect("/admin/dashboard")
 
+@admin.route("/auth/logout")
+def admin_logout():
+    session.pop("Aid")
+    session.pop("type")
+    return redirect("/admin/login")
 
 @admin.route("/board/delete", methods=["POST"])
 def admin_board_delete():
