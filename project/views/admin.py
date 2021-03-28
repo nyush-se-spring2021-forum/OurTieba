@@ -25,9 +25,7 @@ def admin_dashboard():
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return redirect("/admin/login")
@@ -59,21 +57,21 @@ def admin_auth_login():
 
     db_session.commit()
     session["Aid"] = admin_result.Aid
-    session["type"] = "admin"
+
     return redirect("/admin/dashboard")
+
 
 @admin.route("/auth/logout")
 def admin_logout():
     session.pop("Aid")
-    session.pop("type")
+
     return redirect("/admin/login")
+
 
 @admin.route("/board/delete", methods=["POST"])
 def admin_board_delete():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
@@ -90,9 +88,7 @@ def admin_board_delete():
 @admin.route("/post/delete", methods=["POST"])
 def admin_post_delete():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
@@ -109,9 +105,7 @@ def admin_post_delete():
 @admin.route("/comment/delete", methods=["POST"])
 def admin_comment_delete():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
@@ -128,9 +122,7 @@ def admin_comment_delete():
 @admin.route("/user/ban", methods=["POST"])
 def admin_user_ban():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
@@ -151,9 +143,7 @@ def admin_user_ban():
 @admin.route("/user/unban", methods=["POST"])
 def admin_user_unban():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
@@ -170,9 +160,7 @@ def admin_user_unban():
 @admin.route("/report/resolve", methods=["POST"])
 def admin_report_resolve():
     Aid = session.get("Aid")
-    type = session.get("type")
-    if type != "admin":
-        return "Invalid URL", 404
+
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
