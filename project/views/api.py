@@ -257,6 +257,7 @@ def login_auth():
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user[0].password:
         return jsonify({"error": {"msg": "incorrect password"}}), 403
     session["Uid"] = match_user.Uid
+    db_session.commit()
     return redirect("/")
 
 
