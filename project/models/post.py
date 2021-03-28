@@ -23,6 +23,7 @@ class Post(Base):
     under = relationship("Board", back_populates="posts")
     owner = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="comment_in")
+    status_by = relationship("PostStatus", back_populates="on_post")
 
     def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None,
                  commentCount=None, likeCount=None, dislikeCount=None):

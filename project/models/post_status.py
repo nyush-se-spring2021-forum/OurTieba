@@ -1,6 +1,7 @@
 import datetime
 
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy.orm import relationship
 
 from ..database import Base
 
@@ -14,6 +15,9 @@ class PostStatus(Base):
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
     lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
+
+    by_user = relationship("User", back_populates="status_post")
+    on_post = relationship("Post", back_populates="status_by")
 
     def __init__(self, Uid, Pid, liked=None, disliked=None, lastModified=None):
         if isinstance(lastModified, str):

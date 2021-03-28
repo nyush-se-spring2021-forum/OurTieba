@@ -30,6 +30,8 @@ class User(Base):
     posts = relationship("Post", back_populates="owner")
     comments = relationship("Comment", back_populates="comment_by")
     reports = relationship("Report", secondary=lambda: user_report_table, back_populates="report_by")
+    status_comment = relationship("CommentStatus", back_populates="by_user")
+    status_post = relationship("PostStatus", back_populates="by_user")
 
     def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, gender=None,
                  phone_number=None, email=None, address=None, dateOfBirth=None, banned=None, banDuration=None):
