@@ -94,9 +94,11 @@ def admin_post_delete():
         return "Invalid URL", 404
 
     Pid = request.form.get("Pid")
-    match_post = db_session(Post).filter(Post.Pid == Pid).all()
-    if len(match_post) == 0:
+    match_post = db_session(Post).filter(Post.Pid == Pid).first()
+    if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}}, 403)
+    match_post.under.postCount -= 1
+    db_session.commit()
     db_session.delete(match_post)
     db_session.commit()
     return redirect("/admin/dashboard")
@@ -111,9 +113,11 @@ def admin_comment_delete():
         return "Invalid URL", 404
 
     Cid = request.form.get("Cid")
-    match_comment = db_session(Comment).filter(Comment.Cid == Cid).all()
-    if len(match_comment) == 0:
+    match_comment = db_session(Comment).filter(Comment.Cid == Cid).first()
+    if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}}, 403)
+    match_comment.comment_in.commentCount -= 1
+    db_session.commit()
     db_session.delete(match_comment)
     db_session.commit()
     return redirect("/admin/dashboard")
