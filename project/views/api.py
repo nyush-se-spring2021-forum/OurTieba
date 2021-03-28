@@ -1,6 +1,8 @@
 import datetime
+import hashlib
+import re
 
-from flask import Blueprint, render_template, request, session, jsonify, redirect
+from flask import Blueprint, request, session, jsonify, redirect
 
 from ..database import *
 from ..models import *
@@ -8,11 +10,11 @@ from ..models import *
 api = Blueprint("api", __name__, url_prefix="/api")
 
 
-@api.route("/post/add", methods=["POST"])
-def create_post():
+@api.route('/post/add', methods=["POST"])
+def add_post():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403  # redirect("/login")
+        return redirect("/login")
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
@@ -28,11 +30,11 @@ def create_post():
     return redirect(f"/board/{Bid}")
 
 
-@api.route("/like", methods=["POST"])
+@api.route('/like', methods=["POST"])
 def like():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+        return redirect("/login")
     target = request.form.get("target")
     target_id = request.form.get("id")
     action = request.form.get("like")
@@ -53,11 +55,11 @@ def like():
     return jsonify({"success": 1}), 200
 
 
-@api.route("/dislike", methods=["POST"])
+@api.route('/dislike', methods=["POST"])
 def dislike():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+        return redirect("/login")
     target = request.form.get("target")
     target_id = request.form.get("id")
     action = request.form.get("like")
@@ -82,7 +84,7 @@ def dislike():
 def add_report():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+        return redirect("/login")
     target = request.form.get("target")
     target_id = request.form.get("id")
     reason = request.form.get("reason")
@@ -107,7 +109,7 @@ def add_report():
 def add_comment():
     Uid = session.get("Uid")
     if not Uid:
-        return jsonify({"error": {"msg": "Not logged in!"}}), 403
+        return redirect("/login")
     Pid = request.form.get("Pid")
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:
@@ -121,3 +123,138 @@ def add_comment():
     db_session.add(new_comment)
     db_session.commit()
     return redirect(f"/post/{Pid}?order=newest")
+
+
+@api.route('/post/delete', methods=["POST"])
+def delete_post():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+    Pid = request.form.get("Pid")
+    Bid = request.form.get("Bid")
+    if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    match_post = db_session.query(Post).filter(Post.Pid == Pid).all()
+    if not match_post or match_post[0].under.Bid != int(Bid):
+        return jsonify({"error": {"msg": "invalid post ID or board ID"}}), 403
+
+    db_session.query(Post).filter(Post.Pid == Pid).delete()
+    db_session.commit()
+    return redirect(f"/board/{Bid}")
+
+
+@api.route('/comment/delete', methods=["POST"])
+def delete_comment():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+    Cid = request.form.get("Pid")
+    Pid = request.form.get("Bid")
+    if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    match_post = db_session.query(Comment).filter(Comment.Cid == Cid).all()
+    if not match_post or match_post[0].comment_in.Pid != int(Pid):
+        return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
+
+    db_session.query(Comment).filter(Comment.Cid == Cid).delete()
+    db_session.commit()
+    return redirect(f"/post/{Pid}")
+
+
+@api.route('/personal_info/add', methods=["POST"])
+def add_personal_info():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+
+    # check gender
+    gender = request.form.get("gender")
+    if gender not in ["male", "female", "other"]:
+        return jsonify({"error": {"msg": "invalid gender"}}), 403
+    # check phone number
+    phone_number = request.form.get("phone_number")
+    phone_number = re.findall(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$", phone_number)
+    if not phone_number:
+        return jsonify({"error": {"msg": "invalid gender"}}), 403
+    else:
+        phone_number = phone_number[0]
+    # check email
+    email = request.form.get("email")
+    email = re.findall(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
+    if not email:
+        return jsonify({"error": {"msg": "invalid email"}}), 403
+    else:
+        email = email[0]
+    # check address
+    address = request.form.get("address")
+    if len(address) > 200:
+        return jsonify({"error": {"msg": "invalid address"}}), 403
+    # check date of birth
+    date_of_birth = request.form.get("date_of_birth")
+    try:
+        date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d %H:%M:%S")
+    except Exception as e:
+        return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
+
+    db_session.query(User).filter(User.Uid == Uid).update({"gender": gender, "phoneNumber": phone_number,
+                                                           "email": email, "address": address,
+                                                           "dateOfBirth": date_of_birth})
+    db_session.commit()
+    return redirect(f"/profile/{Uid}")
+
+
+@api.route('/auth/register', methods=["POST"])
+def register_auth():
+    Uid = session.get("Uid")
+    if Uid:
+        return redirect("/")  # if already logged in, redirect to homepage
+
+    # check username
+    username = request.form.get("uname")
+    if len(username) < 5 or len(username) > 20:
+        return jsonify({"error": {"msg": "invalid username"}}), 403
+    username = re.findall(r"[\w_]+$", username)
+    if not username:
+        return jsonify({"error": {"msg": "invalid username"}}), 403
+    else:
+        username = username[0]
+    # check password
+    password = request.form.get("password")
+    password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
+    if not password:
+        return jsonify({"error": {"msg": "invalid password"}}), 403
+    else:
+        password = password[0]
+    # check nickname
+    nickname = request.form.get("nickname")
+    if not nickname or len(nickname) > 20:
+        return jsonify({"error": {"msg": "invalid nickname"}}), 403
+
+    new_user = User(password, username, nickname=nickname)
+    db_session.add(new_user)
+    db_session.commit()
+
+    # login once finish registration
+    new_Uid = db_session.query(User).filter(User.uname == username).first().Uid
+    session["Uid"] = new_Uid
+    db_session.commit()
+    return redirect("/")
+
+
+@api.route('/auth/login', methods=["POST"])
+def login_auth():
+    Uid = session.get("Uid")
+    if Uid:
+        return redirect("/")  # if already logged in, redirect to homepage
+
+    username = request.form.get("uname")
+    password = request.form.get("password")
+    match_user = db_session.query(User).filter(User.uname == username).all()
+    if not match_user:
+        return jsonify({"error": {"msg": "user does not exist"}}), 403
+    if hashlib.sha3_512(password.encode()).hexdigest() != match_user[0].password:
+        return jsonify({"error": {"msg": "incorrect password"}}), 403
+    session["Uid"] = match_user.Uid
+    return redirect("/")
