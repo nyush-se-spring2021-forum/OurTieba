@@ -8,11 +8,6 @@ from .models import *
 from .scrapper import *
 from .views import *
 
-# Macros
-PAGE_SIZE = 10
-RECOMMEND_NUM_BOARD = 10
-RECOMMEND_NUM_NEWS = 3
-
 
 def create_app():
     app = Flask(__name__, static_url_path="/")
