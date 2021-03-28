@@ -15,7 +15,12 @@ def index():
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = db_session.query(Board).order_by(Board.hot.desc()).all()[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
-    data = {"boards": recommend_boards, "news": hot_news}
+    user_info = {}
+    Uid = session.get("Uid")
+    if Uid:
+        match_user = db_session.query(User).filter(User.Uid == Uid).first()
+        user_info = {"Uid": Uid, "nickname": match_user.nickname, "avatar": match_user.avatar}
+    data = {"boards": recommend_boards, "news": hot_news, "user_info": user_info}
     db_session.commit()
     return render_template("index.html", data=data)
 
@@ -119,23 +124,30 @@ def report():
     if target == "comment":
         match_result = db_session.query(Comment).filter(Comment.Cid == id).all()
         if len(match_result) == 0:
+            db_session.commit()
             return "Not Found", 404
+        db_session.commit()
         return render_template("report.html", data=data)
     elif target == "post":
         match_result = db_session.query(Post).filter(Post.Pid == id).all()
         if len(match_result) == 0:
+            db_session.commit()
             return "Not Found", 404
+        db_session.commit()
         return render_template("report.html", data=data)
     else:
         return "Invalid URL", 404
+
 
 @app.route("/register")
 def register_interface():
     return render_template("register.html")
 
+
 @app.route("/login")
 def login_interface():
     return render_template("login.html")
+
 
 @app.route("/profile/<Uid>")
 def get_personal_profile(Uid):
@@ -147,11 +159,14 @@ def get_personal_profile(Uid):
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
         "banned": u.banned, "banDuration": u.banDuration
     }]
+    db_session.commit()
     return render_template("profile.html", data=user)
+
 
 @app.route("/admin/login")
 def admin_login():
     return render_template("admin_login.html")
+
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
@@ -163,9 +178,9 @@ def admin_dashboard():
     num_page = (num_reports - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     Allreports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
-                 "timestamp": r.timestamp, "resolved": r.resolved,
-                 "Uid": r.Uid}
-                 for r in reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+                   "timestamp": r.timestamp, "resolved": r.resolved,
+                   "Uid": r.Uid}
+                  for r in reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": Allreports}
     db_session.commit()
     return render_template("admin_dashboard.html", data=data)
