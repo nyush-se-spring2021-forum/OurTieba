@@ -149,7 +149,7 @@ def login_interface():
     return render_template("login.html")
 
 
-@app.route("/profile/<Uid>")
+@app.route("/profile/<int:Uid>")
 def get_personal_profile(Uid):
     u = db_session.query(User).filter(User.Uid == Uid).all()
     if len(u) == 0:
