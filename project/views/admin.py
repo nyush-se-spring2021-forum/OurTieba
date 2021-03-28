@@ -128,7 +128,7 @@ def admin_user_ban():
     user = db_session(User).filter(User.Uid == Uid).first()
     if len(user) == 0:
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
-    if int(days) <= 0:
+    if not days.isnumeric() or int(days) <= 0:
         return jsonify({"error": {"msg": "Invalid Day"}}, 403)
     user.banned = 1
     user.banDuration = (datetime.datetime.now()+datetime.timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
