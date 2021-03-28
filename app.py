@@ -139,7 +139,7 @@ def login_interface():
 
 @app.route("/profile/<Uid>")
 def get_personal_profile(Uid):
-    u = db_session.query(User).filter(User.Uid == Uid).all()
+    u = db_session.query(User).filter(User.Uid == Uid).first()
     if len(u) == 0:
         return "Not Found", 404
     user = [{
@@ -148,28 +148,6 @@ def get_personal_profile(Uid):
         "banned": u.banned, "banDuration": u.banDuration
     }]
     return render_template("profile.html", data=user)
-
-@app.route("/admin/login")
-def admin_login():
-    return render_template("admin_login.html")
-
-@app.route("/admin/dashboard")
-def admin_dashboard():
-    page = request.args.get("page", "1")
-    order = Report.timestamp.desc()
-
-    reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
-    num_reports = len(reports)
-    num_page = (num_reports - 1) // PAGE_SIZE + 1
-    page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    Allreports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
-                 "timestamp": r.timestamp, "resolved": r.resolved,
-                 "Uid": r.Uid}
-                 for r in reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
-    data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": Allreports}
-    db_session.commit()
-    return render_template("admin_dashboard.html", data=data)
-
 
 @app.route("/test")
 def sql_test():
