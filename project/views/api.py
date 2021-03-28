@@ -258,3 +258,13 @@ def login_auth():
         return jsonify({"error": {"msg": "incorrect password"}}), 403
     session["Uid"] = match_user.Uid
     return redirect("/")
+
+
+@api.route('/auth/logout', methods=["POST"])
+def logout_auth():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+
+    session.pop("Uid")
+    return redirect("/")
