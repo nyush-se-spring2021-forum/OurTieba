@@ -22,6 +22,7 @@ def add_post():
     match_board = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
+    match_board.postCount += 1
     title = request.form.get("title")
     content = request.form.get("content")
     new_post = Post(Uid, int(Bid), title, content)
@@ -46,10 +47,11 @@ def like():
     match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
+    match_target.likeCount += 1 if action == "1" else -1
 
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), 0, 0, now) if action == "0" else status(Uid, int(target_id), 1, 0, now)
+    new_status = status(Uid, int(target_id), 1, 0, now) if action == "1" else status(Uid, int(target_id), 0, 0, now)
     db_session.merge(new_status)
     db_session.commit()
     return jsonify({"success": 1}), 200
@@ -71,10 +73,11 @@ def dislike():
     match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
+    match_target.dislikeCount += 1 if action == "1" else -1
 
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), 0, 0, now) if action == "0" else status(Uid, int(target_id), 0, 1, now)
+    new_status = status(Uid, int(target_id), 0, 1, now) if action == "1" else status(Uid, int(target_id), 0, 0, now)
     db_session.merge(new_status)
     db_session.commit()
     return jsonify({"success": 1}), 200
@@ -118,6 +121,7 @@ def add_comment():
     match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
+    match_post.commentCount += 1
 
     new_comment = Comment(Uid, Pid, content)
     db_session.add(new_comment)
@@ -138,6 +142,7 @@ def delete_post():
     match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID"}}), 403
+    match_post.under.postCount -= 1
 
     db_session.query(Post).filter(Post.Pid == Pid).delete()
     db_session.commit()
@@ -157,6 +162,7 @@ def delete_comment():
     match_post = db_session.query(Comment).filter(Comment.Cid == Cid).first()
     if not match_post or match_post.comment_in.Pid != int(Pid):
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
+    match_post.commentCount -= 1
 
     db_session.query(Comment).filter(Comment.Cid == Cid).delete()
     db_session.commit()
