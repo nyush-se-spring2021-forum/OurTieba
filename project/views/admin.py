@@ -30,7 +30,7 @@ def admin_dashboard():
         return "Invalid URL", 404
     match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/login")
 
     reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
     num_reports = len(reports)
