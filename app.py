@@ -6,6 +6,7 @@ app = create_app()
 @app.teardown_appcontext
 def teardown_session(e):
     DB_session.remove()
+    html_session.close()
 
 
 @app.route('/')
