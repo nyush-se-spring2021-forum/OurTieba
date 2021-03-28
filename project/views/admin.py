@@ -5,7 +5,6 @@ import hashlib
 
 from ..database import *
 from ..models import *
-from ...project import *
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -41,7 +40,7 @@ def admin_dashboard():
     db_session.commit()
     return render_template("admin_dashboard.html", data=data)
 
-@admin.route("/auth/login", method=["POST"])
+@admin.route("/auth/login", methods=["POST"])
 def admin_auth_login():
     aname = request.form.get("aname")
     password = request.form.get("password")
@@ -59,7 +58,7 @@ def admin_auth_login():
     session["type"] = "admin"
     return redirect("/dashboard")
 
-@admin.route("/board/delete", method=["POST"])
+@admin.route("/board/delete", methods=["POST"])
 def admin_board_delete():
     Aid = session.get("Aid")
     type = session.get("type")
@@ -77,7 +76,7 @@ def admin_board_delete():
     db_session.commit()
     return redirect("/dashboard")
 
-@admin.route("/post/delete", method=["POST"])
+@admin.route("/post/delete", methods=["POST"])
 def admin_post_delete():
     Aid = session.get("Aid")
     type = session.get("type")
@@ -95,7 +94,7 @@ def admin_post_delete():
     db_session.commit()
     return redirect("/dashboard")
 
-@admin.route("/comment/delete", method=["POST"])
+@admin.route("/comment/delete", methods=["POST"])
 def admin_comment_delete():
     Aid = session.get("Aid")
     type = session.get("type")
@@ -113,7 +112,7 @@ def admin_comment_delete():
     db_session.commit()
     return redirect("/dashboard")
 
-@admin.route("/user/ban", method=["POST"])
+@admin.route("/user/ban", methods=["POST"])
 def admin_user_ban():
     Aid = session.get("Aid")
     type = session.get("type")
@@ -135,7 +134,7 @@ def admin_user_ban():
     db_session.commit()
     return redirect("/dashboard")
 
-@admin.route("/user/unban", method=["POST"])
+@admin.route("/user/unban", methods=["POST"])
 def admin_user_unban():
     Aid = session.get("Aid")
     type = session.get("type")
@@ -153,7 +152,7 @@ def admin_user_unban():
     db_session.commit()
     return redirect("/dashboard")
 
-@admin.route("/report/resolve", method=["POST"])
+@admin.route("/report/resolve", methods=["POST"])
 def admin_report_resolve():
     Aid = session.get("Aid")
     type = session.get("type")
