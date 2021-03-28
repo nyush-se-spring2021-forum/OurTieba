@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, DateTime
+from sqlalchemy import Column, Integer, DateTime, ForeignKey
 
 from ..database import Base
 
@@ -9,8 +9,8 @@ from ..database import Base
 class PostStatus(Base):
     __tablename__ = "post_status"
 
-    Uid = Column(Integer, primary_key=True)
-    Pid = Column(Integer, primary_key=True)
+    Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
+    Pid = Column(Integer, ForeignKey("post.Pid"), primary_key=True)
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
     lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
