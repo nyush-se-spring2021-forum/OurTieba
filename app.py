@@ -30,7 +30,7 @@ def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(b) == 0:
         return "Not Found!", 404
-    board_info = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}]
+    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
@@ -95,9 +95,9 @@ def get_comments_in_post(Pid):
     p = db_session.query(Post).filter(Post.Pid == Pid).all()
     if len(p) == 0:
         return "Not Found", 404
-    post_info = [{"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
-                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
-                  "owner": p.owner.nickname, "avatar": p.owner.avatar}]
+    post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+                 "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
+                 "owner": p.owner.nickname, "avatar": p.owner.avatar}
 
     order = request.args.get("order", "most_like")
     page = request.args.get("page", "1")
@@ -154,13 +154,13 @@ def get_personal_profile(Uid):
     u = db_session.query(User).filter(User.Uid == Uid).all()
     if len(u) == 0:
         return "Not Found", 404
-    user = [{
+    user_info = {
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
         "banned": u.banned, "banDuration": u.banDuration
-    }]
+    }
     db_session.commit()
-    return render_template("profile.html", data=user)
+    return render_template("profile.html", data=user_info)
 
 
 @app.route("/admin/login")
