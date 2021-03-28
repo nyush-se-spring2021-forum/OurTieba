@@ -19,7 +19,7 @@ def add_post():
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
+    match_board = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
     title = request.form.get("title")
@@ -43,7 +43,7 @@ def like():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = db_session.query(query_from).filter(filter_cond).all()
+    match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
 
@@ -68,7 +68,7 @@ def dislike():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = db_session.query(query_from).filter(filter_cond).all()
+    match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
 
@@ -93,11 +93,11 @@ def add_report():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = db_session.query(query_from).filter(filter_cond).all()
+    match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
 
-    Pid = match_target[0].Pid
+    Pid = match_target.Pid
     # insert into db
     new_report = Report(Uid, target, int(target_id), reason)
     db_session.add(new_report)
@@ -115,7 +115,7 @@ def add_comment():
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    match_post = db_session.query(Post).filter(Post.Pid == Pid).all()
+    match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
 
@@ -135,8 +135,8 @@ def delete_post():
     if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    match_post = db_session.query(Post).filter(Post.Pid == Pid).all()
-    if not match_post or match_post[0].under.Bid != int(Bid):
+    match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
+    if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID"}}), 403
 
     db_session.query(Post).filter(Post.Pid == Pid).delete()
@@ -154,8 +154,8 @@ def delete_comment():
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    match_post = db_session.query(Comment).filter(Comment.Cid == Cid).all()
-    if not match_post or match_post[0].comment_in.Pid != int(Pid):
+    match_post = db_session.query(Comment).filter(Comment.Cid == Cid).first()
+    if not match_post or match_post.comment_in.Pid != int(Pid):
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
 
     db_session.query(Comment).filter(Comment.Cid == Cid).delete()
@@ -251,10 +251,10 @@ def login_auth():
 
     username = request.form.get("uname")
     password = request.form.get("password")
-    match_user = db_session.query(User).filter(User.uname == username).all()
+    match_user = db_session.query(User).filter(User.uname == username).first()
     if not match_user:
         return jsonify({"error": {"msg": "user does not exist"}}), 403
-    if hashlib.sha3_512(password.encode()).hexdigest() != match_user[0].password:
+    if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
         return jsonify({"error": {"msg": "incorrect password"}}), 403
     session["Uid"] = match_user.Uid
     db_session.commit()
