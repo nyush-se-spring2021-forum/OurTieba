@@ -60,7 +60,7 @@ def admin_auth_login():
     db_session.commit()
     session["Aid"] = admin_result.Aid
     session["type"] = "admin"
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/board/delete", methods=["POST"])
@@ -79,7 +79,7 @@ def admin_board_delete():
         return jsonify({"error": {"msg": "Bid not Found"}}, 403)
     db_session.delete(match_board)
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/post/delete", methods=["POST"])
@@ -98,7 +98,7 @@ def admin_post_delete():
         return jsonify({"error": {"msg": "Pid not Found"}}, 403)
     db_session.delete(match_post)
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/comment/delete", methods=["POST"])
@@ -117,7 +117,7 @@ def admin_comment_delete():
         return jsonify({"error": {"msg": "Cid not Found"}}, 403)
     db_session.delete(match_comment)
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/user/ban", methods=["POST"])
@@ -140,7 +140,7 @@ def admin_user_ban():
     match_user.banned = 1
     match_user.banDuration = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/user/unban", methods=["POST"])
@@ -159,7 +159,7 @@ def admin_user_unban():
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
     user.banned = 0
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
 
 
 @admin.route("/report/resolve", methods=["POST"])
@@ -178,4 +178,4 @@ def admin_report_resolve():
         return jsonify({"error": {"msg": "Rid not Found"}}, 403)
     match_report.resolved = 1
     db_session.commit()
-    return redirect("/dashboard")
+    return redirect("/admin/dashboard")
