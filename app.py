@@ -20,7 +20,7 @@ def index():
     return render_template("index.html", data=data)
 
 
-@app.route("/board/<Bid>")
+@app.route("/board/<int:Bid>")
 def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(b) == 0:
@@ -85,7 +85,7 @@ def search_board():
     return render_template("search_result.html", data=data)
 
 
-@app.route("/post/<Pid>")
+@app.route("/post/<int:Pid>")
 def get_comments_in_post(Pid):
     p = db_session.query(Post).filter(Post.Pid == Pid).all()
     if len(p) == 0:
