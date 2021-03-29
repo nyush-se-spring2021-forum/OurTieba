@@ -9,6 +9,25 @@ def teardown_session(e):
     html_session.close()
 
 
+@app.handle_exception(404)
+def handle_error(e):
+    return render_template("error/404.html"), 404
+
+
+@app.before_request
+def check_scrapper():
+    ua = request.user_agent
+    if "Mozilla" not in ua or "Gecko" not in ua:
+        return "No Scrappers!", 403
+
+
+@app.after_request
+def set_res_headers(response):
+    response.headers["Server"] = "OurTieba"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    return response
+
+
 @app.route('/')
 def index():
     hot_articles = get_hot_news(num=RECOMMEND_NUM_NEWS)
