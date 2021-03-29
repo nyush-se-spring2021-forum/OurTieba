@@ -69,7 +69,7 @@ def admin_board_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Bid = request.form.get("Bid")
     match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
@@ -86,7 +86,7 @@ def admin_post_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Pid = request.form.get("Pid")
     match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
@@ -105,7 +105,7 @@ def admin_comment_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Cid = request.form.get("Cid")
     match_comment = db_session.query(Comment).filter(Comment.Cid == Cid).first()
@@ -124,7 +124,7 @@ def admin_user_ban():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Uid = request.form.get("Uid")
     days = request.form.get("days")
@@ -145,7 +145,7 @@ def admin_user_unban():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Uid = request.form.get("Uid")
     match_user = db_session.query(User).filter(User.Uid == Uid).first()
@@ -162,7 +162,7 @@ def admin_report_resolve():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return "Invalid URL", 404
+        return redirect("/admin/auth/login")
 
     Rid = request.form.get("Rid")
     match_report = db_session.query(Report).filter(Report.Rid == Rid).first()
