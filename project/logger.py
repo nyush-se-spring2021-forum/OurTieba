@@ -13,7 +13,8 @@ class Logger:
                             filemode='a',
                             datefmt='%Y-%m-%d %A %H:%M:%S'
                             )
-        logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+        self.logger = logging.getLogger('sqlalchemy.engine')
+        self.logger.setLevel(logging.INFO)
 
 
 def init_logger():

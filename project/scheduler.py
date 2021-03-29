@@ -1,11 +1,15 @@
 from flask_apscheduler import APScheduler
 
-from .database import *
+from .logger import *
 from .models import *
+
+logger = init_logger()
 
 
 def update_hot():
+    """ Not Finished!"""
     print("updating hot...")
+    logger.logger.info("Start updating hot")
     print("average hot:", db_session.query(func.avg(Board.hot).label("average")).scalar())
     db_session.commit()
 
