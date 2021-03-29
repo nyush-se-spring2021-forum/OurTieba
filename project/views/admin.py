@@ -5,7 +5,7 @@ import hashlib
 
 from ..database import *
 from ..models import *
-from ..config import *
+from project.configs.config import *
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
@@ -26,7 +26,7 @@ def admin_dashboard():
     order = Report.timestamp.desc()
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return redirect("/admin/login")
 
@@ -72,12 +72,12 @@ def admin_logout():
 def admin_board_delete():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Bid = request.form.get("Bid")
-    match_board = db_session(Board).filter(Board.Bid == Bid).all()
+    match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
     if len(match_board) == 0:
         return jsonify({"error": {"msg": "Bid not Found"}}, 403)
     db_session.delete(match_board)
@@ -89,12 +89,12 @@ def admin_board_delete():
 def admin_post_delete():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Pid = request.form.get("Pid")
-    match_post = db_session(Post).filter(Post.Pid == Pid).first()
+    match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}}, 403)
     match_post.under.postCount -= 1
@@ -108,12 +108,12 @@ def admin_post_delete():
 def admin_comment_delete():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Cid = request.form.get("Cid")
-    match_comment = db_session(Comment).filter(Comment.Cid == Cid).first()
+    match_comment = db_session.query(Comment).filter(Comment.Cid == Cid).first()
     if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}}, 403)
     match_comment.comment_in.commentCount -= 1
@@ -127,19 +127,19 @@ def admin_comment_delete():
 def admin_user_ban():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Uid = request.form.get("Uid")
     days = request.form.get("days")
-    match_user = db_session(User).filter(User.Uid == Uid).first()
+    match_user = db_session.query(User).filter(User.Uid == Uid).first()
     if len(match_user) == 0:
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
     if not days.isnumeric() or int(days) <= 0:
         return jsonify({"error": {"msg": "Invalid Day"}}, 403)
     match_user.banned = 1
-    match_user.banDuration = (datetime.datetime.now() + datetime.timedelta(days=days)).strftime("%Y-%m-%d %H:%M:%S")
+    match_user.banDuration = datetime.datetime.now() + datetime.timedelta(days=days)
     db_session.commit()
     return redirect("/admin/dashboard")
 
@@ -148,12 +148,12 @@ def admin_user_ban():
 def admin_user_unban():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Uid = request.form.get("Uid")
-    match_user = db_session(User).filter(User.Uid == Uid).first()
+    match_user = db_session.query(User).filter(User.Uid == Uid).first()
     if len(match_user) == 0:
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
     user.banned = 0
@@ -165,12 +165,12 @@ def admin_user_unban():
 def admin_report_resolve():
     Aid = session.get("Aid")
 
-    match_admin = db_session(Admin).filter(Admin.Aid == Aid).all()
+    match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
         return "Invalid URL", 404
 
     Rid = request.form.get("Rid")
-    match_report = db_session(Report).filter(Report.Rid == Rid).first()
+    match_report = db_session.query(Report).filter(Report.Rid == Rid).first()
     if len(match_report) == 0:
         return jsonify({"error": {"msg": "Rid not Found"}}, 403)
     match_report.resolved = 1

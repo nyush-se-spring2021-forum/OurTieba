@@ -1,8 +1,8 @@
-from flask import Flask, jsonify, redirect, request
+from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 
-from .config import *
+from .configs import *
 from .database import *
 from .models import *
 from .scrapper import *
