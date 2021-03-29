@@ -30,7 +30,6 @@ def index():
 def get_posts_in_board(Bid):
     b = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not b:
-        db_session.commit()
         return "Not Found!", 404
     board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
 

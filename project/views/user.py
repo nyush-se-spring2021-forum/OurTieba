@@ -18,6 +18,7 @@ def create_post():
     match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 404
+    db_session.commit()
     return render_template("create.html", data=data)
 
 
@@ -29,14 +30,12 @@ def report():
     if target == "comment":
         match_result = db_session.query(Comment).filter(Comment.Cid == id).first()
         if not match_result:
-            db_session.commit()
             return "Not Found", 404
         db_session.commit()
         return render_template("report.html", data=data)
     elif target == "post":
         match_result = db_session.query(Post).filter(Post.Pid == id).first()
         if not match_result:
-            db_session.commit()
             return "Not Found", 404
         db_session.commit()
         return render_template("report.html", data=data)
