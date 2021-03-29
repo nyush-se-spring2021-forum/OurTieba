@@ -15,11 +15,6 @@ def admin_hello():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/login")
-def admin_login():
-    return render_template("admin_login.html")
-
-
 @admin.route("/dashboard")
 def admin_dashboard():
     page = request.args.get("page", "1")
@@ -28,7 +23,7 @@ def admin_dashboard():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/login")
+        return redirect("/admin/auth/login")
 
     reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
     num_reports = len(reports)
@@ -65,7 +60,7 @@ def admin_auth_login():
 def admin_logout():
     session.pop("Aid")
 
-    return redirect("/admin/login")
+    return redirect("/admin/auth/login")
 
 
 @admin.route("/board/delete", methods=["POST"])
