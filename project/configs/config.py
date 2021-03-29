@@ -9,7 +9,7 @@ RECOMMEND_NUM_NEWS = 3
 
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'something you will never guess'
+    SECRET_KEY = 'something you will never guess'
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     TEMPLATES_AUTO_RELOAD = True
