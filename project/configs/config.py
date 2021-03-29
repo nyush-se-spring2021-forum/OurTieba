@@ -2,11 +2,6 @@ import os
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
 
-# Macros
-PAGE_SIZE = 10
-RECOMMEND_NUM_BOARD = 10
-RECOMMEND_NUM_NEWS = 3
-
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY', 'something you will never guess')

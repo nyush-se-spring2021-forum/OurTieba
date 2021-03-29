@@ -5,7 +5,7 @@ import hashlib
 
 from ..database import *
 from ..models import *
-from project.configs.config import *
+from ..configs.macros import *
 
 admin = Blueprint("admin", __name__, url_prefix="/admin")
 
