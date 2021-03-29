@@ -1,4 +1,5 @@
 from flask_apscheduler import APScheduler
+
 from .database import *
 from .models import *
 

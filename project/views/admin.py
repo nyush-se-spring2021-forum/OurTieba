@@ -1,11 +1,11 @@
 import datetime
-
-from flask import Blueprint, render_template, request, session, jsonify, redirect
 import hashlib
 
+from flask import Blueprint, render_template, request, session, jsonify, redirect
+
+from ..configs.macros import *
 from ..database import *
 from ..models import *
-from ..configs.macros import *
 
 admin_blue = Blueprint("admin", __name__, url_prefix="/admin")
 

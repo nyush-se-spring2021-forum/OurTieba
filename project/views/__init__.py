@@ -1,8 +1,8 @@
+from ..views.abstract_user import *
+from ..views.admin import *
+from ..views.api import *
 from ..views.guest import *
 from ..views.user import *
-from ..views.api import *
-from ..views.admin import *
-from ..views.abstract_user import *
 
 
 def register_blue(app):

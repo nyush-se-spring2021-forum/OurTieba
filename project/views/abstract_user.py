@@ -1,10 +1,9 @@
 from flask import Blueprint, session, render_template, request
 
+from ..configs.macros import *
 from ..database import *
 from ..models import *
-from ..configs.macros import *
 from ..scrapper import *
-
 
 a_user = Blueprint("abstract_user", __name__)
 

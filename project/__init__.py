@@ -4,11 +4,11 @@ from flask_moment import Moment
 
 from .configs import *  # import configurations
 from .database import *  # import database session
+from .logger import *  # import logger
 from .models import *  # import all the models
+from .scheduler import *  # import scheduler
 from .scrapper import *  # import scrapper
 from .views import *  # import all the view
-from .logger import *  # import logger
-from .scheduler import *  # import scheduler
 
 
 def create_app():
