@@ -58,7 +58,10 @@ def admin_auth_login():
 
 @admin.route("/auth/logout")
 def admin_logout():
-    session.pop("Aid")
+    Aid = session.get("Aid")
+    if not Aid:
+        return redirect("/admin/auth/login")
+    session.pop("Aid")  # may raise KeyError, must check before pop
 
     return redirect("/admin/auth/login")
 
