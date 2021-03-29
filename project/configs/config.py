@@ -16,10 +16,12 @@ class Config:
 
 
 class DevelopmentConfig(Config):
+    ENV = "development"
     DEBUG = True
 
 
 class ProductionConfig(Config):
+    ENV = "production"
     DEBUG = False
 
 
