@@ -7,15 +7,15 @@ from ..database import *
 from ..models import *
 from ..configs.macros import *
 
-admin = Blueprint("admin", __name__, url_prefix="/admin")
+admin_blue = Blueprint("admin", __name__, url_prefix="/admin")
 
 
-@admin.route("/")
+@admin_blue.route("/")
 def admin_hello():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/dashboard")
+@admin_blue.route("/dashboard")
 def admin_dashboard():
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
@@ -37,7 +37,7 @@ def admin_dashboard():
     return render_template("admin_dashboard.html", data=data)
 
 
-@admin.route("/auth/login", methods=["POST"])
+@admin_blue.route("/auth/login", methods=["POST"])
 def admin_auth_login():
     aname = request.form.get("aname")
     password = request.form.get("password")
@@ -56,7 +56,7 @@ def admin_auth_login():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/auth/logout")
+@admin_blue.route("/auth/logout")
 def admin_logout():
     Aid = session.get("Aid")
     if not Aid:
@@ -66,7 +66,7 @@ def admin_logout():
     return redirect("/admin/auth/login")
 
 
-@admin.route("/board/delete", methods=["POST"])
+@admin_blue.route("/board/delete", methods=["POST"])
 def admin_board_delete():
     Aid = session.get("Aid")
 
@@ -83,7 +83,7 @@ def admin_board_delete():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/post/delete", methods=["POST"])
+@admin_blue.route("/post/delete", methods=["POST"])
 def admin_post_delete():
     Aid = session.get("Aid")
 
@@ -102,7 +102,7 @@ def admin_post_delete():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/comment/delete", methods=["POST"])
+@admin_blue.route("/comment/delete", methods=["POST"])
 def admin_comment_delete():
     Aid = session.get("Aid")
 
@@ -121,7 +121,7 @@ def admin_comment_delete():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/user/ban", methods=["POST"])
+@admin_blue.route("/user/ban", methods=["POST"])
 def admin_user_ban():
     Aid = session.get("Aid")
 
@@ -142,7 +142,7 @@ def admin_user_ban():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/user/unban", methods=["POST"])
+@admin_blue.route("/user/unban", methods=["POST"])
 def admin_user_unban():
     Aid = session.get("Aid")
 
@@ -159,7 +159,7 @@ def admin_user_unban():
     return redirect("/admin/dashboard")
 
 
-@admin.route("/report/resolve", methods=["POST"])
+@admin_blue.route("/report/resolve", methods=["POST"])
 def admin_report_resolve():
     Aid = session.get("Aid")
 
