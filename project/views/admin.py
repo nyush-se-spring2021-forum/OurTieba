@@ -25,14 +25,14 @@ def admin_dashboard():
     if len(match_admin) == 0:
         return redirect("/admin/auth/login")
 
-    reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
-    num_reports = len(reports)
+    match_reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
+    num_reports = len(match_reports)
     num_page = (num_reports - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    Allreports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
-                   "timestamp": r.timestamp, "Uid": r.Uid}
-                  for r in reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
-    data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": Allreports}
+    reports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
+                "timestamp": r.timestamp, "Uid": r.Uid}
+               for r in match_reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": reports}
     db_session.commit()
     return render_template("admin_dashboard.html", data=data)
 
