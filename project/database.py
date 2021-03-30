@@ -43,6 +43,10 @@ class myDb:
         with auto_scope(self._session) as _db_session:
             _db_session.add(new)
 
+    def merge(self, new):
+        with auto_scope(self._session) as _db_session:
+            _db_session.merge(new)
+
     def delete(self, target, condition=False, synchronize_session=True):
         with auto_scope(self._session) as _db_session:
             affected_rows = _db_session.query(target).filter(condition).delete(synchronize_session)
