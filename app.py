@@ -86,7 +86,7 @@ def sql_test():
     ps1 = PostStatus(Uid=6, Pid=1, liked=0, disliked=1, lastModified="2021-01-01 01:59:00")
     ps2 = PostStatus(Uid=5, Pid=7, liked=1, disliked=0, lastModified="2021-03-10 12:00:00")
 
-    db_session.add(A)
+    my_db.add(A)
     for u in [u1, u2, u3, u4, u5, u6]:
         my_db.add(u)
 
