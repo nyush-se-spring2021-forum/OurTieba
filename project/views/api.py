@@ -284,6 +284,9 @@ def save_file():
         return redirect("/login")
 
     file = request.files["file"]
-    with open(f"../../cdn/{ str(hash(Uid + str(datetime.datetime.now()))) }.png", "wb") as f:
+    src = str(hash(Uid + str(datetime.datetime.now()))) + ".png"
+    with open(f"../../cdn/" + src, "wb") as f:
         f.write(file.read())
+    db_session.query(User).filter(User.Uid == Uid).first().avatar = src
+    db_session.commit()
     return jsonify({"success": 1}), 200
