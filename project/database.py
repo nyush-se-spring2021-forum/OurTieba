@@ -26,6 +26,14 @@ def auto_scope(session):
 
 
 class myDb:
+    __instance = None
+
+    # ensure only one instance is created
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
     def __init__(self):
         self._session = None  # must use scoped session here
 
