@@ -15,6 +15,7 @@ class Logger:
                             )
         self.logger = logging.getLogger('sqlalchemy.engine')
         self.logger.setLevel(logging.INFO)
+        logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
 
 
 def init_logger():
