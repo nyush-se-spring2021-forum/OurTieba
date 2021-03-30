@@ -26,7 +26,8 @@ def index():
 
 @a_user.route("/board/<int:Bid>")
 def get_posts_in_board(Bid):
-    b = db_session.query(Board).filter(Board.Bid == Bid).first()
+    b = my_db.query(Board, Board.Bid == Bid, first=True)
+    #b = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not b:
         return "Not Found!", 404
     board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
@@ -42,7 +43,8 @@ def get_posts_in_board(Bid):
     else:
         order = Post.commentCount.desc()
 
-    posts_match_result = db_session.query(Post).filter(Post.Bid == Bid).order_by(order).all()
+    posts_match_result = my_db.query(Post, Post.Bid == Bid, order)
+    #posts_match_result = db_session.query(Post).filter(Post.Bid == Bid).order_by(order).all()
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -51,13 +53,13 @@ def get_posts_in_board(Bid):
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
-    db_session.commit()
     return render_template("board.html", data=data)
 
 
 @a_user.route("/post/<int:Pid>")
 def get_comments_in_post(Pid):
-    p = db_session.query(Post).filter(Post.Pid == Pid).first()
+    p = my_db.query(Post, Post.Pid == Pid, first=True)
+    #p = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not p:
         return "Not Found", 404
     post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
@@ -68,7 +70,8 @@ def get_comments_in_post(Pid):
     page = request.args.get("page", "1")
 
     order = Comment.likeCount.desc() if order == "most_like" else Comment.timestamp.desc()
-    comment_match_result = db_session.query(Comment).filter(Comment.Pid == Pid).order_by(order).all()
+    comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
+    #comment_match_result = db_session.query(Comment).filter(Comment.Pid == Pid).order_by(order).all()
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -77,7 +80,6 @@ def get_comments_in_post(Pid):
                  "user_avatar": c.comment_by.avatar}
                 for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "post_info": post_info}
-    db_session.commit()
     return render_template("post.html", data=data)
 
 
@@ -89,12 +91,12 @@ def search_board():
     order = request.args.get("order", "popular")
     page = request.args.get("page", "1")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
-    match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
+    match_result = my_db.query(Board, Board.name.like("%" + keyword + "%"), order)
+    #match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
     num_match = len(match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount}
               for b in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "boards": boards}
-    db_session.commit()
     return render_template("search_result.html", data=data)

@@ -88,30 +88,24 @@ def sql_test():
 
     db_session.add(A)
     for u in [u1, u2, u3, u4, u5, u6]:
-        db_session.add(u)
-    db_session.commit()
+        my_db.add(u)
 
     for b in [b1, b2, b3, b4, b5, b6]:
-        db_session.add(b)
-    db_session.commit()
+        my_db.add(b)
 
     for p in [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13]:
-        db_session.add(p)
-    db_session.commit()
+        my_db.add(p)
 
     for c in [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13]:
-        db_session.add(c)
-    db_session.commit()
+        my_db.add(c)
 
     for r in [r1, r2, r3]:
-        db_session.add(r)
-    db_session.commit()
+        my_db.add(r)
 
     for s in [cs1, cs2, ps1, ps2]:
-        db_session.add(s)
-    db_session.commit()
+        my_db.add(s)
 
-    db_session.close()
+    my_db.close()
     return "success!", 200
 
 
@@ -122,10 +116,10 @@ def frontendtest():
 
 @app.route("/getsomething")
 def getsth():
-    John = db_session.query(User).filter(User.Uid == 1).first()
+    John = my_db.query(User, User.Uid == 1, first=True)
+    #John = db_session.query(User).filter(User.Uid == 1).first()
     uname = John.uname
-    db_session.commit()
-    db_session.close()
+    my_db.close()
     return jsonify({"data": [{"name": uname}]})
 
 
