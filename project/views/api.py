@@ -285,6 +285,8 @@ def save_file():
 
     file = request.files["file"]
     src = str(hash(Uid + str(datetime.datetime.now()))) + ".png"
+
+    """Not finished! Haven't checked whether file is legitimate."""
     with open(f"../../cdn/" + src, "wb") as f:
         f.write(file.read())
     db_session.query(User).filter(User.Uid == Uid).first().avatar = src
