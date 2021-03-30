@@ -15,6 +15,12 @@ def add_post():
     Uid = session.get("Uid")
     if not Uid:
         return redirect("/login")
+    # check whether user is banned
+    match_user: User = my_db.query(User, User.Uid == Uid, first=True)
+    if match_user.banned:
+        if match_user.banDuration > datetime.datetime.now():
+            return jsonify({"error": {"msg": "user banned"}}), 404
+
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
@@ -109,6 +115,12 @@ def add_comment():
     Uid = session.get("Uid")
     if not Uid:
         return redirect("/login")
+    # check whether user is banned
+    match_user: User = my_db.query(User, User.Uid == Uid, first=True)
+    if match_user.banned:
+        if match_user.banDuration > datetime.datetime.now():
+            return jsonify({"error": {"msg": "user banned"}}), 404
+
     Pid = request.form.get("Pid")
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:

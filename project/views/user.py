@@ -1,4 +1,6 @@
-from flask import Blueprint, render_template, request, jsonify, session
+import datetime
+
+from flask import Blueprint, render_template, request, jsonify, session, redirect
 
 from ..database import *
 from ..models import *
@@ -14,7 +16,13 @@ def create_post():
     Uid = session.get("Uid")
     data = {"Bid": Bid}
     if not Uid:
-        return render_template("create.html", data=data, error="Not logged in!")
+        return redirect("/login")
+    # check whether user is banned
+    match_user: User = my_db.query(User, User.Uid == Uid, first=True)
+    if match_user.banned:
+        if match_user.banDuration > datetime.datetime.now():
+            return jsonify({"error": {"msg": "user banned"}}), 404
+
     match_board = my_db.query(Board, Board.Bid == Bid)
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 404
@@ -23,6 +31,10 @@ def create_post():
 
 @user_blue.route("/report")
 def report():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+
     target = request.args.get("target", 0)
     id = request.args.get("id")
     data = {"id": id, "target": target}
