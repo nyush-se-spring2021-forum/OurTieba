@@ -275,3 +275,15 @@ def logout_auth():
 
     session.pop("Uid")
     return redirect("/")
+
+
+@api.route("/upload", methods=["POST"])
+def save_file():
+    Uid = session.get("Uid")
+    if not Uid:
+        return redirect("/login")
+
+    file = request.files["file"]
+    with open(f"../../cdn/{ str(hash(Uid + str(datetime.datetime.now()))) }.png", "wb") as f:
+        f.write(file.read())
+    return jsonify({"success": 1}), 200
