@@ -95,3 +95,16 @@ def search_board():
               for b in match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "boards": boards}
     return render_template("search_result.html", data=data)
+
+
+@a_user.route("/profile/<int:Uid>")
+def get_personal_profile(Uid):
+    u = my_db.query(User, User.Uid == Uid, first=True)
+    if not u:
+        return "Not Found", 404
+    user_info = {
+        "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
+        "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
+        "banned": u.banned, "banDuration": u.banDuration, "isCurrent": int(Uid == session.get("Uid", -1))
+    }
+    return render_template("profile.html", data=user_info)
