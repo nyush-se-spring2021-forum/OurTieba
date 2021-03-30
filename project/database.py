@@ -7,7 +7,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 engine = create_engine('sqlite:///test.db', convert_unicode=True)
 DB_session = scoped_session(sessionmaker(bind=engine))
 
-db_session = DB_session()
+# db_session = DB_session()
 
 Base = declarative_base()
 Base.query = DB_session.query_property()
@@ -35,10 +35,10 @@ class myDb:
         return cls.__instance
 
     def __init__(self):
-        self._session = None  # must use scoped session here
+        self._session = None
 
     def connect(self, *args, **kwargs):
-        self._session = DB_session
+        self._session = DB_session  # must use scoped session here
 
     def query(self, target, condition=True, order=True, first=False):
         with auto_scope(self._session) as _db_session:
