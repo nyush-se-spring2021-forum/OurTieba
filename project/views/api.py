@@ -20,7 +20,6 @@ def add_post():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
-    #match_board = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
     match_board.postCount += 1
@@ -45,7 +44,6 @@ def like():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
-    #match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
     match_target.likeCount += 1 if action == "1" else -1
@@ -71,7 +69,6 @@ def dislike():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
-    #match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
     match_target.dislikeCount += 1 if action == "1" else -1
@@ -97,7 +94,6 @@ def add_report():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
-    #match_target = db_session.query(query_from).filter(filter_cond).first()
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
 
@@ -119,7 +115,6 @@ def add_comment():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
-    #match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
     match_post.commentCount += 1
@@ -140,13 +135,11 @@ def delete_post():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
-    #match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID"}}), 403
     match_post.under.postCount -= 1
 
     my_db.delete(Post, Post.Pid == Pid)
-    #db_session.query(Post).filter(Post.Pid == Pid).delete()
     return redirect(f"/board/{Bid}")
 
 
@@ -161,13 +154,11 @@ def delete_comment():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
     match_post = my_db.query(Comment, Comment.Cid == Cid, first=True)
-    #match_post = db_session.query(Comment).filter(Comment.Cid == Cid).first()
     if not match_post or match_post.comment_in.Pid != int(Pid):
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
     match_post.commentCount -= 1
 
     my_db.delete(Comment, Comment.Cid == Cid)
-    #db_session.query(Comment).filter(Comment.Cid == Cid).delete()
     return redirect(f"/post/{Pid}")
 
 
@@ -206,15 +197,12 @@ def add_personal_info():
     except Exception as e:
         return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
 
-    personal_information = my_db.query(User, User.Uid == Uid, first=True)
-    personal_information.gender = gender
-    personal_information.phoneNumber = phone_number
-    personal_information.email = email
-    personal_information.address = address
-    personal_information.dateOfBirth = date_of_birth
-    #db_session.query(User).filter(User.Uid == Uid).update({"gender": gender, "phoneNumber": phone_number,
-                                                           #"email": email, "address": address,
-                                                           #"dateOfBirth": date_of_birth})
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    match_user.gender = gender
+    match_user.phoneNumber = phone_number
+    match_user.email = email
+    match_user.address = address
+    match_user.dateOfBirth = date_of_birth
     return redirect(f"/profile/{Uid}")
 
 
@@ -250,7 +238,6 @@ def register_auth():
 
     # login once finish registration
     new_Uid = my_db.query(User, User.uname == username, first=True).Uid
-    #new_Uid = db_session.query(User).filter(User.uname == username).first().Uid
     session["Uid"] = new_Uid
     return redirect("/")
 
@@ -264,7 +251,6 @@ def login_auth():
     username = request.form.get("uname")
     password = request.form.get("password")
     match_user = my_db.query(User, User.uname == username, first=True)
-    #match_user = db_session.query(User).filter(User.uname == username).first()
     if not match_user:
         return jsonify({"error": {"msg": "user does not exist"}}), 403
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
@@ -296,5 +282,4 @@ def save_file():
     with open(f"../../cdn/" + src, "wb") as f:
         f.write(file.read())
     my_db.query(User, User.Uid == Uid, first=True).avatar = src
-    #db_session.query(User).filter(User.Uid == Uid).first().avatar = src
     return jsonify({"success": 1}), 200

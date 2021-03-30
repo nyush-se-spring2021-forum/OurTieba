@@ -16,7 +16,6 @@ def create_post():
     if not Uid:
         return render_template("create.html", data=data, error="Not logged in!")
     match_board = my_db.query(Board, Board.Bid == Bid)
-    #match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 404
     return render_template("create.html", data=data)
@@ -29,13 +28,11 @@ def report():
     data = {"id": id, "target": target}
     if target == "comment":
         match_result = my_db.query(Comment, Comment.Cid == id, first=True)
-        #match_result = db_session.query(Comment).filter(Comment.Cid == id).first()
         if not match_result:
             return "Not Found", 404
         return render_template("report.html", data=data)
     elif target == "post":
         match_result = my_db.query(Post, Post.Pid == id, first=True)
-        #match_result = db_session.query(Post).filter(Post.Pid == id).first()
         if not match_result:
             return "Not Found", 404
         return render_template("report.html", data=data)
@@ -46,7 +43,6 @@ def report():
 @user_blue.route("/profile/<int:Uid>")
 def get_personal_profile(Uid):
     u = my_db.query(User, User.Uid == Uid)
-    #u = db_session.query(User).filter(User.Uid == Uid).all()
     if len(u) == 0:
         return "Not Found", 404
     user_info = {

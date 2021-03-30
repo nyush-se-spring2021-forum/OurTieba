@@ -27,7 +27,6 @@ def index():
 @a_user.route("/board/<int:Bid>")
 def get_posts_in_board(Bid):
     b = my_db.query(Board, Board.Bid == Bid, first=True)
-    #b = db_session.query(Board).filter(Board.Bid == Bid).first()
     if not b:
         return "Not Found!", 404
     board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
@@ -44,7 +43,6 @@ def get_posts_in_board(Bid):
         order = Post.commentCount.desc()
 
     posts_match_result = my_db.query(Post, Post.Bid == Bid, order)
-    #posts_match_result = db_session.query(Post).filter(Post.Bid == Bid).order_by(order).all()
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -59,7 +57,6 @@ def get_posts_in_board(Bid):
 @a_user.route("/post/<int:Pid>")
 def get_comments_in_post(Pid):
     p = my_db.query(Post, Post.Pid == Pid, first=True)
-    #p = db_session.query(Post).filter(Post.Pid == Pid).first()
     if not p:
         return "Not Found", 404
     post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
@@ -71,7 +68,6 @@ def get_comments_in_post(Pid):
 
     order = Comment.likeCount.desc() if order == "most_like" else Comment.timestamp.desc()
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
-    #comment_match_result = db_session.query(Comment).filter(Comment.Pid == Pid).order_by(order).all()
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -92,7 +88,6 @@ def search_board():
     page = request.args.get("page", "1")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
     match_result = my_db.query(Board, Board.name.like("%" + keyword + "%"), order)
-    #match_result = db_session.query(Board).filter(Board.name.like("%" + keyword + "%")).order_by(order).all()
     num_match = len(match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page

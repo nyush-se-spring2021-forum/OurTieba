@@ -117,9 +117,7 @@ def frontendtest():
 @app.route("/getsomething")
 def getsth():
     John = my_db.query(User, User.Uid == 1, first=True)
-    #John = db_session.query(User).filter(User.Uid == 1).first()
     uname = John.uname
-    my_db.close()
     return jsonify({"data": [{"name": uname}]})
 
 
