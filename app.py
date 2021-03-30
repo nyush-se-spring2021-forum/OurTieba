@@ -5,7 +5,7 @@ app = create_app()
 
 @app.teardown_appcontext
 def teardown_session(e):
-    DB_session.remove()
+    my_db.close()
     html_session.close()
 
 
