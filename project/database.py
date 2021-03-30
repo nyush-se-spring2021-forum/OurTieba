@@ -13,14 +13,10 @@ Base = declarative_base()
 Base.query = DB_session.query_property()
 
 
-def init_db():
-    # import all models here (only the class name)
-    from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, User
-    Base.metadata.create_all(bind=engine)
-
-
 @contextmanager
 def auto_scope(session):
+    if not session:
+        raise Exception("Please connect to database first!")
     try:
         yield session
         session.commit()
@@ -31,7 +27,10 @@ def auto_scope(session):
 
 class myDb:
     def __init__(self):
-        self._session = DB_session  # must use scoped session here
+        self._session = None  # must use scoped session here
+
+    def connect(self, *args, **kwargs):
+        self._session = DB_session
 
     def query(self, target, condition=True, order=True, first=False):
         with auto_scope(self._session) as _db_session:
@@ -62,3 +61,13 @@ class myDb:
 
     def close(self):
         self._session.remove()
+
+
+my_db = myDb()
+
+
+def init_db():
+    # import all models here (only the class name)
+    from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, User
+    Base.metadata.create_all(bind=engine)
+    my_db.connect()
