@@ -48,13 +48,13 @@ class myDb:
             affected_rows = _db_session.query(target).filter(condition).delete(synchronize_session)
             return affected_rows
 
-    def avg(self, target):
+    def avg(self, target, condition=True):
         with auto_scope(self._session) as _db_session:
-            return _db_session.query(func.avg(target)).scalar()
+            return _db_session.query(func.avg(target)).filter(condition).scalar()
 
-    def count(self, target):
+    def count(self, target, condition=True):
         with auto_scope(self._session) as _db_session:
-            return _db_session.query(func.count(target)).scalar()
+            return _db_session.query(func.count(target)).filter(condition).scalar()
 
     def close(self):
         self._session.remove()
