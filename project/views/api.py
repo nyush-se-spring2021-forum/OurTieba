@@ -135,7 +135,6 @@ def add_comment():
 @api.route('/post/delete', methods=["POST"])
 @login_required
 def delete_post():
-    Uid = session["Uid"]
     Pid = request.form.get("Pid")
     Bid = request.form.get("Bid")
     if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
@@ -153,7 +152,6 @@ def delete_post():
 @api.route('/comment/delete', methods=["POST"])
 @login_required
 def delete_comment():
-    Uid = session["Uid"]
     Cid = request.form.get("Pid")
     Pid = request.form.get("Bid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
