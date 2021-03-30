@@ -13,12 +13,12 @@ from .views import *  # import all the view
 
 def create_app():
     app = Flask(__name__, static_url_path="/")
-    Bootstrap(app)
-    Moment(app)
     config_app(app)
     with app.app_context():
+        Bootstrap(app)
+        Moment(app)
         init_db()
-    register_blue(app)
-    # init_logger()
-    # init_scheduler(app)
+        register_blue(app)
+        # init_logger()
+        # init_scheduler(app)
     return app
