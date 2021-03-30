@@ -15,6 +15,11 @@ def admin_hello():
     return redirect("/admin/dashboard")
 
 
+@admin_blue.route("/login")
+def admin_login():
+    return render_template("admin_login.html")
+
+
 @admin_blue.route("/dashboard")
 def admin_dashboard():
     page = request.args.get("page", "1")
@@ -23,7 +28,7 @@ def admin_dashboard():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     match_reports = db_session.query(Report).filter(Report.resolved == 0).order_by(order).all()
     num_reports = len(match_reports)
@@ -60,7 +65,7 @@ def admin_auth_login():
 def admin_logout():
     Aid = session.get("Aid")
     if not Aid:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
     session.pop("Aid")  # may raise KeyError, must check before pop
 
     return redirect("/admin/auth/login")
@@ -72,7 +77,7 @@ def admin_board_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Bid = request.form.get("Bid")
     match_board = db_session.query(Board).filter(Board.Bid == Bid).all()
@@ -89,7 +94,7 @@ def admin_post_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Pid = request.form.get("Pid")
     match_post = db_session.query(Post).filter(Post.Pid == Pid).first()
@@ -108,7 +113,7 @@ def admin_comment_delete():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Cid = request.form.get("Cid")
     match_comment = db_session.query(Comment).filter(Comment.Cid == Cid).first()
@@ -127,7 +132,7 @@ def admin_user_ban():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Uid = request.form.get("Uid")
     days = request.form.get("days")
@@ -148,7 +153,7 @@ def admin_user_unban():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Uid = request.form.get("Uid")
     match_user = db_session.query(User).filter(User.Uid == Uid).first()
@@ -165,7 +170,7 @@ def admin_report_resolve():
 
     match_admin = db_session.query(Admin).filter(Admin.Aid == Aid).all()
     if len(match_admin) == 0:
-        return redirect("/admin/auth/login")
+        return redirect("/admin/login")
 
     Rid = request.form.get("Rid")
     match_report = db_session.query(Report).filter(Report.Rid == Rid).first()
