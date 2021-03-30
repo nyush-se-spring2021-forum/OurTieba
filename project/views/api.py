@@ -2,19 +2,19 @@ import datetime
 import hashlib
 import re
 
-from flask import Blueprint, request, session, jsonify, redirect
+from flask import Blueprint, request, jsonify
 
 from ..database import *
+from ..configs.macros import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
 
 
 @api.route('/post/add', methods=["POST"])
+@login_required
 def add_post():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
@@ -37,10 +37,9 @@ def add_post():
 
 
 @api.route('/like', methods=["POST"])
+@login_required
 def like():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
     action = request.form.get("like")
@@ -62,10 +61,9 @@ def like():
 
 
 @api.route('/dislike', methods=["POST"])
+@login_required
 def dislike():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
     action = request.form.get("like")
@@ -87,10 +85,9 @@ def dislike():
 
 
 @api.route('/report/add', methods=["POST"])
+@login_required
 def add_report():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
     reason = request.form.get("reason")
@@ -111,10 +108,9 @@ def add_report():
 
 
 @api.route('/comment/add', methods=["POST"])
+@login_required
 def add_comment():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
@@ -137,10 +133,9 @@ def add_comment():
 
 
 @api.route('/post/delete', methods=["POST"])
+@login_required
 def delete_post():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     Pid = request.form.get("Pid")
     Bid = request.form.get("Bid")
     if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
@@ -156,10 +151,9 @@ def delete_post():
 
 
 @api.route('/comment/delete', methods=["POST"])
+@login_required
 def delete_comment():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
     Cid = request.form.get("Pid")
     Pid = request.form.get("Bid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
@@ -175,10 +169,9 @@ def delete_comment():
 
 
 @api.route('/personal_info/add', methods=["POST"])
+@login_required
 def add_personal_info():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
 
     # check gender
     gender = request.form.get("gender")
@@ -272,20 +265,16 @@ def login_auth():
 
 
 @api.route('/auth/logout', methods=["POST"])
+@login_required
 def logout_auth():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
-
     session.pop("Uid")
     return redirect("/")
 
 
 @api.route("/upload", methods=["POST"])
+@login_required
 def save_file():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
 
     file = request.files["file"]
     src = str(hash(Uid + str(datetime.datetime.now()))) + ".png"
