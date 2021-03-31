@@ -14,6 +14,16 @@ def handle_error(e):
     return render_template("error/404.html"), 404
 
 
+@app.errorhandler(403)
+def handle_error(e):
+    return render_template("error/403.html"), 403
+
+
+@app.errorhandler(503)
+def handle_error(e):
+    return render_template("error/403.html"), 503
+
+
 @app.before_request
 def check_scrapper():
     ua = str(request.user_agent)
