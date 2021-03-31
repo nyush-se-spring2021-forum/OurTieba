@@ -43,7 +43,7 @@ def admin_auth_login():
     password = request.form.get("password")
 
     admin_result = my_db.query(Admin, Admin.aname == aname, first=True)
-    if len(admin_result) == 0:
+    if not admin_result:
         return jsonify({"error": {"msg": "aname Not Found"}}, 403)
     encoded_password = hashlib.sha3_512(password.encode()).hexdigest()
     recorded_password = admin_result.password
@@ -76,7 +76,7 @@ def admin_board_delete():
 @admin_login_required
 def admin_post_delete():
     Pid = request.form.get("Pid")
-    match_post = my_db.delete(Post, Post.Pid == Pid, first=True)
+    match_post = my_db.delete(Post, Post.Pid == Pid)
     if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}}, 403)
     match_post.under.postCount -= 1
@@ -87,7 +87,7 @@ def admin_post_delete():
 @admin_login_required
 def admin_comment_delete():
     Cid = request.form.get("Cid")
-    match_comment = my_db.delete(Comment, Comment.Cid == Cid, first=True)
+    match_comment = my_db.delete(Comment, Comment.Cid == Cid)
     if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}}, 403)
     match_comment.comment_in.commentCount -= 1
@@ -125,7 +125,7 @@ def admin_user_unban():
 def admin_report_resolve():
     Rid = request.form.get("Rid")
     match_report = my_db.query(Report, Report.Rid == Rid, first=True)
-    if len(match_report) == 0:
+    if not match_report:
         return jsonify({"error": {"msg": "Rid not Found"}}, 403)
     match_report.resolved = 1
     return redirect("/admin/dashboard")
