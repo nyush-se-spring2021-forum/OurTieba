@@ -5,7 +5,7 @@ import re
 from flask import Blueprint, request, jsonify
 
 from ..database import *
-from ..configs.macros import *
+from ..configs.functions import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
