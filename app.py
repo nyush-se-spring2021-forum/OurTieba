@@ -108,6 +108,7 @@ def sql_test():
     my_db.close()
     return "success!", 200
 
+
 @app.route("/getsomething")
 def getsth():
     John = my_db.query(User, User.Uid == 1, first=True)
