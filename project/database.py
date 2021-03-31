@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-from .configs.functions import *
+from .configs import auto_scope
 
 engine = create_engine('sqlite:///test.db', convert_unicode=True)
 DB_session = scoped_session(sessionmaker(bind=engine))

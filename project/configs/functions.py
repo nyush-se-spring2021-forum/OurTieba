@@ -4,6 +4,9 @@ import functools
 from flask import session, redirect
 
 
+# For now, we just assume that all the sessions are not tampered.
+# Forgery may be possible, but it's csrf token's lob to find it out
+# (which we haven't implemented yet).
 def login_required(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
@@ -11,6 +14,17 @@ def login_required(f):
             return f(*args, **kwargs)
         else:
             return redirect("/login")
+
+    return wrapper
+
+
+def admin_login_required(f):
+    @functools.wraps(f)
+    def wrapper(*args, **kwargs):
+        if session.get("Aid"):
+            return f(*args, **kwargs)
+        else:
+            return redirect("/admin/login")
 
     return wrapper
 
