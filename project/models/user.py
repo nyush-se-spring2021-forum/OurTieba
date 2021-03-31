@@ -5,10 +5,10 @@ from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from .user_report import user_report_table
-from ..database import Base
+from ..database import my_db
 
 
-class User(Base):
+class User(my_db.Base):
     __tablename__ = 'user'
 
     Uid = Column(Integer, primary_key=True)

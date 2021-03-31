@@ -3,10 +3,10 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from ..database import my_db
 
 
-class Board(Base):
+class Board(my_db.Base):
     __tablename__ = "board"
 
     Bid = Column(Integer, primary_key=True)

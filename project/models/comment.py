@@ -3,10 +3,10 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from ..database import Base
+from ..database import my_db
 
 
-class Comment(Base):
+class Comment(my_db.Base):
     __tablename__ = "comment"
 
     Cid = Column(Integer, primary_key=True)

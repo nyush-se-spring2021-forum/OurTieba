@@ -4,10 +4,10 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
 from .user_report import user_report_table
-from ..database import Base
+from ..database import my_db
 
 
-class Report(Base):
+class Report(my_db.Base):
     __tablename__ = "report"
 
     Rid = Column(Integer, primary_key=True)
