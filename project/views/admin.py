@@ -3,7 +3,7 @@ import hashlib
 
 from flask import Blueprint, render_template, request, session, jsonify, redirect
 
-from ..configs.macros import *
+from ..configs import *
 from ..database import *
 from ..models import *
 
@@ -21,14 +21,10 @@ def admin_login():
 
 
 @admin_blue.route("/dashboard")
+@admin_login_required
 def admin_dashboard():
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
 
     match_reports = my_db.query(Report, Report.resolved == 0, order)
     num_reports = len(match_reports)
@@ -60,23 +56,15 @@ def admin_auth_login():
 
 
 @admin_blue.route("/auth/logout")
+@admin_login_required
 def admin_logout():
-    Aid = session.get("Aid")
-    if not Aid:
-        return redirect("/admin/login")
     session.pop("Aid")  # may raise KeyError, must check before pop
-
     return redirect("/admin/auth/login")
 
 
 @admin_blue.route("/board/delete", methods=["POST"])
+@admin_login_required
 def admin_board_delete():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Bid = request.form.get("Bid")
     match_board = my_db.delete(Board, Board.Bid == Bid)
     if len(match_board) == 0:
@@ -85,13 +73,8 @@ def admin_board_delete():
 
 
 @admin_blue.route("/post/delete", methods=["POST"])
+@admin_login_required
 def admin_post_delete():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Pid = request.form.get("Pid")
     match_post = my_db.delete(Post, Post.Pid == Pid, first=True)
     if not match_post:
@@ -101,13 +84,8 @@ def admin_post_delete():
 
 
 @admin_blue.route("/comment/delete", methods=["POST"])
+@admin_login_required
 def admin_comment_delete():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Cid = request.form.get("Cid")
     match_comment = my_db.delete(Comment, Comment.Cid == Cid, first=True)
     if not match_comment:
@@ -117,13 +95,8 @@ def admin_comment_delete():
 
 
 @admin_blue.route("/user/ban", methods=["POST"])
+@admin_login_required
 def admin_user_ban():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Uid = request.form.get("Uid")
     days = request.form.get("days")
     match_user = my_db.query(User, User.Uid == Uid, first=True)
@@ -137,13 +110,8 @@ def admin_user_ban():
 
 
 @admin_blue.route("/user/unban", methods=["POST"])
+@admin_login_required
 def admin_user_unban():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Uid = request.form.get("Uid")
     match_user = my_db.query(User, User.Uid == Uid, first=True)
     if len(match_user) == 0:
@@ -153,13 +121,8 @@ def admin_user_unban():
 
 
 @admin_blue.route("/report/resolve", methods=["POST"])
+@admin_login_required
 def admin_report_resolve():
-    Aid = session.get("Aid")
-
-    match_admin = my_db.query(Admin, Admin.Aid == Aid)
-    if len(match_admin) == 0:
-        return redirect("/admin/login")
-
     Rid = request.form.get("Rid")
     match_report = my_db.query(Report, Report.Rid == Rid, first=True)
     if len(match_report) == 0:
