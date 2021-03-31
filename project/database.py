@@ -22,12 +22,12 @@ class myDb:
 
     def connect(self, *args, **kwargs):
         self._engine = create_engine('sqlite:///test.db', convert_unicode=True)
-        self._session = scoped_session(sessionmaker(bind=self._engine))  # must use scoped session here
-
+        # must use scoped session here
+        self._session = scoped_session(sessionmaker(self._engine, *args, **kwargs))
         self.Base.query = self._session.query_property()
 
-    def initialize(self):
-        self.connect()
+    def initialize(self, *args, **kwargs):
+        self.connect(*args, **kwargs)
         # import all models here (only the class name)
         from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, User
         self.Base.metadata.create_all(bind=self._engine)
