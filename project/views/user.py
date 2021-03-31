@@ -26,7 +26,7 @@ def create_post():
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 404
     data = {"Bid": Bid}
-    return render_template("create.html", data=data)
+    return render_template("login.html", data=data)
 
 
 @user_blue.route("/report")

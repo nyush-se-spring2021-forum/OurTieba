@@ -6,6 +6,7 @@
 {{ super() }}
 <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
 <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
+<script src="/js/jquery-3.6.0.min.js"></script>
 {% endblock %}
 
 {% block navbar %}
@@ -24,6 +25,7 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
                 <li><a href="/">Home</a></li>
+                <li><a href="/board">Boards</a></li>
                 <li><a href="/frontendtest">Hot</a></li>
             </ul>
         </div>
