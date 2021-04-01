@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import re
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, json
 
 from ..database import *
 from ..configs import *
@@ -251,15 +251,16 @@ def login_auth():
     if Uid:
         return redirect("/")  # if already logged in, redirect to homepage
 
-    username = request.form.get("uname")
-    password = request.form.get("password")
+    data = request.form.to_dict()
+    username = data.get("uname")
+    password = data.get("password")
     match_user = my_db.query(User, User.uname == username, first=True)
     if not match_user:
-        return jsonify({"error": {"msg": "user does not exist"}}), 403
+        return jsonify({"error": {"msg": "user does not exist"}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
-        return jsonify({"error": {"msg": "incorrect password"}}), 403
+        return jsonify({"error": {"msg": "incorrect password"}})
     session["Uid"] = match_user.Uid
-    return redirect("/")
+    return jsonify({"status": 1})
 
 
 @api.route('/auth/logout', methods=["POST"])

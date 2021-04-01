@@ -11,19 +11,23 @@
         <input name="uname" id="uname" required>
         <label for="password">Password: </label>
         <input type="password" name="password" id="password" required>
-        <button id="btn-submit">Log In</button>
     </form>
-    <p class="err"></p>
+    <button id="btn-submit">Log In</button>
+    <p id="username-err"></p>
 <script>
 $("#btn-submit").on("click", () => {
     $.ajax({
         method: "post",
         url: "/api/auth/login",
         dataType: "json",
-        data: JSON.stringify({"uname": $("#uname").val(), "password": $("#password").val()}),
-        success: (data => {
-            $(".err").text(data.error.msg);
-        })
+        data: {"uname": $("#uname").val(), "password": $("#password").val()},
+        success: function (data) {
+            if (data.status) {
+                window.location.href = "/";
+            } else {
+                $("#username-err").text(data.error.msg); // # = id, . = class
+            }
+        }
     })
 })
 </script>
