@@ -62,6 +62,12 @@ class myDb:
     def close(self):
         self._session.remove()
 
+    def get_engine(self):
+        return self._engine
+
+    def set_engine(self, _new_engine):
+        self._engine = _new_engine
+
 
 my_db = myDb()
 
