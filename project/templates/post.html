@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} Post {% endblock %}
+
+{% block page_content %}
+    <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
+    <div style="text-align: right">
+        Rank by:
+        <a href="?order=latest_comment">latest comment</a>
+        <a href="?order=newest">newest</a>
+        <a href="?order=like_count">likes</a>
+    </div>
+
+    <hr>
+    {% for comment in data['comments'] %}
+        <article class="post">
+            <header>
+                <div>
+                    <h3>Comment id: {{ comment['Cid'] }}</h3>
+                    <div class="blockquote-footer">{{ moment(comment['publish_time']).fromNow() }}</div>
+                    <div>liked by {{ comment['like_count'] }} </div>
+                </div>
+            </header>
+            <p class="body">{{ comment['summary'] }}</p>
+        </article>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+{% endblock %}
