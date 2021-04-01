@@ -254,11 +254,14 @@ def login_auth():
     data = request.form.to_dict()
     username = data.get("uname")
     password = data.get("password")
+    if not username or not password:
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+
     match_user = my_db.query(User, User.uname == username, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "user does not exist"}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
-        return jsonify({"error": {"msg": "incorrect password"}})
+        return jsonify({"error": {"msg": "incorrect password"}, "status": 0})
     session["Uid"] = match_user.Uid
     return jsonify({"status": 1})
 
