@@ -1,4 +1,5 @@
 {% extends "bootstrap/base.html" %}
+{{ moment.include_moment() }}
 
 {% block title %}OurTieba{% endblock %}
 
@@ -18,9 +19,11 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="/">OurTieba</a>
+            <a class="navbar-brand" href="/">
+{#                <img src="{{ url_for('static', filename='img/logo.png') }}" width="20" height="25" alt="logo">#}
+                OurTieba
+            </a>
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
