@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, func
+from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -56,6 +56,8 @@ class myDb:
             return _db_session.query(func.avg(target)).filter(condition).scalar()
 
     def count(self, target, condition=True):
+        if issubclass(target, self.Base):
+            target = inspect(target).primary_key[0]
         with auto_scope(self._session) as _db_session:
             return _db_session.query(func.count(target)).filter(condition).scalar()
 
