@@ -1,12 +1,11 @@
 {% extends "base.html" %}
-{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %} OurTieba {% endblock %}
 
 {% block page_content %}
     <div class="page-header">
         <h1>Hey, there!</h1>
-        <button>AJAX REQUEST</button>
+        <button type="button" class="btn btn-primary">AJAX REQUEST</button>
     </div>
     <script>
         $("button").on("click", () => {
