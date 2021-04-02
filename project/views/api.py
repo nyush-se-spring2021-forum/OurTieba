@@ -126,6 +126,7 @@ def add_comment():
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
     match_post.commentCount += 1
+    match_post.lastCommentTime = datetime.datetime.now()
 
     new_comment = Comment(Uid, Pid, content)
     my_db.add(new_comment)
@@ -151,7 +152,7 @@ def delete_post():
 
 @api.route('/comment/delete', methods=["POST"])
 @login_required
-def delete_comment():
+def delete_comment():  # will not alter post lastCommentTime
     Cid = request.form.get("Pid")
     Pid = request.form.get("Bid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
