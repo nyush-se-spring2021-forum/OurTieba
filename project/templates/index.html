@@ -35,6 +35,8 @@
                     if (data.hasOwnProperty("status")) {
                         alert("Successfully uploaded image!");
                         location.reload();
+                    } else {
+                        alert(data.error.msg);
                     }
                 }
             })
