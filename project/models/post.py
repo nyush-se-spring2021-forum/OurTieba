@@ -16,7 +16,9 @@ class Post(my_db.Base):
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
+    viewCount = Column(Integer, default=0)
     latestCommentTime = Column(DateTime)
+
     Uid = Column(Integer, ForeignKey("user.Uid"))
     Bid = Column(Integer, ForeignKey("board.Bid"))
 
@@ -25,7 +27,7 @@ class Post(my_db.Base):
     comments = relationship("Comment", back_populates="comment_in")
     status_by = relationship("PostStatus", back_populates="on_post")
 
-    def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None,
+    def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None, viewCount=None,
                  commentCount=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
@@ -37,6 +39,7 @@ class Post(my_db.Base):
         self.content = content
         self.timestamp = timestamp
         self.latestCommentTime = LCT if LCT else self.timestamp
+        self.viewCount = viewCount
         self.commentCount = commentCount
         self.likeCount = likeCount
         self.dislikeCount = dislikeCount
