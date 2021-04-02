@@ -6,3 +6,4 @@ from ..models.post import Post
 from ..models.post_status import PostStatus
 from ..models.report import Report
 from ..models.user import User
+from ..models.subsription import Subscription

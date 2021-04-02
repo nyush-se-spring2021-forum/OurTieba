@@ -11,7 +11,10 @@ class Subscription(my_db.Base):
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
     Bid = Column(Integer, ForeignKey("board.Bid"), primary_key=True)
-    subscribed = Column(Integer, default=0)  # 0 = False, 1 = True
+    # Two implementations:
+    # 1. Not use "subscribed" column. Simply delete from table when unsubscribe;
+    # 2. Use "subscribed" column. Set subscribed = 0 when unsubscribe.
+    subscribed = Column(Integer, default=0)  # 0 = False, 1 = True,
     lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
 
     by_user = relationship("User", back_populates="subscriptions")
