@@ -32,7 +32,10 @@
                 processData: false,
                 contentType: false,
                 success: (data) => {
-                    console.log(data);
+                    if (data.hasOwnProperty("status")) {
+                        alert("Successfully uploaded image!");
+                        location.reload();
+                    }
                 }
             })
         }
