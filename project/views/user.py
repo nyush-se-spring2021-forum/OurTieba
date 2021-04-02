@@ -2,6 +2,7 @@ import datetime
 
 from flask import Blueprint, render_template, request, jsonify, session, redirect
 
+from ..configs.functions import *
 from ..database import *
 from ..models import *
 
@@ -9,10 +10,10 @@ user_blue = Blueprint("user", __name__)
 
 
 @user_blue.route("/board/create")
+@login_required
 def create_post():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
+
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
@@ -30,10 +31,9 @@ def create_post():
 
 
 @user_blue.route("/report")
+@login_required
 def report():
-    Uid = session.get("Uid")
-    if not Uid:
-        return redirect("/login")
+    Uid = session["Uid"]
 
     target = request.args.get("target", 0)
     id = request.args.get("id")
