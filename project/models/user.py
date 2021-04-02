@@ -4,7 +4,7 @@ import hashlib
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from .user_report import user_report_table
+from ._tables import user_report_table
 from ..database import my_db
 
 
@@ -32,6 +32,7 @@ class User(my_db.Base):
     reports = relationship("Report", secondary=lambda: user_report_table, back_populates="report_by")
     status_comment = relationship("CommentStatus", back_populates="by_user")
     status_post = relationship("PostStatus", back_populates="by_user")
+    subscriptions = relationship("Subscription", back_populates="by_user")
 
     def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, gender=None,
                  phone_number=None, email=None, address=None, dateOfBirth=None, banned=None, banDuration=None):
