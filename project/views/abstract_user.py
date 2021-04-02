@@ -29,7 +29,9 @@ def get_posts_in_board(Bid):
     b = my_db.query(Board, Board.Bid == Bid, first=True)
     if not b:
         return "Not Found!", 404
-    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "time": b.timestamp}
+    b.viewCount += 1  # when page is accessed, increment view count
+    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount,
+                  "time": b.timestamp, "view_count": b.viewCount}
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
@@ -59,6 +61,7 @@ def get_comments_in_post(Pid):
     p = my_db.query(Post, Post.Pid == Pid, first=True)
     if not p:
         return "Not Found", 404
+    p.viewCount += 1  # when page is accessed, increment view count
     post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
                  "owner": p.owner.nickname, "avatar": p.owner.avatar}
