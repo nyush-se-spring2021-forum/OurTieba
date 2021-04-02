@@ -321,6 +321,7 @@ def subscribe():
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
+    match_board.subscribeCount += 1 if action == "1" else -1
 
     new_sub = Subscription(Uid, Bid, int(action), datetime.datetime.now())
     my_db.merge(new_sub)
