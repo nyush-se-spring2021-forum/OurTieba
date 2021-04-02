@@ -32,4 +32,4 @@ class Comment(my_db.Base):
         self.dislikeCount = dislikeCount
 
     def __repr__(self):
-        return '<Post %r>' % self.Pid
+        return '<Comment %r>' % self.Cid
