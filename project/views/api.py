@@ -282,19 +282,25 @@ def logout_auth():
 def save_file():
     Uid = session["Uid"]
 
-    file = request.files["file"]
+    file = request.files.get("file")
+    # check if file
+    if not file:
+        return jsonify({"error": {"msg": "please upload a file"}})
+    # check file size
+    if int(request.headers["Content-Length"]) > 3 * 1024 * 1024:
+        return jsonify({"error": {"msg": "image too large"}})
+
+    file_type = file.content_type
+    # check file type
+    if not file_type or not file_type.startswith("image"):
+        return jsonify({"error": {"msg": "invalid file type"}})
+    file_type = file_type.split("/")[1]
 
     path = "cdn/"
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
-    file_type: str = file.content_type
-    if not file_type or not file_type.startswith("image"):
-        return jsonify({"error": {"msg": "invalid file type"}})
-    file_type = file_type.split("/")[1]
-
     src = str(hash(str(Uid) + str(datetime.datetime.now()))) + "." + file_type
-
     with open(path + src, "wb") as f:
         file.save(f)
 
