@@ -289,7 +289,7 @@ def save_file():
         os.mkdir(path)
 
     file_type: str = file.content_type
-    if not file_type.startswith("image"):
+    if not file_type or not file_type.startswith("image"):
         return jsonify({"error": {"msg": "invalid file type"}})
     file_type = file_type.split("/")[1]
 
