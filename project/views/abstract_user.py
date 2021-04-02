@@ -10,7 +10,7 @@ a_user = Blueprint("abstract_user", __name__)
 
 @a_user.route("/")
 def index():
-    hot_articles = get_hot_news(num=RECOMMEND_NUM_NEWS)
+    hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": a["url"],
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
