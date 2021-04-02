@@ -10,8 +10,8 @@ def update_hot():
     """ Not Finished!"""
     print("updating hot...")
     # logger.logger.info("Start updating hot")
-    print("average hot:", db_session.query(func.avg(Board.hot).label("average")).scalar())
-    db_session.commit()
+    print("average hot:", my_db.query(func.avg(Board.hot).label("average")).scalar())
+    my_db.commit()
 
 
 def init_scheduler(app):
