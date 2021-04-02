@@ -3,7 +3,7 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
-from .user_report import user_report_table
+from ._tables import user_report_table
 from ..database import my_db
 
 
