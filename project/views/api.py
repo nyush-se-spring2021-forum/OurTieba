@@ -55,7 +55,7 @@ def like():
 
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), 1, 0, now) if action == "1" else status(Uid, int(target_id), 0, 0, now)
+    new_status = status(Uid, int(target_id), int(action), 0, now)
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
 
@@ -79,7 +79,7 @@ def dislike():
 
     now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), 0, 1, now) if action == "1" else status(Uid, int(target_id), 0, 0, now)
+    new_status = status(Uid, int(target_id), 0, int(action), now)
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
 
@@ -288,5 +288,25 @@ def save_file():
     """Not finished! Haven't checked whether file is legitimate."""
     with open(f"../../cdn/" + src, "wb") as f:
         f.write(file.read())
-    my_db.query(User, User.Uid == Uid, first=True).avatar = src
-    return jsonify({"success": 1}), 200
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    match_user.avatar = src
+    return jsonify({"status": 1})
+
+
+@api.route("/subscribe", methods=["POST"])
+@login_required
+def subscribe():
+    Uid = session["Uid"]
+
+    Bid = request.form.get("Bid")
+    action = request.form.get("subscribe")  # "0"=unsub, "1"=sub
+    if not Bid or not Bid.isnumeric() or action not in ["0", "1"]:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    match_board = my_db.query(Board, Board.Bid == Bid, first=True)
+    if not match_board:
+        return jsonify({"error": {"msg": "invalid board ID"}}), 403
+
+    new_sub = Subscription(Uid, Bid, int(action), datetime.datetime.now())
+    my_db.merge(new_sub)
+    return jsonify({"status": 1})
