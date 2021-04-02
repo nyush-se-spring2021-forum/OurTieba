@@ -61,6 +61,12 @@ class myDb:
         with auto_scope(self._session) as _db_session:
             return _db_session.query(func.count(target)).filter(condition).scalar()
 
+    def update(self, target, condition=True, **kwargs):
+        with auto_scope(self._session) as _db_session:
+            values = kwargs.get("values")  # "values" is a dict
+            if values:
+                _db_session.query(target).filter(condition).update(values)
+
     def close(self):
         self._session.remove()
 
