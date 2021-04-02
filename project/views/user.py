@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Blueprint, render_template, request, jsonify, session, redirect
+from flask import Blueprint, render_template, request, jsonify
 
 from ..configs.functions import *
 from ..database import *
@@ -33,8 +33,6 @@ def create_post():
 @user_blue.route("/report")
 @login_required
 def report():
-    Uid = session["Uid"]
-
     target = request.args.get("target", 0)
     id = request.args.get("id")
     data = {"id": id, "target": target}
