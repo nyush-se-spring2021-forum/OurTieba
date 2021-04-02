@@ -283,13 +283,22 @@ def save_file():
     Uid = session["Uid"]
 
     file = request.files["file"]
-    src = str(hash(Uid + str(datetime.datetime.now()))) + ".png"
 
-    """Not finished! Haven't checked whether file is legitimate."""
-    with open(f"../../cdn/" + src, "wb") as f:
-        f.write(file.read())
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
-    match_user.avatar = src
+    path = "cdn/"
+    if not os.path.exists(path):  # os is imported in config.py
+        os.mkdir(path)
+
+    file_type: str = file.content_type
+    if not file_type.startswith("image"):
+        return jsonify({"error": {"msg": "invalid file type"}})
+    file_type = file_type.split("/")[1]
+
+    src = str(hash(str(Uid) + str(datetime.datetime.now()))) + "." + file_type
+
+    with open(path + src, "wb") as f:
+        file.save(f)
+
+    my_db.update(User, User.Uid == Uid, values={"avatar": src})
     return jsonify({"status": 1})
 
 

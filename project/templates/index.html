@@ -6,6 +6,8 @@
     <div class="page-header">
         <h1>Hey, there!</h1>
         <button type="button" class="btn btn-primary">AJAX REQUEST</button>
+        <br>
+        <input type="file" accept="image/*" onchange="uploadImg(this.files[0]);">
     </div>
     <script>
         $("button").on("click", () => {
@@ -16,5 +18,23 @@
                 }
             })
         })
+        function uploadImg(file) {
+            if (file.size > (3 * 1024 * 1024)) {
+                alert("Image Too Large!");
+                return;
+            }
+            var formData = new FormData();
+            formData.append("file", file);
+            $.ajax({
+                method: "post",
+                url: "/api/upload",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    console.log(data);
+                }
+            })
+        }
     </script>
 {% endblock %}
