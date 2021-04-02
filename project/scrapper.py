@@ -70,15 +70,18 @@ class AsyncOTSpider:
             self.headers.pop("Cookie")
 
     async def get_baidu(self):
-        r = await self.session.get("https://www.baidu.com", headers=self.headers)
-        return r.html.text
+        res = await self.session.get("https://www.baidu.com", headers=self.headers)
+        return res.html.text
 
     async def get_bilibili(self):
-        r = await self.session.get("https://www.bilibili.com", headers=self.headers)
-        return r.html.text
+        res = await self.session.get("https://www.bilibili.com", headers=self.headers)
+        return res.html.text
 
     def run_multitask(self, *args, **kwargs):  # can take in "tasks"(Iterable) as keyword argument
-        results = self.session.run(*args, *kwargs["tasks"])
+        if kwargs.get("tasks"):
+            results = self.session.run(*kwargs["tasks"])
+        else:
+            results = self.session.run(*args)
         return results
 
 
@@ -87,5 +90,5 @@ async_spider = AsyncOTSpider()
 if __name__ == '__main__':
     # news = spider.get_hot_news(num=3)
     # print(news)
-    print(async_spider.run_multitask(async_spider.get_baidu, tasks=[async_spider.get_baidu, async_spider.get_bilibili]))
+    print(async_spider.run_multitask(async_spider.get_baidu))
     # OT_spider.upload_avatar(port=5000)
