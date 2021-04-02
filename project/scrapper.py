@@ -9,16 +9,14 @@ class OTSpider:
             cls.__instance = super().__new__(cls)
         return cls.__instance
 
-    def __init__(self, async_session=False):
-        self.session = HTMLSession() if not async_session else AsyncHTMLSession()
+    def __init__(self):
+        self.session = HTMLSession()
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                                       "like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.57"}
 
-    def set_cookie(self, cookie):
+    def set_cookie(self, cookie):  # if cookie set to None, remove cookie
         self.headers.update({"Cookie": cookie})
-
-    def remove_cookie(self):
-        if self.headers.get("Cookie"):
+        if not cookie:
             self.headers.pop("Cookie")
 
     def get_hot_news(self, **kwargs):
@@ -50,7 +48,44 @@ class OTSpider:
 
 OT_spider = OTSpider()
 
+
+class AsyncOTSpider:
+    __instance = None
+
+    def __new__(cls, *args, **kwargs):
+        if cls.__instance is None:
+            cls.__instance = super().__new__(cls)
+        return cls.__instance
+
+    def __init__(self):
+        self.session = AsyncHTMLSession()
+        self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
+                                      "like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.57"}
+
+    def set_cookie(self, cookie):
+        self.headers.update({"Cookie": cookie})
+
+    def remove_cookie(self):
+        if self.headers.get("Cookie"):
+            self.headers.pop("Cookie")
+
+    async def get_baidu(self):
+        r = await self.session.get("https://www.baidu.com", headers=self.headers)
+        return r.html.text
+
+    async def get_bilibili(self):
+        r = await self.session.get("https://www.bilibili.com", headers=self.headers)
+        return r.html.text
+
+    def run_multitask(self, *args, **kwargs):  # can take in "tasks"(Iterable) as keyword argument
+        results = self.session.run(*args, *kwargs["tasks"])
+        return results
+
+
+async_spider = AsyncOTSpider()
+
 if __name__ == '__main__':
     # news = spider.get_hot_news(num=3)
     # print(news)
-    OT_spider.upload_avatar(port=5000)
+    print(async_spider.run_multitask(async_spider.get_baidu, tasks=[async_spider.get_baidu, async_spider.get_bilibili]))
+    # OT_spider.upload_avatar(port=5000)
