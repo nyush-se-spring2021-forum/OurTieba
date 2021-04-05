@@ -1,3 +1,5 @@
+import datetime
+
 from requests_html import HTMLSession, AsyncHTMLSession
 
 
@@ -13,18 +15,33 @@ class OTSpider:
         self.session = HTMLSession()
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                                       "like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.57"}
+        self.cache = dict()  # note that this is stateless, which means it is cleared on every restart
 
     def set_cookie(self, cookie):  # if cookie set to None, remove cookie
         self.headers.update({"Cookie": cookie})
         if not cookie:
             self.headers.pop("Cookie")
 
+    def empty_cache(self, name=None):  # empty all the cache by default
+        if not name:
+            self.cache = dict()
+            return
+        if not self.cache.get(name):
+            print("Name not found!")
+            return
+        self.cache.pop(name)
+
     def get_hot_news(self, **kwargs):
-        url = "https://newsapi.org/v2/top-headlines?country=us&category=general&apiKey=9d51c192354848748d129b08faea32ea"
-        res = self.session.get(url, headers=self.headers)
-        data = res.json()
-        num = kwargs["num"]
-        return data["articles"][:num]
+        # if news is not cached, or cache has expired, update cache
+        if not self.cache.get("news") or self.cache["news"]["expires"] < datetime.datetime.now():
+            url = "https://newsapi.org/v2/top-headlines?country=us&category=general&" \
+                  "apiKey=9d51c192354848748d129b08faea32ea"
+            res = self.session.get(url, headers=self.headers)
+            data = res.json()
+            num = kwargs["num"]
+            self.cache["news"] = {"articles": data["articles"][:num],
+                                  "expires": datetime.datetime.now() + datetime.timedelta(seconds=kwargs["freq"])}
+        return self.cache["news"]["articles"]
 
     def get_cookie(self, domain="localhost", port=80, uname="U1", password="111"):
         url = f"http://{domain}:{port}/api/auth/login"
