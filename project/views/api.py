@@ -2,7 +2,7 @@ import datetime
 import hashlib
 import re
 
-from flask import Blueprint, request, jsonify, json
+from flask import Blueprint, request, jsonify
 
 from ..database import *
 from ..configs import *
@@ -204,12 +204,8 @@ def add_personal_info():
     except Exception as e:
         return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
 
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
-    match_user.gender = gender
-    match_user.phoneNumber = phone_number
-    match_user.email = email
-    match_user.address = address
-    match_user.dateOfBirth = date_of_birth
+    my_db.update(User, User.Uid == Uid, values={"gender": gender, "phoneNumber": phone_number, "email": email,
+                                                "address": address, "dateOfBirth": date_of_birth})
     return redirect(f"/profile/{Uid}")
 
 
