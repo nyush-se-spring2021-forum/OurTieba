@@ -292,7 +292,7 @@ def save_file():
         return jsonify({"error": {"msg": "invalid file type"}})
     file_type = file_type.split("/")[1]
 
-    path = "cdn/"
+    path = CDN_PATH
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
