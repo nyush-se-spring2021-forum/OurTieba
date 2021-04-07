@@ -29,7 +29,8 @@ class myDb:
     def initialize(self, *args, **kwargs):
         self.connect(*args, **kwargs)
         # import all models here (only the class name)
-        from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, User
+        from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, Subscription,\
+            User, user_report_table
         self.Base.metadata.create_all(bind=self._engine)
 
     def query(self, target, condition=True, order=True, first=False):
