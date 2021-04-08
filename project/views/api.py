@@ -305,6 +305,9 @@ def save_file():
         file.save(f)
 
     my_db.update(User, User.Uid == Uid, values={"avatar": src})
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    session.pop("user_info")
+    session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     return jsonify({"status": 1})
 
 
