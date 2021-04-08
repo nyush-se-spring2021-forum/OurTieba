@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}OurTieba{% endblock %}
+
+{% block page_content %}
+
+    <h1>Register</h1>
+    <hr>
+    <form action="{{ url_for('api.register_auth') }}" method="post">
+        <label for="uname">Username: </label>
+        <input name="uname" id="uname" required>
+        <label for="nickname">Nickname: </label>
+        <input type="text" name="nickname" id="nickname" required>
+        <label for="password">Password: </label>
+        <input type="password" name="password" id="password" required>
+    </form>
+    <button id="btn-submit">Register</button>
+    <p id="username-err"></p>
+    <script>
+        $("#btn-submit").on("click", () => {
+            $.ajax({
+                method: "post",
+                url: "/api/auth/register",
+                dataType: "json",
+                data: {"uname": $("#uname").val(), "password": $("#password").val(), "nickname": $("#nickname").val()},
+                success: function (data) {
+                    if (data.status) {
+                        window.location.href = "/";
+                    } else {
+                        $("#username-err").text(data.error.msg); // # = id, . = class
+                    }
+                }
+            })
+        })
+    </script>
+{% endblock %}

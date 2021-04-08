@@ -266,7 +266,7 @@ def login_auth():
     return jsonify({"status": 1})
 
 
-@api.route('/auth/logout', methods=["POST"])
+@api.route('/auth/logout', methods=["POST", "GET"])
 @login_required
 def logout_auth():
     session.pop("Uid")

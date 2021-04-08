@@ -137,6 +137,16 @@ def frontendtest():
     abort(500)
 
 
+@app.route('/register')
+def register():
+    return render_template('register.html')
+
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+
 @app.route("/getsomething")
 def getsth():
     John = my_db.query(User, User.Uid == 1, first=True)
