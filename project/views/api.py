@@ -217,15 +217,17 @@ def register_auth():
 
     # check username
     username = request.form.get("uname")
-    if len(username) < 5 or len(username) > 20:
-        return jsonify({"error": {"msg": "invalid username"}}), 403
-    username = re.findall(r"[\w_]+$", username)
     if not username:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+    username = re.findall(r"[\w_]+$", username)
+    if len(username) < 5 or len(username) > 20:
         return jsonify({"error": {"msg": "invalid username"}}), 403
     else:
         username = username[0]
     # check password
     password = request.form.get("password")
+    if not password:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
     password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
     if not password:
         return jsonify({"error": {"msg": "invalid password"}}), 403
