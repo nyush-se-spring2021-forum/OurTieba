@@ -175,6 +175,9 @@ def delete_comment():  # will not alter post lastCommentTime
 def add_personal_info():
     Uid = session["Uid"]
 
+    nickname = request.form.get("nickname")
+    if not nickname:
+        return jsonify({"error": {"msg": "invalid data"}}), 403
     # check gender
     gender = request.form.get("gender")
     if gender not in ["male", "female", "other"]:
@@ -204,8 +207,11 @@ def add_personal_info():
     except Exception as e:
         return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
 
-    my_db.update(User, User.Uid == Uid, values={"gender": gender, "phoneNumber": phone_number, "email": email,
-                                                "address": address, "dateOfBirth": date_of_birth})
+    my_db.update(User, User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
+                                                "email": email, "address": address, "dateOfBirth": date_of_birth})
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    session.pop("user_info")
+    session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     return redirect(f"/profile/{Uid}")
 
 
