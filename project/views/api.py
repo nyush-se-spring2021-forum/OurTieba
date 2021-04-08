@@ -259,20 +259,21 @@ def login_auth():
     if not username or not password:
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
-    match_user = my_db.query(User, User.uname == username, first=True)
+    match_user: User = my_db.query(User, User.uname == username, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "user does not exist"}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
         return jsonify({"error": {"msg": "incorrect password"}, "status": 0})
     session["Uid"] = match_user.Uid
-    session["avatar"] = match_user.avatar  # can be None
+    user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
+    session["user_info"] = user_info
     return jsonify({"status": 1})
 
 
 @api.route('/auth/logout', methods=["POST", "GET"])
 @login_required
 def logout_auth():
-    session.pop("Uid")
+    session.clear()
     return redirect("/")
 
 

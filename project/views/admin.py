@@ -51,6 +51,8 @@ def admin_auth_login():
         return jsonify({"error": {"msg": "Incorrect Password"}}, 403)
 
     session["Aid"] = admin_result.Aid
+    admin_info = {"nickname": admin_result.nickname, "avatar": admin_result.avatar}
+    session["admin_info"] = admin_info
 
     return redirect("/admin/dashboard")
 
@@ -58,7 +60,7 @@ def admin_auth_login():
 @admin_blue.route("/auth/logout")
 @admin_login_required
 def admin_logout():
-    session.pop("Aid")  # may raise KeyError, must check before pop
+    session.clear()
     return redirect("/admin/auth/login")
 
 

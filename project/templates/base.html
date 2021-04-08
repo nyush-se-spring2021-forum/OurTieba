@@ -53,7 +53,8 @@
                                        href="{{ url_for('guest.register_interface') }}">Sign-up</a>
                                 {% else %}
                                     <a type="button" class="btn btn-outline-light" href="{{ url_for('api.logout_auth') }}">Log Out</a>
-                                    <img src={{ "cdn/" + session.avatar }}>
+                                    <img src={{ "cdn/" + session.user_info["avatar"] }}>
+                                    <p>{{ session.user_info["nickname"] }}</p>
                                 {% endif %}
                             </div>
                         </div>

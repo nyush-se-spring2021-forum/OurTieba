@@ -15,13 +15,7 @@ def index():
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
-    user_info = {}
-    Uid = session.get("Uid")
-    if Uid:
-        match_user = my_db.query(User, condition=User.Uid == Uid, first=True)
-        user_info = {"Uid": Uid, "nickname": match_user.nickname, "avatar": match_user.avatar}
-        session["avatar"] = match_user.avatar
-    data = {"boards": recommend_boards, "news": hot_news, "user_info": user_info}
+    data = {"boards": recommend_boards, "news": hot_news}
     return render_template("index.html", data=data)
 
 
