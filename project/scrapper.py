@@ -102,10 +102,10 @@ class AsyncOTSpider:
         return results
 
 
-async_spider = AsyncOTSpider()
+# async_spider = AsyncOTSpider()
 
 if __name__ == '__main__':
-    # news = spider.get_hot_news(num=3)
-    # print(news)
-    print(async_spider.run_multitask(async_spider.get_baidu))
+    news = OT_spider.get_hot_news(num=3)
+    print(news)
+    # print(async_spider.run_multitask(async_spider.get_baidu))
     # OT_spider.upload_avatar(port=5000)
