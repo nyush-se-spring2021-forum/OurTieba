@@ -48,12 +48,12 @@
 
                             <div class="text-end">
                                 {% if not session.Uid %}
-                                    <a type="button" class="btn btn-outline-light me-2" href="{{ url_for('login') }}">Login</a>
+                                    <a type="button" class="btn btn-outline-light me-2" href="{{ url_for('guest.login_interface') }}">Login</a>
                                     <a type="button" class="btn btn-warning"
-                                       href="{{ url_for('register') }}">Sign-up</a>
+                                       href="{{ url_for('guest.register_interface') }}">Sign-up</a>
                                 {% else %}
                                     <a type="button" class="btn btn-outline-light" href="{{ url_for('api.logout_auth') }}">Log Out</a>
-                                    <img src={{ "cdn/" + data["user_info"]["avatar"] }}>
+                                    <img src={{ "cdn/" + session.avatar }}>
                                 {% endif %}
                             </div>
                         </div>

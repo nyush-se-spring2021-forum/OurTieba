@@ -15,7 +15,7 @@ class User(my_db.Base):
     password = Column(String)
     uname = Column(String, unique=True)
     nickname = Column(String)
-    avatar = Column(String)  # upon uploading, link=hash(Uid + timestamp) + ".png"
+    avatar = Column(String, default="default_avatar.jpg")  # upon uploading, link=hash(Uid + timestamp) + ".png"
     timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
     # personal info
     gender = Column(String)

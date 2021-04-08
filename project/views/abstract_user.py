@@ -20,6 +20,7 @@ def index():
     if Uid:
         match_user = my_db.query(User, condition=User.Uid == Uid, first=True)
         user_info = {"Uid": Uid, "nickname": match_user.nickname, "avatar": match_user.avatar}
+        session["avatar"] = match_user.avatar
     data = {"boards": recommend_boards, "news": hot_news, "user_info": user_info}
     return render_template("index.html", data=data)
 

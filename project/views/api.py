@@ -265,6 +265,7 @@ def login_auth():
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
         return jsonify({"error": {"msg": "incorrect password"}, "status": 0})
     session["Uid"] = match_user.Uid
+    session["avatar"] = match_user.avatar  # can be None
     return jsonify({"status": 1})
 
 
