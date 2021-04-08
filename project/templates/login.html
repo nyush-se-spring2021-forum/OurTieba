@@ -52,16 +52,13 @@
         <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72"
              height="72">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-        <label for="uname" class="sr-only">Username</label>
         <input type="text" id="uname" class="form-control" placeholder="Username" required autofocus>
-        <label for="password" class="sr-only">Password</label>
         <input type="password" id="password" class="form-control" placeholder="Password" required>
         <button class="btn btn-lg btn-primary btn-block" id="btn_submit" type="submit">Sign in</button>
     </form>
 
-    <p id="username-err"></p>
-    <p class="sr-only">ao</p>
-
+    <div id="username-err" class="alert alert-warning" style="display: none">
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -84,8 +81,11 @@
                                 window.location = "/";
                             } else {
                                 msg = "Invalid username and password!";
+                                $("#username-err").show();
+
                             }
                             $("#username-err").html(msg);
+
                         }
                     });
                 }

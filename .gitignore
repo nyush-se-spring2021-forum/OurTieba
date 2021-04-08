@@ -18,3 +18,4 @@ build/
 access.log
 
 *.swp
+.DS_Store
