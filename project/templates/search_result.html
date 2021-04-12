@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %} Results {% endblock %}
+{% block page_content %}
+    {% if error %}
+        <h1>Please enter a keyword.</h1>
+    {% else %}
+        <h1>Search Results</h1>
+        <hr>
+        {% if data['num_match'] == 0 %}
+            No results.
+        {% endif %}
+
+        {{ data }}
+        {% for a in data['boards'] %}
+            <h1>{{ a.Bid }}</h1>
+            <hr>
+
+        {% endfor %}
+    {% endif %}
+
+{% endblock %}
