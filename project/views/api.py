@@ -223,6 +223,11 @@ def register_auth():
 
     # check username
     username = request.form.get("uname")
+    # (non-existence)
+    match_user = my_db.query(User, User.uname == username, first=True)
+    if match_user:
+        return jsonify({"error": {"msg": "user already exists"}, "status": 0})
+    # (validity)
     if not username:
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     username = re.findall(r"[\w_]+$", username)
