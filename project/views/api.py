@@ -255,8 +255,8 @@ def register_auth():
     my_db.add(new_user)
 
     # login once finish registration
-    new_Uid = my_db.query(User, User.uname == username, first=True).Uid
-    session["Uid"] = new_Uid
+    # new_Uid = my_db.query(User, User.uname == username, first=True).Uid
+    # session["Uid"] = new_Uid
     return jsonify({"status": 1})
 
 
