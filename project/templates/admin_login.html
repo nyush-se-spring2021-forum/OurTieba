@@ -39,7 +39,7 @@
 
                 if (uname !== "" && password !== "") {
                     $.ajax({
-                        url: '/admin/auth/admin_login',
+                        url: '/admin/auth/login',
                         type: 'post',
                         dataType: 'json',
                         data: {uname: uname, password: password},
