@@ -2,10 +2,10 @@ import datetime
 import hashlib
 import re
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
-from ..database import *
 from ..configs import *
+from ..database import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -224,25 +224,25 @@ def register_auth():
     # check username
     username = request.form.get("uname")
     if not username:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     username = re.findall(r"[\w_]+$", username)
     if len(username) < 5 or len(username) > 20:
-        return jsonify({"error": {"msg": "invalid username"}}), 403
+        return jsonify({"error": {"msg": "invalid username"}, "status": 0})
     else:
         username = username[0]
     # check password
     password = request.form.get("password")
     if not password:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
     if not password:
-        return jsonify({"error": {"msg": "invalid password"}}), 403
+        return jsonify({"error": {"msg": "invalid password"}, "status": 0})
     else:
         password = password[0]
     # check nickname
     nickname = request.form.get("nickname")
     if not nickname or len(nickname) > 20:
-        return jsonify({"error": {"msg": "invalid nickname"}}), 403
+        return jsonify({"error": {"msg": "invalid nickname"}, "status": 0})
 
     new_user = User(password, username, nickname=nickname)
     my_db.add(new_user)
@@ -250,7 +250,7 @@ def register_auth():
     # login once finish registration
     new_Uid = my_db.query(User, User.uname == username, first=True).Uid
     session["Uid"] = new_Uid
-    return redirect("/")
+    return jsonify({"status": 1})
 
 
 @api.route('/auth/login', methods=["POST"])
@@ -263,13 +263,13 @@ def login_auth():
     username = data.get("uname")
     password = data.get("password")
     if not username or not password:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid input."}, "status": 0})
 
     match_user: User = my_db.query(User, User.uname == username, first=True)
     if not match_user:
-        return jsonify({"error": {"msg": "user does not exist"}, "status": 0})
+        return jsonify({"error": {"msg": "Username does not exist."}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
-        return jsonify({"error": {"msg": "incorrect password"}, "status": 0})
+        return jsonify({"error": {"msg": "Incorrect password."}, "status": 0})
     session["Uid"] = match_user.Uid
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info

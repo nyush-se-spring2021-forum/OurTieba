@@ -83,11 +83,10 @@
 				let rpassword= $("#repeat-password").val().trim();
 				
 				if (password !== rpassword){
-					$("#username-err").html("Those passwords didn't match.");
-					$("#username-err").show();
+					$("#username-err").html("Passwords don't match.").show();
 				}
 				
-                if (uname !== "" && nickname !== "" && password !== "") {
+                else if (uname !== "" && nickname !== "" && password !== "") {
                     $.ajax({
                         url: '/api/auth/register',
                         type: 'post',
@@ -95,10 +94,11 @@
                         data: {uname: uname, password: password, nickname: nickname},
                         success: function (response) {
                             let msg = "";
-                            if (response.status) {
+                            if (response.status !== 0) {
                                 window.location = "/";
                             } else {
-                                msg = error.msg;
+                                msg = response.error['msg'];
+                                 console.log(msg);
                                 $("#username-err").show();
 
                             }
@@ -109,21 +109,6 @@
                 }
             });
         });
-	
-        $("#btn-submit").on("click", () => {
-            $.ajax({
-                method: "post",
-                url: "/api/auth/register",
-                dataType: "json",
-                data: {"uname": $("#uname").val(), "password": $("#password").val(), "nickname": $("#nickname").val()},
-                success: function (data) {
-                    if (data.status) {
-                        window.location.href = "/";
-                    } else {
-                        $("#username-err").text(data.error.msg); // # = id, . = class
-                    }
-                }
-            })
-        })
+
     </script>
 {% endblock %}
