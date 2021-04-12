@@ -231,10 +231,12 @@ def register_auth():
         return jsonify({"error": {"msg": "user already exists"}, "status": 0})
     # (validity)
     username = re.findall(r"[\w_]+$", username)
-    if len(username) < 5 or len(username) > 20:
+    if not username:
         return jsonify({"error": {"msg": "invalid username"}, "status": 0})
     else:
         username = username[0]
+    if len(username) < 5 or len(username) > 20:
+        return jsonify({"error": {"msg": "username must be of length 5 ~ 20"}, "status": 0})
     # check password
     password = request.form.get("password")
     if not password:
