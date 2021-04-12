@@ -43,11 +43,11 @@
     </style>
 {% endblock %}
 {% block page_content %}
-
     <h1>Login</h1>
     <hr>
     <iframe name="dummy" id="dummy" style="display: none;"></iframe>
-
+    <div id="username-err" class="alert alert-warning" style="display: none">
+    </div>
     <form class="form-signin" action="{{ url_for('api.login_auth') }}" method="post" target="dummy">
         <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72"
              height="72">
@@ -57,8 +57,7 @@
         <button class="btn btn-lg btn-primary btn-block" id="btn_submit" type="submit">Sign in</button>
     </form>
 
-    <div id="username-err" class="alert alert-warning" style="display: none">
-    </div>
+
 {% endblock %}
 
 {% block scripts %}
@@ -80,7 +79,7 @@
                             if (response.status) {
                                 window.location = "/";
                             } else {
-                                msg = "Invalid username and password!";
+                                msg = response.error['msg'];
                                 $("#username-err").show();
 
                             }

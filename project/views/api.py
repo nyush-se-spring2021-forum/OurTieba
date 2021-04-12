@@ -263,13 +263,13 @@ def login_auth():
     username = data.get("uname")
     password = data.get("password")
     if not username or not password:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid input."}, "status": 0})
 
     match_user: User = my_db.query(User, User.uname == username, first=True)
     if not match_user:
-        return jsonify({"error": {"msg": "user does not exist"}, "status": 0})
+        return jsonify({"error": {"msg": "Username does not exist."}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
-        return jsonify({"error": {"msg": "incorrect password"}, "status": 0})
+        return jsonify({"error": {"msg": "Incorrect password."}, "status": 0})
     session["Uid"] = match_user.Uid
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info
