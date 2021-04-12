@@ -63,7 +63,9 @@
                                         <ul class="dropdown-menu text-small"
                                             aria-labelledby="{{ session.user_info["nickname"] }}" style="">
                                             <li><a class="dropdown-item" href="#">Settings</a></li>
-                                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                                            <li><a class="dropdown-item"
+                                                   href="{{ url_for('abstract_user.get_personal_profile', Uid=session.Uid) }}">Profile</a>
+                                            </li>
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
