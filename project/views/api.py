@@ -224,7 +224,7 @@ def register_auth():
     # check username
     username = request.form.get("uname")
     if not username:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     # (non-existence)
     match_user = my_db.query(User, User.uname == username, first=True)
     if match_user:
@@ -232,7 +232,7 @@ def register_auth():
     # (validity)
     username = re.findall(r"[\w_]+$", username)
     if not username:
-        return jsonify({"error": {"msg": "invalid username"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid username"}, "status": 0})
     else:
         username = username[0]
     if len(username) < 5 or len(username) > 20:
@@ -240,16 +240,16 @@ def register_auth():
     # check password
     password = request.form.get("password")
     if not password:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
     if not password:
-        return jsonify({"error": {"msg": "invalid password"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid password"}, "status": 0})
     else:
         password = password[0]
     # check nickname
     nickname = request.form.get("nickname")
     if not nickname or len(nickname) > 20:
-        return jsonify({"error": {"msg": "invalid nickname"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid nickname"}, "status": 0})
 
     new_user = User(password, username, nickname=nickname)
     my_db.add(new_user)

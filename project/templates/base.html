@@ -51,12 +51,26 @@
                                     <a type="button" class="btn btn-outline-light me-2"
                                        href="{{ url_for('guest.login_interface') }}">Login</a>
                                     <a type="button" class="btn btn-warning"
-                                       href="{{ url_for('guest.register_interface') }}">Sign-up</a>
+                                       href="{{ url_for('guest.register_interface') }}">Register</a>
                                 {% else %}
-                                    <a type="button" class="btn btn-outline-light"
-                                       href="{{ url_for('api.logout_auth') }}">Log Out</a>
-                                    <img src={{ "cdn/" + session.user_info["avatar"] }}>
-                                    <p>{{ session.user_info["nickname"] }}</p>
+                                    <div class="dropdown text-end">
+                                        <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle"
+                                           id="{{ session.user_info["nickname"] }}" data-bs-toggle="dropdown"
+                                           aria-expanded="false">
+                                            <img src="{{ "cdn/" + session.user_info["avatar"] }}" width="32" height="32"
+                                                 class="rounded-circle">
+                                        </a>
+                                        <ul class="dropdown-menu text-small"
+                                            aria-labelledby="{{ session.user_info["nickname"] }}" style="">
+                                            <li><a class="dropdown-item" href="#">Settings</a></li>
+                                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                                            <li>
+                                                <hr class="dropdown-divider">
+                                            </li>
+                                            <li><a class="dropdown-item" href="{{ url_for('api.logout_auth') }}">Sign
+                                                out</a></li>
+                                        </ul>
+                                    </div>
                                 {% endif %}
                             </div>
                         </div>

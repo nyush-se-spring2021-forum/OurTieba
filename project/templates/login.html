@@ -81,10 +81,9 @@
                                 window.location = "/";
                             } else {
                                 msg = response.error['msg'];
-                                $("#username-err").show();
+                                $("#username-err").html(msg).show();
 
                             }
-                            $("#username-err").html(msg);
 
                         }
                     });
