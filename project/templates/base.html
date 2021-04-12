@@ -25,8 +25,8 @@
 
         <body{% block body_attribs %}{% endblock body_attribs %}>
         {% block body -%}
-            {% block header %}
-                <header class="p-3 bg-dark text-white">
+            {% block header -%}
+                <header class="fixed-top p-3 bg-dark text-white">
                     <div class="container">
                         <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
                             {#                        TODO: Add SVG file here#}
@@ -87,7 +87,7 @@
                             {{ message }}
                         </div>
                     {% endfor %}
-
+                    <div style="position:relative;">&nbsp</div>
                     {% block page_content %}{% endblock %}
                 </div>
             {%- endblock content %}
