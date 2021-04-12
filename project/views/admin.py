@@ -1,7 +1,7 @@
 import datetime
 import hashlib
 
-from flask import Blueprint, render_template, request, session, jsonify, redirect
+from flask import Blueprint, jsonify, render_template, request
 
 from ..configs import *
 from ..database import *

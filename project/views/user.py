@@ -1,6 +1,6 @@
 import datetime
 
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, jsonify, render_template, request
 
 from ..configs.functions import *
 from ..database import *

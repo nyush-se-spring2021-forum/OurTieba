@@ -9,7 +9,7 @@
 {% block page_content %}
     <form class="form-signin" action="{{ url_for('admin.admin_login') }}" method="post" target="dummy">
         <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72" height="72">
-        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <h1 class="h3 mb-3 fw-normal">Admin Login</h1>
         <iframe name="dummy" id="dummy" style="display: none;"></iframe>
         <div class="form-floating">
             <input type="text" class="form-control" id="uname" placeholder="username">
