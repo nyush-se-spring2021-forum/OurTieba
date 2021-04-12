@@ -27,7 +27,7 @@ class OTSpider:
             self.cache = dict()
             return
         if not self.cache.get(name):
-            print("Name not found!")
+            print("Name not found! Aborting...")
             return
         self.cache.pop(name)
 
@@ -44,9 +44,18 @@ class OTSpider:
         return self.cache["news"]["articles"]
 
     def get_cookie(self, domain="localhost", port=80, uname="U1", password="111"):
+        cached_cookies = self.cache.get("cookies")
+        if cached_cookies:
+            if cached_cookies.get(uname):
+                return cached_cookies[uname]
+
         url = f"http://{domain}:{port}/api/auth/login"
         res = self.session.post(url, data={"uname": uname, "password": password}, headers=self.headers)
         cookie = res.headers["Set-Cookie"].split(";")[0]
+
+        if not cached_cookies:
+            self.cache["cookies"] = dict()
+        self.cache["cookies"].update({uname: cookie})
         return cookie
 
     def upload_avatar(self, domain="localhost", port=80, uname="U1"):
@@ -105,7 +114,7 @@ class AsyncOTSpider:
 # async_spider = AsyncOTSpider()
 
 if __name__ == '__main__':
-    news = OT_spider.get_hot_news(num=3)
+    news = OT_spider.get_hot_news(num=3, freq=60)
     print(news)
     # print(async_spider.run_multitask(async_spider.get_baidu))
-    # OT_spider.upload_avatar(port=5000)
+    OT_spider.upload_avatar(port=5000)
