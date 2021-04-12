@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}OurTieba{% endblock %}
+{% block head %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/signin.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block page_content %}
+    <form class="form-signin" action="{{ url_for('admin.admin_login') }}" method="post" target="dummy">
+        <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+        <iframe name="dummy" id="dummy" style="display: none;"></iframe>
+        <div class="form-floating">
+            <input type="text" class="form-control" id="uname" placeholder="username">
+            <label for="uname">Username</label>
+        </div>
+        <div class="form-floating">
+            <input type="password" class="form-control" id="password" placeholder="Password">
+            <label for="password">Password</label>
+        </div>
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit" id="btn_submit">Sign in</button>
+        <p class="mt-5 mb-3 text-muted">&copy; OurTieba</p>
+    </form>
+
+
+    <div id="username-err" class="alert alert-warning" style="display: none">
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $(document).ready(function () {
+            $("#btn_submit").click(function () {
+                let uname = $("#uname").val().trim();
+                let password = $("#password").val().trim();
+
+                if (uname !== "" && password !== "") {
+                    $.ajax({
+                        url: '/admin/auth/admin_login',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {uname: uname, password: password},
+                        success: function (response) {
+                            let msg = "";
+                            if (response.status !== 0) {
+                                window.location = "/";
+                            } else {
+                                msg = response.error['msg'];
+                                $("#username-err").html(msg).show();
+
+                            }
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}
