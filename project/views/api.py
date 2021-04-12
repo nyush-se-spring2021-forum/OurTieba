@@ -2,10 +2,10 @@ import datetime
 import hashlib
 import re
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify, request
 
-from ..database import *
 from ..configs import *
+from ..database import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -224,25 +224,25 @@ def register_auth():
     # check username
     username = request.form.get("uname")
     if not username:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     username = re.findall(r"[\w_]+$", username)
     if len(username) < 5 or len(username) > 20:
-        return jsonify({"error": {"msg": "invalid username"}}), 403
+        return jsonify({"error": {"msg": "invalid username"}, "status": 0})
     else:
         username = username[0]
     # check password
     password = request.form.get("password")
     if not password:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
     if not password:
-        return jsonify({"error": {"msg": "invalid password"}}), 403
+        return jsonify({"error": {"msg": "invalid password"}, "status": 0})
     else:
         password = password[0]
     # check nickname
     nickname = request.form.get("nickname")
     if not nickname or len(nickname) > 20:
-        return jsonify({"error": {"msg": "invalid nickname"}}), 403
+        return jsonify({"error": {"msg": "invalid nickname"}, "status": 0})
 
     new_user = User(password, username, nickname=nickname)
     my_db.add(new_user)
@@ -250,7 +250,7 @@ def register_auth():
     # login once finish registration
     new_Uid = my_db.query(User, User.uname == username, first=True).Uid
     session["Uid"] = new_Uid
-    return redirect("/")
+    return jsonify({"status": 1})
 
 
 @api.route('/auth/login', methods=["POST"])

@@ -43,11 +43,11 @@
     </style>
 {% endblock %}
 {% block page_content %}
+
     <h1>Login</h1>
     <hr>
     <iframe name="dummy" id="dummy" style="display: none;"></iframe>
-    <div id="username-err" class="alert alert-warning" style="display: none">
-    </div>
+
     <form class="form-signin" action="{{ url_for('api.login_auth') }}" method="post" target="dummy">
         <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72"
              height="72">
@@ -57,7 +57,8 @@
         <button class="btn btn-lg btn-primary btn-block" id="btn_submit" type="submit">Sign in</button>
     </form>
 
-
+    <div id="username-err" class="alert alert-warning" style="display: none">
+    </div>
 {% endblock %}
 
 {% block scripts %}
@@ -76,7 +77,7 @@
                         data: {uname: uname, password: password},
                         success: function (response) {
                             let msg = "";
-                            if (response.status) {
+                            if (response.status !== 0) {
                                 window.location = "/";
                             } else {
                                 msg = response.error['msg'];
