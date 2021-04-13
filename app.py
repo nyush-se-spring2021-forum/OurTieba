@@ -25,7 +25,9 @@ def internal_server_error(e):
 
 
 @app.before_request
-def check_scrapper():
+def filter_request():
+    if request.method not in ALLOWED_METHODS:
+        return "Bad method", 403
     ua = str(request.user_agent)
     if "Mozilla" not in ua or "Gecko" not in ua:
         return "No Scrappers!", 403
