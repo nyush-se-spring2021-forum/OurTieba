@@ -1,4 +1,4 @@
-from flask import Blueprint, session, render_template, request
+from flask import Blueprint, render_template, request, session
 
 from ..configs.macros import *
 from ..database import *

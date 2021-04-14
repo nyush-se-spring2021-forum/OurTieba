@@ -12,8 +12,8 @@
         <h1 class="h3 mb-3 fw-normal">Admin Login</h1>
         <iframe name="dummy" id="dummy" style="display: none;"></iframe>
         <div class="form-floating">
-            <input type="text" class="form-control" id="uname" placeholder="username">
-            <label for="uname">Username</label>
+            <input type="text" class="form-control" id="aname" placeholder="username">
+            <label for="aname">Username</label>
         </div>
         <div class="form-floating">
             <input type="password" class="form-control" id="password" placeholder="Password">
@@ -34,7 +34,7 @@
     <script>
         $(document).ready(function () {
             $("#btn_submit").click(function () {
-                let uname = $("#uname").val().trim();
+                let uname = $("#aname").val().trim();
                 let password = $("#password").val().trim();
 
                 if (uname !== "" && password !== "") {
@@ -42,7 +42,7 @@
                         url: '/admin/auth/login',
                         type: 'post',
                         dataType: 'json',
-                        data: {uname: uname, password: password},
+                        data: {aname: aname, password: password},
                         success: function (response) {
                             let msg = "";
                             if (response.status !== 0) {
