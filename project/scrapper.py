@@ -43,6 +43,29 @@ class OTSpider:
                                   "expires": datetime.datetime.now() + datetime.timedelta(seconds=kwargs["freq"])}
         return self.cache["news"]["articles"]
 
+    def weibo_hot_search(self, **kwargs):  # top 10, can use kwargs if wanted
+        # Juncheng's cookie
+        self.set_cookie('SINAGLOBAL=9266532810528.248.1599373736944; login_sid_t=b3eea3454137ac70848c4a32a25c282a; '
+                        'cross_origin_proto=SSL; _s_tentry=-; Apache=349928957021.5636.1618803988393; '
+                        'ULV=1618803988399:9:2:1:349928957021.5636.1618803988393:1617765463404; '
+                        'wb_view_log=1536*8641.25&1920*10802.0000000298023224; ALF=1650340136; '
+                        'SSOLoginState=1618804137; '
+                        'SUB'
+                        '=_2A25NeI38DeRhGeFN71AZ9y7Nwj2IHXVuD_g0rDV8PUNbmtANLVLmkW9NQDBJhXO328RvICGNnS19JPY6LqASfZKJ; '
+                        'SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9WhfZk1zy.rnRggXMDx9zNI55JpX5KzhUgL'
+                        '.FoM0ShzRS05p1K22dJLoIp7LxKML1KBLBKnLxKqL1hnLBoMNe0BE1hM7eK.p; wvr=6; '
+                        'wb_view_log_7342870191=1536*8641.25&1920*10802.0000000298023224; UOR=www.baidu.com,'
+                        'weibo.com,www.baidu.com; webim_unReadCount={"time":1618804704383,"dm_pub_total":0,'
+                        '"chat_group_client":0,"chat_group_notice":0,"allcountNum":11,"msgbox":0}')
+        res = self.session.get("https://s.weibo.com/top/summary?Refer=top_hot&topnav=1&wvr=6", headers=self.headers)
+        selectors = [f"#pl_top_realtimehot > table > tbody > tr:nth-child({i}) > td.td-02 > a"
+                     for i in range(2, 2+int(kwargs["num"]))]
+        top_list = []
+        for s in selectors:
+            element = res.html.find(s, first=True)
+            top_list.append({"url": "https://s.weibo.com" + element.attrs["href"], "title": element.text})
+        return top_list
+
     def get_cookie(self, domain="localhost", port=80, uname="U1", password="111"):
         cached_cookies = self.cache.get("cookies")
         if cached_cookies:
@@ -114,7 +137,8 @@ class AsyncOTSpider:
 # async_spider = AsyncOTSpider()
 
 if __name__ == '__main__':
-    news = OT_spider.get_hot_news(num=3, freq=60)
-    print(news)
+    # news = OT_spider.get_hot_news(num=3, freq=60)
+    # print(news)
     # print(async_spider.run_multitask(async_spider.get_baidu))
-    OT_spider.upload_avatar(port=5000)
+    # OT_spider.upload_avatar(port=5000)
+    print(OT_spider.weibo_hot_search(num=10))
