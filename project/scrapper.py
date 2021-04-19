@@ -43,7 +43,7 @@ class OTSpider:
                                   "expires": datetime.datetime.now() + datetime.timedelta(seconds=kwargs["freq"])}
         return self.cache["news"]["articles"]
 
-    def weibo_hot_search(self, **kwargs):  # top 10, can use kwargs if wanted
+    def weibo_hot_search(self, **kwargs):  # cache not applied because change is rapid
         # Juncheng's cookie
         self.set_cookie('SINAGLOBAL=9266532810528.248.1599373736944; login_sid_t=b3eea3454137ac70848c4a32a25c282a; '
                         'cross_origin_proto=SSL; _s_tentry=-; Apache=349928957021.5636.1618803988393; '
