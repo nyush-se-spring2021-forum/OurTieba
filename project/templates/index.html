@@ -4,30 +4,18 @@
 
 {% block page_content %}
     <div class="page-header">
-        <h1>Hey, there!</h1>
-        <button type="button" class="btn btn-primary">AJAX REQUEST</button>
+        <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+            <div class="col-md-6 px-0">
+                <h1 class="display-4 fst-italic">{{ data['news'][0]['title'] }}</h1>
+                <p class="lead my-3">{{ data['news'][0]['abstract'] }}</p>
+                <p class="lead mb-0"><a href="{{ data['news'][0]['link'] }}" class="text-white fw-bold">Continue
+                    reading...</a></p>
+            </div>
+        </div>
     </div>
-    <br>
-    <input type="file" accept="image/*" onchange="uploadImg(this.files[0]);">
 
-    {% for board in data['boards'] %}
-        <article class="post">
-            <header>
-                <div>
-                    <h3>{{ board['name'] }}</h3>
-                    <h3>Board ID: {{ board['Bid'] }}</h3>
-                    <h3>Post count: {{ board['post_count'] }}</h3>
 
-                </div>
-            </header>
-            <p class="body">{{ board['summary'] }}</p>
-        </article>
-        {% if not loop.last %}
-            <hr>
-        {% endif %}
-    {% endfor %}
-
-    {% for news in data['news'] %}
+    {% for news in data['news'][1:] %}
         <article class="post">
             <header>
                 <div>
@@ -41,16 +29,33 @@
             <hr>
         {% endif %}
     {% endfor %}
-    <script>
-        $("button").on("click", () => {
-            $.ajax({
-                url: "/getsomething",
-                success: function (data) {
-                    $("h1").text(data.data[0].name);
-                }
-            })
-        })
 
+    <br>
+    <h4>Upload User Avatar</h4>
+    <input type="file" accept="image/*" onchange="uploadImg(this.files[0]);">
+    <hr>
+    <div class="display-4">Hot Boards</div>
+    <hr>
+
+    {% for board in data['boards'] %}
+        <article class="post">
+            <header>
+                <div>
+                    <a href="/board/{{ board['Bid'] }}" class="text-decoration-none display-6">{{ board['name'] }}</a>
+                    <div class="accordion-body">Board ID: {{ board['Bid'] }}</div>
+                    <div class="accordion-body">Post count: {{ board['post_count'] }}</div>
+
+                </div>
+            </header>
+            <p class="body">{{ board['summary'] }}</p>
+        </article>
+        {% if not loop.last %}
+            <hr>
+        {% endif %}
+    {% endfor %}
+
+
+    <script>
         function uploadImg(file) {
             if (file.type.substr(0, 5) !== "image") {
                 alert("Invalid File Type!");
