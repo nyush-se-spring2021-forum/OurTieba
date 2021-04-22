@@ -19,6 +19,9 @@
                 <div>
                     <h3>Comment id: {{ comment['Cid'] }}</h3>
                     <div class="blockquote-footer">{{ moment(comment['publish_time']).fromNow() }}</div>
+                    <div><a href="/api/like">Like</a></div>
+                    <div><a href="/api/dislike">Dislike</a></div>
+                    <div><a href="/report">Report</a></div>
                     <div>liked by {{ comment['like_count'] }} </div>
                 </div>
             </header>
