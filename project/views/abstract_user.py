@@ -65,17 +65,28 @@ def get_comments_in_post(Pid):
     page = request.args.get("page", "1")
 
     if order == "like_count":
-        order = Comment.likeCount.desc() #if order == "like_count" else Comment.timestamp.desc()
+        order = Comment.likeCount.desc()  # if order == "like_count" else Comment.timestamp.desc()
     else:
         order = Comment.timestamp.desc()
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    Comments = [{"Cid": c.Cid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
-                 "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
-                 "user_avatar": c.comment_by.avatar}
-                for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+
+    Comments = []
+    for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
+        base_info = {"Cid": c.Cid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
+                     "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
+                     "user_avatar": c.comment_by.avatar}
+        if not session.get("Uid"):
+            base_info.update({"liked_by_user": 0, "disliked_by_user": 0})
+        else:
+            Uid = session["Uid"]
+            match_status = my_db.query(CommentStatus, (CommentStatus.Uid == Uid) and
+                                       (CommentStatus.Cid == c.Cid), first=True)
+            base_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
+        Comments.append(base_info)
+
     data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "post_info": post_info}
     return render_template("post.html", data=data)
 
