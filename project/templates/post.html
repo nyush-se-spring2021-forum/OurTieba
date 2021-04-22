@@ -11,6 +11,8 @@
         <a href="?order=like_count">likes</a>
     </div>
 
+    <h1>{{ data['post_info']['title'] }}</h1>
+    <p>{{ data['post_info']['content'] }}</p>
     <hr>
     {% for comment in data['comments'] %}
         <article class="post">
