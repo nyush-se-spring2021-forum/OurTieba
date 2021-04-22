@@ -16,7 +16,7 @@
         <article class="post">
             <header>
                 <div>
-                    <h3>{{ post['title'] }}</h3>
+                    <h3><a href="/post/{{ post['Pid'] }}">{{ post['title'] }}</a></h3>
 
                     <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
                     <div>liked by {{ post['like_count'] }} </div>
