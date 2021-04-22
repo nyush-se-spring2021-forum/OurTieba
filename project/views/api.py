@@ -349,3 +349,22 @@ def subscribe():
     new_sub = Subscription(Uid, Bid, int(action), datetime.datetime.now())
     my_db.merge(new_sub)
     return jsonify({"status": 1})
+
+
+@api.route("/auth/set_password")
+@login_required
+def set_password():
+    Uid = session["Uid"]
+
+    # check password
+    password = request.form.get("password")
+    if not password:
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
+    password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
+    if not password:
+        return jsonify({"error": {"msg": "Invalid password"}, "status": 0})
+    else:
+        password = hashlib.sha3_512(password[0].encode()).hexdigest()
+
+    my_db.update(User, User.Uid == Uid, values={"password": password})
+    return jsonify({"status": 1})
