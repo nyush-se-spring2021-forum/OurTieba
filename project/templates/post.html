@@ -19,6 +19,15 @@
                 <div>
                     <h3>Comment id: {{ comment['Cid'] }}</h3>
                     <div class="blockquote-footer">{{ moment(comment['publish_time']).fromNow() }}</div>
+                    <form action="/api/like" method="post">
+                        <input type="hidden" name="cid" value= {{ comment['Cid'] }} >
+                        <button type="submit">Like</button>
+                    </form>
+                    <form action="/api/dislike" method="post">
+                        <input type="hidden" name="cid" value= {{ comment['Cid'] }} >
+                        <button type="submit">Dislike</button>
+                    </form>
+                    <div><a href="/report">Report</a></div>
                     <div>liked by {{ comment['like_count'] }} </div>
                 </div>
             </header>

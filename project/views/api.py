@@ -317,6 +317,13 @@ def save_file():
     with open(path + src, "wb") as f:
         file.save(f)
 
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    avatar = match_user.avatar
+    if avatar != "default_avatar.jpg":
+        old_path = path + avatar
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
     my_db.update(User, User.Uid == Uid, values={"avatar": src})
     match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
@@ -341,4 +348,23 @@ def subscribe():
 
     new_sub = Subscription(Uid, Bid, int(action), datetime.datetime.now())
     my_db.merge(new_sub)
+    return jsonify({"status": 1})
+
+
+@api.route("/auth/set_password")
+@login_required
+def set_password():
+    Uid = session["Uid"]
+
+    # check password
+    password = request.form.get("password")
+    if not password:
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
+    password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
+    if not password:
+        return jsonify({"error": {"msg": "Invalid password"}, "status": 0})
+    else:
+        password = hashlib.sha3_512(password[0].encode()).hexdigest()
+
+    my_db.update(User, User.Uid == Uid, values={"password": password})
     return jsonify({"status": 1})
