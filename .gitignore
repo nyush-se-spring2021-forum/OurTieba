@@ -19,3 +19,6 @@ access.log
 
 *.swp
 .DS_Store
+
+cdn/
+test.db
