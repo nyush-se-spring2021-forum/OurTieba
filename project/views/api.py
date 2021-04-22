@@ -317,6 +317,13 @@ def save_file():
     with open(path + src, "wb") as f:
         file.save(f)
 
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    avatar = match_user.avatar
+    if avatar != "default_avatar.jpg":
+        old_path = path + avatar
+        if os.path.exists(old_path):
+            os.remove(old_path)
+
     my_db.update(User, User.Uid == Uid, values={"avatar": src})
     match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
