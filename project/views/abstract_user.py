@@ -61,10 +61,10 @@ def get_comments_in_post(Pid):
                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
                  "owner": p.owner.nickname, "avatar": p.owner.avatar}
 
-    order = request.args.get("order", "most_like")
+    order = request.args.get("order", "like_count")
     page = request.args.get("page", "1")
 
-    order = Comment.likeCount.desc() if order == "most_like" else Comment.timestamp.desc()
+    order = Comment.likeCount.desc() if order == "like_count" else Comment.timestamp.desc()
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1

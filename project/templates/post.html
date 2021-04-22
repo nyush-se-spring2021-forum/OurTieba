@@ -21,7 +21,7 @@
                     <div>liked by {{ comment['like_count'] }} </div>
                 </div>
             </header>
-            <p class="body">{{ comment['summary'] }}</p>
+            <p class="body">{{ comment['content'] }}</p>
         </article>
         {% if not loop.last %}
             <hr>
