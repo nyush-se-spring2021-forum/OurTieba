@@ -33,6 +33,15 @@
         <div class="form-floating">
             <input type="password" class="form-control" id="repeat-password" placeholder="Repeat Password" required>
             <label for="password">Repeat Password</label>
+			<small class="text-muted">Passwords must meet the following requirements:</small>
+			<small class="text-muted">
+				<ul>
+					<li>Must be at least 8 characters</li>
+					<li>Must contain a letter</li>
+					<li>Must contain a number</li>
+					<li>Must contain at least one of the following special characters: @$!%*#?&amp;</li>
+				</ul>
+			</small>
         </div>
 
         <button class="w-100 btn btn-lg btn-primary" type="submit" id="btn_submit">Sign up</button>
