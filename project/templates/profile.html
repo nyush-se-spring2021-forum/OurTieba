@@ -3,4 +3,17 @@
 {% block title %} Profile {% endblock %}
 {% block page_content %}
     {{ data }}
+    <div class="display-6">Hello {{ data['nickname'] }}!</div>
+    <hr>
+    {% if data['isCurrent'] %}
+        <div class="text-right"><button class="btn-warning">Edit Profile</button></div>
+    {% endif %}
+    {% if data['banned'] == 1 %}
+        <div class="alert-danger">You're banned until: {{ moment(data['banDuration']).fromNow() }}</div>
+    {% endif %}
+    <div class="h3">Date of Birth: {{ moment(data['dateOfBirth']).format('YYYY/M/D') }}</div>
+    <div class="h3">Gender: {{ data['gender'] }}</div>
+    <div class="h3">Email Address: {{ data['email'] }}</div>
+    <div class="h3">Phone Number: {{ data['phoneNumber'] }}</div>
+    <div class="h3">Address: {{ data['address'] }}</div>
 {% endblock %}
