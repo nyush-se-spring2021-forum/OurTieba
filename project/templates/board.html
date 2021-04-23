@@ -19,7 +19,11 @@
                     <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none">{{ post['title'] }}</a></h3>
 
                     <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
-                    <div>liked by {{ post['like_count'] }} </div>
+
+
+                    <i class="bi bi-hand-thumbs-up"></i>{{ post['like_count'] }}
+                    <i class="bi bi-hand-thumbs-down"></i>{{ post['dislike_count'] }}
+
                 </div>
             </header>
             <p class="body">{{ post['summary'] }}</p>
