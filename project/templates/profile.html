@@ -2,29 +2,42 @@
 
 {% block title %} Profile {% endblock %}
 {% block page_content %}
-    <div class="display-6">Hello {{ data['nickname'] }}!</div>
+    <div class="display-6">{{ data['nickname'] }}</div>
     <hr>
-    <div>You joined OurTieba since {{ moment(data['timestamp']).toNow() }}</div>
     {% if data['isCurrent'] %}
         <div class="text-right">
             <button class="btn-warning">Edit Profile</button>
         </div>
+
     {% endif %}
     {% if data['banned'] == 1 %}
         <div class="alert-danger">You're banned until: {{ moment(data['banDuration']).fromNow() }}</div>
     {% endif %}
+    {% if data['isCurrent'] %}
+        <h4>Change your Avatar</h4>
+        <img id="avatar-upload" style=" cursor: pointer" src="{{ '/cdn/'+ session.user_info["avatar"] }}" width="100"
+             height="100"
+             class="rounded-circle">
+        <input id="uploadImg" type="file" accept="image/*" onchange="uploadImg(this.files[0]);" style="display: none">
+    {% else %}
+        <img id="avatar-upload" src="{{ '/cdn/'+ data["avatar"] }}" width="100"
+             height="100" class="rounded-circle">
+    {% endif %}
+    <hr>
     <div class="h3">Date of Birth: {{ moment(data['dateOfBirth']).format('YYYY/M/D') }}</div>
     <div class="h3">Gender: {{ data['gender'] }}</div>
     <div class="h3">Email Address: {{ data['email'] }}</div>
     <div class="h3">Phone Number: {{ data['phoneNumber'] }}</div>
     <div class="h3">Address: {{ data['address'] }}</div>
     <hr>
-    <h4>Upload User Avatar</h4>
-    <input type="file" accept="image/*" onchange="uploadImg(this.files[0]);">
 
 
 
     <script>
+        $("#avatar-upload").click(function () {
+            $("#uploadImg").trigger('click');
+        });
+
         function uploadImg(file) {
             if (file.type.substr(0, 5) !== "image") {
                 alert("Invalid File Type!");
