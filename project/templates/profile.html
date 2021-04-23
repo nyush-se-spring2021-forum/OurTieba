@@ -2,11 +2,13 @@
 
 {% block title %} Profile {% endblock %}
 {% block page_content %}
-    {{ data }}
     <div class="display-6">Hello {{ data['nickname'] }}!</div>
     <hr>
+    <div>You joined OurTieba since {{ moment(data['timestamp']).toNow() }}</div>
     {% if data['isCurrent'] %}
-        <div class="text-right"><button class="btn-warning">Edit Profile</button></div>
+        <div class="text-right">
+            <button class="btn-warning">Edit Profile</button>
+        </div>
     {% endif %}
     {% if data['banned'] == 1 %}
         <div class="alert-danger">You're banned until: {{ moment(data['banDuration']).fromNow() }}</div>
@@ -16,4 +18,39 @@
     <div class="h3">Email Address: {{ data['email'] }}</div>
     <div class="h3">Phone Number: {{ data['phoneNumber'] }}</div>
     <div class="h3">Address: {{ data['address'] }}</div>
+    <hr>
+    <h4>Upload User Avatar</h4>
+    <input type="file" accept="image/*" onchange="uploadImg(this.files[0]);">
+
+
+
+    <script>
+        function uploadImg(file) {
+            if (file.type.substr(0, 5) !== "image") {
+                alert("Invalid File Type!");
+                return;
+            }
+            if (file.size > (3 * 1024 * 1024)) {
+                alert("Image Too Large!");
+                return;
+            }
+            var formData = new FormData();
+            formData.append("file", file);
+            $.ajax({
+                method: "post",
+                url: "/api/upload",
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: (data) => {
+                    if (data.hasOwnProperty("status")) {
+                        alert("Successfully uploaded image!");
+                        location.reload();
+                    } else {
+                        alert(data.error.msg);
+                    }
+                }
+            })
+        }
+    </script>
 {% endblock %}
