@@ -3,11 +3,12 @@
 {% block title %} Post {% endblock %}
 
 {% block page_content %}
+    {{ data }}
     <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
     <div style="text-align: right">
         Rank by:
-        <a href="javascript:setParam('order', 'newest')">newest</a>
-        <a href="javascript:setParam('order', 'like_count')">likes</a>
+        <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
+        <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
     </div>
 
     <h1>{{ data['post_info']['title'] }}</h1>
@@ -52,17 +53,22 @@
                     <br>
                     <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
                     <div class="btn-group">
-                    <form action="/api/like" method="post">
-                        <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                        <div class="btn btn-outline-danger" type="submit"><i class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</div>
-                    </form>
-                    <form action="/api/dislike" method="post">
-                        <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                        <div class="btn btn-outline-dark" type="submit"><i class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
-                    </form>
+                        <form action="/api/like" method="post">
+                            <input type="hidden" name="cid" value={{ comment['Cid'] }}>
+                            <div class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger" type="submit"><i
+                                    class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</div>
+                        </form>
+                        <form action="/api/dislike" method="post">
+                            <input type="hidden" name="cid" value={{ comment['Cid'] }}>
+                            <div class="btn btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit"><i
+                                    class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
+                        </form>
                     </div>
-                    <div><a href="/report">Report</a></div>
                     <div>liked by {{ comment['like_count'] }} </div>
+                    <div class="float-end">
+                        <a class="text-decoration-none text-body"
+                           href="{{ url_for('user.report', target='comment', id=comment.Cid) }}"><div class="btn btn-outline-info">Report</div></a>
+                    </div>
                 </div>
             </header>
             <p class="body">{{ comment['content'] }}</p>
