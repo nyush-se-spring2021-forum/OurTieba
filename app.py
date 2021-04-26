@@ -76,6 +76,13 @@ def sql_test():
                commentCount=1, LCT="2021-03-23 13:03:00")
     p12 = Post(Uid=2, Bid=6, title="P12", content="1212", timestamp="2020-11-06 08:42:00")
     p13 = Post(Uid=2, Bid=6, title="P13", content="1313", timestamp="2021-03-21 12:01:00")
+    p14 = Post(Uid=2, Bid=1, title="P14", content="1414", timestamp="2021-03-21 12:01:10")
+    p15 = Post(Uid=2, Bid=1, title="P15", content="1515", timestamp="2021-03-21 12:01:00")
+    p16 = Post(Uid=2, Bid=1, title="P16", content="1616", timestamp="2021-03-21 12:01:00")
+    p17 = Post(Uid=2, Bid=1, title="P17", content="1313", timestamp="2021-03-21 12:01:00")
+    p18 = Post(Uid=2, Bid=1, title="P18", content="1313", timestamp="2021-03-21 12:01:00")
+    p19 = Post(Uid=2, Bid=1, title="P19", content="1313", timestamp="2021-03-21 12:01:00")
+    p20 = Post(Uid=2, Bid=1, title="P20", content="1313", timestamp="2021-03-21 12:01:00")
 
     c1 = Comment(Uid=6, Pid=1, content="wtf", timestamp="2021-01-01 02:00:00", dislikeCount=1)
     c2 = Comment(Uid=1, Pid=1, content="c111", timestamp="2021-01-01 09:00:00")
@@ -111,7 +118,7 @@ def sql_test():
     for b in [b1, b2, b3, b4, b5, b6]:
         my_db.add(b)
 
-    for p in [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13]:
+    for p in [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20]:
         my_db.add(p)
 
     for c in [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13]:

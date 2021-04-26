@@ -10,7 +10,7 @@
         <a href="?order=newest">newest</a>
         <a href="?order=like_count">likes</a>
     </div>
-
+    {{ data }}
     <hr>
     {% for post in data['posts'] %}
         <article class="post">
@@ -32,4 +32,12 @@
             <hr>
         {% endif %}
     {% endfor %}
+
+    <ul>
+        {% for i in range(1, 1 + data['num_page']) %}
+            <li><a{% if i == data['page'] %} class='disabled' {% endif %} href="?page={{ i }}">{{ i }}</a></li>
+        {% endfor %}
+    </ul>
+
+
 {% endblock %}
