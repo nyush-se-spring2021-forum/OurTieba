@@ -25,7 +25,11 @@
              height="100" class="rounded-circle">
     {% endif %}
     <hr>
-    <div class="h3">Date of Birth: {{ moment(data['dateOfBirth']).format('YYYY/M/D') }}</div>
+    {% if not data['dateOfBirth'] %}
+        <div class="h3">Date of Birth: Not Set</div>
+    {% else %}
+        <div class="h3">Date of Birth: {{ moment(data['dateOfBirth']).format('YYYY/M/D') }}</div>
+    {% endif %}
     <div class="h3">Gender: {{ data['gender'] }}</div>
     <div class="h3">Email Address: {{ data['email'] }}</div>
     <div class="h3">Phone Number: {{ data['phoneNumber'] }}</div>
