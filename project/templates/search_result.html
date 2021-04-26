@@ -17,16 +17,16 @@
             No results.
         {% endif %}
 
-        {{ data }}
-        {% for a in data['boards'] %}
-            <h1>{{ a.Bid }}</h1>
+        {% for board in data['boards'] %}
+            <div class="h1"><a href="/board/{{ board.Bid }}" class="text-decoration-none">{{ board.name }}</a></div>
+            <div class="text-muted">Post count:{{ board.post_count }}</div>
             <hr>
 
         {% endfor %}
     {% endif %}
 
     {# Pagination #}
-    <nav>
+    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
                 <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
