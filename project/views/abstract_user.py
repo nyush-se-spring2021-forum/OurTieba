@@ -57,7 +57,7 @@ def get_comments_in_post(Pid):
     if not p:
         return "Not Found", 404
     p.viewCount += 1  # when page is accessed, increment view count
-    post_info = {"Pid": p.Pid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
+    post_info = {"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
                  "owner": p.owner.nickname, "avatar": p.owner.avatar}
 
@@ -75,7 +75,7 @@ def get_comments_in_post(Pid):
 
     Comments = []
     for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
-        base_info = {"Cid": c.Cid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
+        base_info = {"Cid": c.Cid, "Uid": c.Uid, "content": c.content, "publish_time": c.timestamp, "like_count": c.likeCount,
                      "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
                      "user_avatar": c.comment_by.avatar}
         if not session.get("Uid"):

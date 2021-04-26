@@ -13,9 +13,16 @@
     <h1>{{ data['post_info']['title'] }}</h1>
 
     <div class="blockquote-footer">{{ moment(data['post_info']['publish_time']).fromNow() }}</div>
-    <div class="float-start"><img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32"
-                                  class="rounded-circle"></div>
-    <div class="lead float-start">{{ data.post_info['owner'] }}</div>
+    <div class="float-start">
+        <a class="text-decoration-none"
+           href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">
+            <img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32" class="rounded-circle">
+        </a>
+    </div>
+    <div class="lead float-start">
+        <a class="text-body text-decoration-none"
+           href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">&nbsp;{{ data.post_info['owner'] }}</a>
+    </div>
     <br>
     <br>
     <div class="btn-group">
@@ -31,9 +38,17 @@
         <article class="post">
             <header>
                 <div>
-                    <div class="float-start"><img src="{{ '/cdn/'+ comment["user_avatar"] }}" width="32" height="32"
-                                                  class="rounded-circle"></div>
-                    <div class="lead">{{ comment['publish_user'] }}</div>
+                    <div class="float-start">
+                        <a class="text-body text-decoration-none"
+                           href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
+                            <img src="{{ '/cdn/'+ comment["user_avatar"] }}" width="32" height="32"
+                                 class="rounded-circle">
+                        </a>
+                    </div>
+                    <a class="text-body text-decoration-none"
+                       href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
+                        <div class="lead">&nbsp;{{ comment['publish_user'] }}</div>
+                    </a>
                     <br>
                     <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
                     <form action="/api/like" method="post">

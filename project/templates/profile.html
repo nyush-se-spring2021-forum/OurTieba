@@ -11,7 +11,7 @@
 
     {% endif %}
     {% if data['banned'] == 1 %}
-        <div class="alert-danger">You're banned until: {{ moment(data['banDuration']).fromNow() }}</div>
+        <div class="alert-danger">User banned until: {{ moment(data['banDuration']).fromNow() }}</div>
     {% endif %}
     {% if data['isCurrent'] %}
         <h4>Change your Avatar</h4>
