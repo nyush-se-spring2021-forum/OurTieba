@@ -6,26 +6,43 @@
     <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
     <div style="text-align: right">
         Rank by:
-        <a href="?order=newest">newest</a>
-        <a href="?order=like_count">likes</a>
+        <a href="javascript:setParam('order', 'newest')">newest</a>
+        <a href="javascript:setParam('order', 'like_count')">likes</a>
     </div>
 
     <h1>{{ data['post_info']['title'] }}</h1>
+
+    <div class="blockquote-footer">{{ moment(data['post_info']['publish_time']).fromNow() }}</div>
+    <div class="float-start"><img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32"
+                                  class="rounded-circle"></div>
+    <div class="lead float-start">{{ data.post_info['owner'] }}</div>
+    <br>
+    <br>
+    <div class="btn-group">
+        <button class="btn btn-outline-danger"><i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}
+        </button>
+        <button class="btn btn-outline-dark"><i class="bi bi-hand-thumbs-down"></i>{{ data.post_info['dislike_count'] }}
+        </button>
+    </div>
+    <hr>
     <p>{{ data['post_info']['content'] }}</p>
     <hr>
     {% for comment in data['comments'] %}
         <article class="post">
             <header>
                 <div>
-                    <h3>Comment id: {{ comment['Cid'] }}</h3>
-                    <div class="blockquote-footer">{{ moment(comment['publish_time']).fromNow() }}</div>
+                    <div class="float-start"><img src="{{ '/cdn/'+ comment["user_avatar"] }}" width="32" height="32"
+                                                  class="rounded-circle"></div>
+                    <div class="lead">{{ comment['publish_user'] }}</div>
+                    <br>
+                    <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
                     <form action="/api/like" method="post">
-                        <input type="hidden" name="cid" value= {{ comment['Cid'] }} >
-                        <button type="submit">Like</button>
+                        <input type="hidden" name="cid" value={{ comment['Cid'] }}>
+                        <button type="submit"><i class="bi bi-hand-thumbs-up"></i></button>
                     </form>
                     <form action="/api/dislike" method="post">
-                        <input type="hidden" name="cid" value= {{ comment['Cid'] }} >
-                        <button type="submit">Dislike</button>
+                        <input type="hidden" name="cid" value={{ comment['Cid'] }}>
+                        <button class="btn-primary" type="submit"><i class="bi bi-hand-thumbs-down"></i></button>
                     </form>
                     <div><a href="/report">Report</a></div>
                     <div>liked by {{ comment['like_count'] }} </div>
@@ -37,4 +54,24 @@
             <hr>
         {% endif %}
     {% endfor %}
+
+    {# Pagination #}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
+                <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
+                   tabindex="-1">Previous</a>
+            </li>
+
+            {% for i in range(1, 1 + data['num_page']) %}
+                <li class="page-item{% if i == data['page'] %} active {% endif %}">
+                    <a class="page-link" href="javascript:setParam('page',{{ i }})">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
+                <a class="page-link" href="javascript:setParam('page',{{ data['page'] + 1 }})">Next</a>
+            </li>
+        </ul>
+    </nav>
 {% endblock %}

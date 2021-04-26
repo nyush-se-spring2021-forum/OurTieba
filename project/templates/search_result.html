@@ -5,7 +5,7 @@
     {% if error %}
         <h1>Please enter a keyword.</h1>
     {% else %}
-        <h1>Search Results</h1>
+       <div class="h1">Found {{ data['num_match'] }} board{% if data['num_match'] > 1 %}s{% endif %}.</div>
         <div class="float-end">
             Sort by:
             <a href="javascript:setParam('order', 'popular')">Popular</a>
@@ -13,9 +13,8 @@
         </div>
         <br>
         <hr>
-        {% if data['num_match'] == 0 %}
-            No results.
-        {% endif %}
+
+
 
         {% for board in data['boards'] %}
             <div class="h1"><a href="/board/{{ board.Bid }}" class="text-decoration-none">{{ board.name }}</a></div>
