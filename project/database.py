@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, func, inspect
+from sqlalchemy import create_engine, func, inspect, and_
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
