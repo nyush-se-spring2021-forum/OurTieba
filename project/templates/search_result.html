@@ -6,6 +6,12 @@
         <h1>Please enter a keyword.</h1>
     {% else %}
         <h1>Search Results</h1>
+        <div class="float-end">
+            Sort by:
+            <a href="javascript:setParam('order', 'popular')">Popular</a>
+            <a href="javascript:setParam('order', 'hot')">Hot</a>
+        </div>
+        <br>
         <hr>
         {% if data['num_match'] == 0 %}
             No results.
