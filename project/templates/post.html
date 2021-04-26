@@ -51,14 +51,16 @@
                     </a>
                     <br>
                     <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
+                    <div class="btn-group">
                     <form action="/api/like" method="post">
                         <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                        <button type="submit"><i class="bi bi-hand-thumbs-up"></i></button>
+                        <div class="btn btn-outline-danger" type="submit"><i class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</div>
                     </form>
                     <form action="/api/dislike" method="post">
                         <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                        <button class="btn-primary" type="submit"><i class="bi bi-hand-thumbs-down"></i></button>
+                        <div class="btn btn-outline-dark" type="submit"><i class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
                     </form>
+                    </div>
                     <div><a href="/report">Report</a></div>
                     <div>liked by {{ comment['like_count'] }} </div>
                 </div>
