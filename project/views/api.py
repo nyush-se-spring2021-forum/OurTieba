@@ -31,7 +31,8 @@ def add_post():
     match_board.postCount += 1
     title = request.form.get("title")
     content = request.form.get("content")
-    new_post = Post(Uid, int(Bid), title, content)
+    now = datetime.datetime.now()  # current timestamp
+    new_post = Post(Uid, int(Bid), title, content, now)
     my_db.add(new_post)
     return redirect(f"/board/{Bid}")
 
