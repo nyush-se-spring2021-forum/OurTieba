@@ -189,7 +189,7 @@ def add_personal_info():
     phone_number = request.form.get("phone_number")
     phone_number = re.findall(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$", phone_number)
     if not phone_number:
-        return jsonify({"error": {"msg": "invalid gender"}}), 403
+        return jsonify({"error": {"msg": "invalid phone number"}}), 403
     else:
         phone_number = phone_number[0]
     # check email

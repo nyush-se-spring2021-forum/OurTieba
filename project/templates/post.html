@@ -206,31 +206,6 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        $(document).ready(function () {
-            $("#btn_submit").click(function () {
-                let uname = $("#uname").val().trim();
-                let password = $("#password").val().trim();
-
-                if (uname !== "" && password !== "") {
-                    $.ajax({
-                        url: '/api/auth/login',
-                        type: 'post',
-                        dataType: 'json',
-                        data: {uname: uname, password: password},
-                        success: function (response) {
-                            let msg = "";
-                            if (response.status !== 0) {
-                                window.location = "/";
-                            } else {
-                                msg = response.error['msg'];
-                                $("#username-err").html(msg).show();
-
-                            }
-
-                        }
-                    });
-                }
-            });
-        });
+        {# TODO: ajax function#}
     </script>
 {% endblock %}
