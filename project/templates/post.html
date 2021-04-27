@@ -31,36 +31,38 @@
         <button class="btn btn-outline-dark"><i class="bi bi-hand-thumbs-down"></i>{{ data.post_info['dislike_count'] }}
         </button>
     </div>
-    {# Delete post trigger #}
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deletePostModal">
-        Delete Post
-    </button>
+    {% if session['Uid'] and session['Uid'] == data.post_info['Uid'] %}
+        {# Delete post trigger #}
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+            Delete Post
+        </button>
 
-    {# Delete post modal #}
-    <div class="modal fade" id="deletePostModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Post</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to delete the post?
-                    <br>
-                    (All the comments are also deleted!)
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <form action="{{ url_for('api.delete_post') }}" method="post">
-                        <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
-                        <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
-                        <button class="btn btn-primary" type="submit">Delete</button>
-                    </form>
+        {# Delete post modal #}
+        <div class="modal fade" id="deletePostModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Delete Post</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Are you sure you want to delete the post?
+                        <br>
+                        (All the comments are also deleted!)
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <form action="{{ url_for('api.delete_post') }}" method="post">
+                            <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
+                            <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
+                            <button class="btn btn-primary" type="submit">Delete</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
 
     {# Post content #}
     <hr>
@@ -104,37 +106,38 @@
                                     class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
                         </form>
                     </div>
-                    {# Delete comment trigger #}
 
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#deleteCommentModal{{ loop.index }}">
-                        Delete Comment
-                    </button>
+                    {% if session['Uid'] and session['Uid'] == comment['Uid'] %}
+                        {# Delete comment trigger #}
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#deleteCommentModal{{ loop.index }}">
+                            Delete Comment
+                        </button>
 
-                    {# Delete comment modal #}
-                    <div class="modal fade" id="deleteCommentModal{{ loop.index }}" tabindex="-1">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-                                <div class="modal-body">
-                                    Are you sure you want to delete the comment?
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
-                                    </button>
-                                    <form action="{{ url_for('api.delete_comment') }}" method="post">
-                                        <input type="hidden" name="Cid" value="{{ comment['Cid'] }}">
-                                        <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
-                                        <button class="btn btn-primary" type="submit">Delete</button>
-                                    </form>
+                        {# Delete comment modal #}
+                        <div class="modal fade" id="deleteCommentModal{{ loop.index }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        Are you sure you want to delete the comment?
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel
+                                        </button>
+                                        <form action="{{ url_for('api.delete_comment') }}" method="post">
+                                            <input type="hidden" name="Cid" value="{{ comment['Cid'] }}">
+                                            <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
+                                            <button class="btn btn-primary" type="submit">Delete</button>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
+                    {% endif %}
                     <div>liked by {{ comment['like_count'] }} </div>
                     <div class="float-end">
                         <a class="text-decoration-none text-body"
