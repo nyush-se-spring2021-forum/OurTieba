@@ -103,7 +103,8 @@ def add_report():
 
     Pid = match_target.Pid
     # insert into db
-    new_report = Report(Uid, target, int(target_id), reason)
+    now = datetime.datetime.now()  # current timestamp
+    new_report = Report(Uid, target, int(target_id), reason, now)
     my_db.add(new_report)
 
     reporter = my_db.query(User, User.Uid == Uid)
@@ -132,7 +133,8 @@ def add_comment():
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.now()
 
-    new_comment = Comment(Uid, Pid, content)
+    now = datetime.datetime.now()  # current timestamp
+    new_comment = Comment(Uid, Pid, content, now)
     my_db.add(new_comment)
     return redirect(f"/post/{Pid}?order=newest")
 
