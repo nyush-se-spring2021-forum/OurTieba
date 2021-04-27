@@ -5,7 +5,7 @@
     <div class="display-6">{{ data['nickname'] }}</div>
     {% if data['isCurrent'] %}
         <div class="float-lg-end">
-            <button class="btn btn-warning">Edit Profile</button>
+            <button class="btn btn-warning"><a class="text-decoration-none text-body" href="">Edit Profile</a></button>
         </div>
     {% endif %}
     <br>
@@ -25,17 +25,15 @@
              height="100" class="rounded-circle">
     {% endif %}
     <hr>
-    {% if not data['dateOfBirth'] %}
-        <div class="h3">Date of Birth: Not Set</div>
-    {% else %}
-        <div class="h3">Date of Birth: {{ moment(data['dateOfBirth']).format('YYYY/M/D') }}</div>
-    {% endif %}
-    <div class="h3">Gender: {{ data['gender'] }}</div>
-    <div class="h3">Email Address: {{ data['email'] }}</div>
-    <div class="h3">Phone Number: {{ data['phoneNumber'] }}</div>
-    <div class="h3">Address: {{ data['address'] }}</div>
+    <div class="h3">
+        Date of Birth:
+        {{ 'Not Set' if data['dateOfBirth'] is none else moment(data['dateOfBirth']).format('YYYY/M/D') }}
+    </div>
+    <div class="h3">Gender: {{ 'Not Set' if data['gender'] is none else data['gender'] }}</div>
+    <div class="h3">Email Address: {{ 'Not Set' if data['email'] is none else data['email'] }}</div>
+    <div class="h3">Phone Number: {{ 'Not Set' if data['phoneNumber'] is none else data['phoneNumber'] }}</div>
+    <div class="h3">Address: {{ 'Not Set' if data['address'] is none else data['address'] }}</div>
     <hr>
-
 
 
     <script>

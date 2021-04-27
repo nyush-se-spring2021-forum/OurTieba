@@ -3,4 +3,8 @@
 {% block title %} Report {% endblock %}
 {% block page_content %}
     {{ data }}
+    <form action="/report/add">
+        <input type="hidden" name="target" placeholder="">
+        <input type="submit">
+    </form>
 {% endblock %}
