@@ -3,6 +3,7 @@
 {% block title %} Post {% endblock %}
 
 {% block page_content %}
+    {{ data }}
     <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
     <div style="text-align: right; {% if data['num_page'] <= 1 %}display: none{% endif %}">
         Rank by:
@@ -43,7 +44,7 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Delete Post</h5>
+                        <h5 class="modal-title">Delete Post</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
@@ -92,26 +93,35 @@
                     </a>
                     <br>
                     <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
+
+                    {# Add like and dislike logic #}
+                    {# TODO: change this code to ajax #}
                     <div class="btn-group">
-                        <form action="/api/like" method="post">
-                            <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                            <div class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
-                                 type="submit"><i
-                                    class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</div>
+                        <form action="{{ url_for('api.like') }}" method="post">
+                            <input type="hidden" name="target" value="comment">
+                            <input type="hidden" name="id" value={{ comment['Cid'] }}>
+                            <input type="hidden" name="like" value="{{ 0 if comment['liked_by_user'] else 1 }}">
+                            <button class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                                    type="submit">
+                                <i class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</button>
                         </form>
-                        <form action="/api/dislike" method="post">
-                            <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                            <div class="btn btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
-                                 type="submit"><i
-                                    class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
+                        <form action="{{ url_for('api.dislike') }}" method="post">
+                            <input type="hidden" name="target" value="comment">
+                            <input type="hidden" name="id" value={{ comment['Cid'] }}>
+                            <input type="hidden" name="like" value="{{ 0 if comment['disliked_by_user'] else 1 }}">
+                            <button class="btn btn
+                                    {% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
+                                    type="submit">
+                                <i class="bi bi-hand-thumbs-up"></i>{{ comment['dislike_count'] }}</button>
                         </form>
+
                     </div>
 
                     {% if session['Uid'] and session['Uid'] == comment['Uid'] %}
                         {# Delete comment trigger #}
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#deleteCommentModal{{ loop.index }}">
-                            Delete Comment
+                            Delete
                         </button>
 
                         {# Delete comment modal #}
@@ -119,7 +129,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="exampleModalLabel">Delete Comment</h5>
+                                        <h5 class="modal-title">Delete Comment</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                     </div>
                                     <div class="modal-body">
@@ -191,4 +201,37 @@
             </li>
         </ul>
     </nav>
+{% endblock %}
+
+
+{% block scripts %}
+    {{ super() }}
+    <script>
+        $(document).ready(function () {
+            $("#btn_submit").click(function () {
+                let uname = $("#uname").val().trim();
+                let password = $("#password").val().trim();
+
+                if (uname !== "" && password !== "") {
+                    $.ajax({
+                        url: '/api/auth/login',
+                        type: 'post',
+                        dataType: 'json',
+                        data: {uname: uname, password: password},
+                        success: function (response) {
+                            let msg = "";
+                            if (response.status !== 0) {
+                                window.location = "/";
+                            } else {
+                                msg = response.error['msg'];
+                                $("#username-err").html(msg).show();
+
+                            }
+
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}
