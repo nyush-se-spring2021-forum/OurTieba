@@ -2,9 +2,16 @@
 
 {% block title %} Report {% endblock %}
 {% block page_content %}
-    {{ data }}
-    <form action="/report/add">
-        <input type="hidden" name="target" placeholder="">
-        <input type="submit">
+    <div class="h3">You're filing a report for {{ data['target'] + ' ' + data['id'] }}</div>
+    <br>
+    <form action="{{ url_for('api.add_report') }}" method="post">
+        <input type="hidden" name="target" value="{{ data['target'] }}">
+        <input type="hidden" name="id" value="{{ data['id'] }}">
+        <textarea class="form-control" name="reason" id="reason" rows="10"
+                  placeholder="Please state your reason" required></textarea>
+        <br>
+        <div class="form-group">
+            <button class="btn btn-primary" type="submit">Submit</button>
+        </div>
     </form>
 {% endblock %}
