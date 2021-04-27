@@ -4,7 +4,7 @@
 
 {% block page_content %}
     <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
-    <div style="text-align: right">
+    <div style="text-align: right; {% if data['num_page'] <= 1 %}display: none{% endif %}" >
         Rank by:
         <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
         <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
@@ -33,9 +33,12 @@
     </div>
     <hr>
     <p>{{ data['post_info']['content'] }}</p>
-    <hr>
-    <div class="h2 lead">Comments:</div>
-    <hr>
+    {% if data['comments']|length > 0 %}
+        <hr>
+        <div class="h2 lead">Comments:</div>
+        <hr>
+    {% endif %}
+
     {% for comment in data['comments'] %}
         <article class="post">
             <header>
@@ -56,19 +59,23 @@
                     <div class="btn-group">
                         <form action="/api/like" method="post">
                             <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                            <div class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger" type="submit"><i
+                            <div class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                                 type="submit"><i
                                     class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</div>
                         </form>
                         <form action="/api/dislike" method="post">
                             <input type="hidden" name="cid" value={{ comment['Cid'] }}>
-                            <div class="btn btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit"><i
+                            <div class="btn btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
+                                 type="submit"><i
                                     class="bi bi-hand-thumbs-down"></i>{{ comment['dislike_count'] }}</div>
                         </form>
                     </div>
                     <div>liked by {{ comment['like_count'] }} </div>
                     <div class="float-end">
                         <a class="text-decoration-none text-body"
-                           href="{{ url_for('user.report', target='comment', id=comment.Cid) }}"><div class="btn btn-outline-info">Report</div></a>
+                           href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
+                            <div class="btn btn-outline-info">Report</div>
+                        </a>
                     </div>
                 </div>
             </header>
@@ -78,9 +85,27 @@
             <hr>
         {% endif %}
     {% endfor %}
+    <hr>
+    {# Add comment #}
+    <form action="{{ url_for('api.add_comment') }}" method="post">
+        <div class="form-group row">
+            <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" name="content" id="content" rows="5" placeholder="Comment"></textarea>
+            </div>
+        </div>
+        <br>
+        <input type="hidden" name="Pid" value="{{ data['post_info']['Pid'] }}">
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary">Comment</button>
+            </div>
+        </div>
+    </form>
+    <br>
 
     {# Pagination #}
-    <nav>
+    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
                 <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"

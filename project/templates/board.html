@@ -61,7 +61,7 @@
     <br>
 
     {# Pagination #}
-    <nav>
+    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
                 <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
