@@ -35,6 +35,7 @@ def auto_scope(_session):
         raise Exception("Please connect to database first!")
     try:
         yield _session
+        _session.flush()
         _session.commit()
     except Exception as e:
         _session.rollback()
