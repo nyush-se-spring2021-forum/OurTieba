@@ -159,8 +159,8 @@ def delete_post():
 @api.route('/comment/delete', methods=["POST"])
 @login_required
 def delete_comment():  # will not alter post lastCommentTime
-    Cid = request.form.get("Pid")
-    Pid = request.form.get("Bid")
+    Cid = request.form.get("Cid")
+    Pid = request.form.get("Pid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
