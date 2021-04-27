@@ -4,6 +4,8 @@
 
 {% block page_content %}
     <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
+    <br>
+    <br>
     <div style="text-align: right">
         Sort by:
         <a href="javascript:setParam('order', 'latest_comment')">latest comment</a>
@@ -31,8 +33,35 @@
         {% endif %}
     {% endfor %}
 
+    <hr>
+
+    {# Add post #}
+    <form action="{{ url_for('api.add_post') }}" method="post">
+        <div class="form-group row">
+            <label class="col-sm-2 col-form-label" for="title">Title</label>
+            <div class="col-sm-10">
+                <input class="form-control" name="title" id="title" placeholder="Title" required>
+            </div>
+        </div>
+        <br>
+        <div class="form-group row">
+            <label for="content" class="col-sm-2 col-form-label">Content</label>
+            <div class="col-sm-10">
+                <textarea class="form-control" name="content" id="content" rows="5" placeholder="Content"></textarea>
+            </div>
+        </div>
+        <br>
+        <input type="hidden" name="Bid" value="{{ data['board_info']['Bid'] }}">
+        <div class="form-group row">
+            <div class="col-sm-10">
+                <button type="submit" class="btn btn-primary">Add Post</button>
+            </div>
+        </div>
+    </form>
+    <br>
+
     {# Pagination #}
-    <nav>
+    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
                 <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
