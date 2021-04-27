@@ -109,9 +109,8 @@
                             <input type="hidden" name="target" value="comment">
                             <input type="hidden" name="id" value={{ comment['Cid'] }}>
                             <input type="hidden" name="like" value="{{ 0 if comment['disliked_by_user'] else 1 }}">
-                            <button class="btn btn
-                                    {% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
-                                    type="submit">
+                            <button class="btn
+                            btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit">
                                 <i class="bi bi-hand-thumbs-up"></i>{{ comment['dislike_count'] }}</button>
                         </form>
 
