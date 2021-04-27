@@ -129,7 +129,7 @@ def add_comment():
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
     match_post.commentCount += 1
-    match_post.lastCommentTime = datetime.datetime.now()
+    match_post.latestCommentTime = datetime.datetime.now()
 
     new_comment = Comment(Uid, Pid, content)
     my_db.add(new_comment)
