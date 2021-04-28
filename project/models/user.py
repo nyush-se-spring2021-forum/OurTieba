@@ -16,7 +16,7 @@ class User(my_db.Base):
     uname = Column(String, unique=True)
     nickname = Column(String)
     avatar = Column(String, default="default_avatar.jpg")  # upon uploading, link=hash(Uid + timestamp) + ".png"
-    timestamp = Column(DateTime, default=datetime.datetime.now())  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.now)  # time of account creation
     # personal info
     gender = Column(String)
     phoneNumber = Column(String)
@@ -25,7 +25,7 @@ class User(my_db.Base):
     dateOfBirth = Column(DateTime)
     # ban status
     banned = Column(Integer, default=0)  # 0=False, 1=True
-    banDuration = Column(DateTime, default=datetime.datetime.now())  # banned until
+    banDuration = Column(DateTime, default=datetime.datetime.now)  # banned until
 
     posts = relationship("Post", back_populates="owner")
     comments = relationship("Comment", back_populates="comment_by")

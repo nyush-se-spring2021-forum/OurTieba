@@ -15,7 +15,7 @@ class Subscription(my_db.Base):
     # 1. Not use "subscribed" column. Simply delete from table when unsubscribe;
     # 2. Use "subscribed" column. Set subscribed = 0 when unsubscribe.
     subscribed = Column(Integer, default=0)  # 0 = False, 1 = True,
-    lastModified = Column(DateTime, default=datetime.datetime.now())  # timestamp of last action
+    lastModified = Column(DateTime, default=datetime.datetime.now)  # timestamp of last action
 
     by_user = relationship("User", back_populates="subscriptions")
     of_board = relationship("Board", back_populates="subscribers")

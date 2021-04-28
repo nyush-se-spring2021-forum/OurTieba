@@ -31,8 +31,8 @@ def add_post():
     match_board.postCount += 1
     title = request.form.get("title")
     content = request.form.get("content")
-    now = datetime.datetime.now()  # current timestamp
-    new_post = Post(Uid, int(Bid), title, content, now)
+
+    new_post = Post(Uid, int(Bid), title, content)
     my_db.add(new_post)
     return redirect(f"/board/{Bid}")
 
@@ -54,9 +54,8 @@ def like():
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
     match_target.likeCount += 1 if action == "1" else -1
 
-    now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), int(action), 0, now)
+    new_status = status(Uid, int(target_id), int(action), 0)
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
 
@@ -78,9 +77,8 @@ def dislike():
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
     match_target.dislikeCount += 1 if action == "1" else -1
 
-    now = datetime.datetime.now()  # current timestamp
     status = CommentStatus if target == "comment" else PostStatus
-    new_status = status(Uid, int(target_id), 0, int(action), now)
+    new_status = status(Uid, int(target_id), 0, int(action))
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
 
@@ -103,8 +101,7 @@ def add_report():
 
     Pid = match_target.Pid
     # insert into db
-    now = datetime.datetime.now()  # current timestamp
-    new_report = Report(Uid, target, int(target_id), reason, now)
+    new_report = Report(Uid, target, int(target_id), reason)
     my_db.add(new_report)
 
     reporter = my_db.query(User, User.Uid == Uid)
@@ -133,8 +130,7 @@ def add_comment():
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.now()
 
-    now = datetime.datetime.now()  # current timestamp
-    new_comment = Comment(Uid, Pid, content, now)
+    new_comment = Comment(Uid, Pid, content)
     my_db.add(new_comment)
     return redirect(f"/post/{Pid}?order=newest")
 
