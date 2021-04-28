@@ -71,7 +71,7 @@ def admin_board_delete():
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
     affected_row = my_db.delete(Board, Board.Bid == Bid)
-    if affected_row == 0:
+    if not affected_row:
         return jsonify({"error": {"msg": "Bid not Found"}}, 403)
     return redirect("/admin/dashboard")
 
@@ -134,8 +134,9 @@ def admin_user_unban():
 @admin_login_required
 def admin_report_resolve():
     Rid = request.form.get("Rid")
-    match_report = my_db.query(Report, Report.Rid == Rid, first=True)
-    if not match_report:
+    if not Rid or not Rid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+    affected_row = my_db.update(Report, Report.Rid == Rid, values={"resolved": 1})
+    if not affected_row:
         return jsonify({"error": {"msg": "Rid not Found"}}, 403)
-    match_report.resolved = 1
     return redirect("/admin/dashboard")
