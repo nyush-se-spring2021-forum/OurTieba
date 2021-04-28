@@ -69,6 +69,16 @@
     <hr>
     <p>{{ data['post_info']['content'] }}</p>
 
+    {# Report post button #}
+    <div class="float-end">
+        <a class="text-decoration-none text-body"
+           href="{{ url_for('user.report', target='post', id=data.post_info['Pid']) }}">
+            <div class="btn btn-outline-info">Report</div>
+        </a>
+    </div>
+    <br>
+    <br>
+
     {# Comments #}
     {% if data['comments']|length > 0 %}
         <hr>
