@@ -66,15 +66,11 @@
                 <div class="float-end blockquote-footer">{{ moment(report['timestamp']).fromNow() }}</div>
                 <div class="lead">{{ report['reason'] }}</div>
                 <form action="{{ url_for('admin.admin_report_resolve') }}" method="post">
-                    <input type="hidden" value="{{ report['Rid'] }}">
-                <button class="btn btn-outline-dark" type="submit">Resolve</button>
+                    <input name="Rid" type="hidden" value="{{ report['Rid'] }}">
+                    <button class="btn btn-outline-dark" type="submit">Resolve</button>
                 </form>
-
-
                 <hr>
             {% endfor %}
-
-
 
             {# Pagination #}
             <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
