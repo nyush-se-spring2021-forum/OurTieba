@@ -3,14 +3,7 @@
 {% block title %} Profile {% endblock %}
 {% block page_content %}
     <div class="display-6">{{ data['nickname'] }}</div>
-    {% if data['isCurrent'] %}
-        <div class="float-lg-end">
-            <button class="btn btn-warning"><a class="text-decoration-none text-body" href="">Edit Profile</a></button>
-        </div>
-    {% endif %}
-    <br>
     <hr>
-
     {% if data['banned'] == 1 %}
         <div class="alert-danger">User banned until: {{ moment(data['banDuration']).fromNow() }}</div>
     {% endif %}
@@ -35,9 +28,11 @@
     <div class="h3">Address: {{ 'Not Set' if data['address'] is none else data['address'] }}</div>
     <hr>
     {# Modal trigger for change profile #}
-    <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changeProfileModal">
-        Edit profile
-    </button>
+    {% if data['isCurrent'] %}
+        <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#changeProfileModal">
+            Edit profile
+        </button>
+    {% endif %}
 
     {# Modal window for change profile #}
     <div class="modal fade" id="changeProfileModal" tabindex="-1">
@@ -51,15 +46,16 @@
                     <form action="{{ url_for('api.add_personal_info') }}" method="post">
                         <div class="mb-3">
                             <label for="nickname" class="col-form-label">nickname</label>
-                            <input type="text" class="form-control" id="nickname" name="nickname" value="{{ data['nickname'] }}">
+                            <input type="text" class="form-control" id="nickname" name="nickname"
+                                   value="{{ data['nickname'] }}">
                         </div>
                         <div class="mb-3">
                             <label for="dateOfBirth" class="col-form-label">Date of Birth:</label>
-                            <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth">
+                            <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth" required>
                         </div>
                         <div class="mb-3">
                             <label for="gender" class="col-form-label">Gender</label>
-                            <select id="gender" name="gender" class="form-select">
+                            <select id="gender" name="gender" class="form-select" required>
                                 <option selected disabled value="">{{ 'Not set' if data['gender'] is none }}</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -69,13 +65,13 @@
                         <div class="mb-3">
                             <label for="email" class="col-form-label">Email</label>
                             <input id="email" class="form-control" name="email" type="email"
-                                   placeholder="{{ 'john@example.com' if data['email'] is none }}">
+                                   placeholder="{{ 'john@example.com' if data['email'] is none }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="col-form-label">Phone number</label>
                             <input type="tel" id="phone" class="form-control" name="phone_number"
                                    placeholder="123456789"
-                                   value="{{ '' if data['phoneNumber'] is none else data['phoneNumber'] }}">
+                                   value="{{ '' if data['phoneNumber'] is none else data['phoneNumber'] }}" required>
                         </div>
                         <div class="mb-3">
                             <label for="address" class="col-form-label">Address</label>
