@@ -20,8 +20,8 @@ class Admin(my_db.Base):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.password = hashlib.sha3_512(password.encode()).hexdigest()
-        self.aname = aname if aname else "admin" + str(self.Aid)
-        self.nickname = nickname if nickname else "admin" + str(self.Aid)
+        self.aname = aname if aname else "admin" + str(hash(datetime.datetime.utcnow))
+        self.nickname = nickname if nickname else self.aname
         self.avatar = avatar
         self.timestamp = timestamp
 
