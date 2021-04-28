@@ -52,9 +52,17 @@ def like():
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
-    match_target.likeCount += 1 if action == "1" else -1
 
     status = CommentStatus if target == "comment" else PostStatus
+    status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
+    match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    if not match_status:
+        match_target.likeCount += int(action)
+    elif (action == "1" and match_status.liked == 1) or (action == "0" and match_status.liked == 0):
+        pass  # duplicate request, do not perform anything
+    else:
+        match_target.likeCount += 1 if action == "1" else -1
+        match_target.dislikeCount -= match_status.disliked
     new_status = status(Uid, int(target_id), int(action), 0)
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
@@ -75,9 +83,17 @@ def dislike():
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}}), 403
-    match_target.dislikeCount += 1 if action == "1" else -1
 
     status = CommentStatus if target == "comment" else PostStatus
+    status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
+    match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    if not match_status:
+        match_target.dislikeCount += int(action)
+    elif (action == "1" and match_status.disliked == 1) or (action == "0" and match_status.disliked == 0):
+        pass  # duplicate request, do not perform anything
+    else:
+        match_target.dislikeCount += 1 if action == "1" else -1
+        match_target.likeCount -= match_status.liked
     new_status = status(Uid, int(target_id), 0, int(action))
     my_db.merge(new_status)
     return jsonify({"success": 1}), 200
