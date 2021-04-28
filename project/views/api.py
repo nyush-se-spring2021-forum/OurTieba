@@ -138,14 +138,16 @@ def add_comment():
 @api.route('/post/delete', methods=["POST"])
 @login_required
 def delete_post():
+    Uid = session['Uid']
+
     Pid = request.form.get("Pid")
     Bid = request.form.get("Bid")
     if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
-    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
+    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid), first=True)
     if not match_post or match_post.under.Bid != int(Bid):
-        return jsonify({"error": {"msg": "invalid post ID or board ID"}}), 403
+        return jsonify({"error": {"msg": "invalid post ID or board ID or user"}}), 403
     match_post.under.postCount -= 1
 
     my_db.delete(Post, Post.Pid == Pid)
@@ -155,11 +157,15 @@ def delete_post():
 @api.route('/comment/delete', methods=["POST"])
 @login_required
 def delete_comment():  # will not alter post lastCommentTime
+    Uid = session['Uid']
+
     Cid = request.form.get("Cid")
     Pid = request.form.get("Pid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
-    match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
+    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid), first=True)
+    if not match_comment:
+        return jsonify({"error": {"msg": "invalid ID or user"}}), 403
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post or match_comment not in match_post.comments:
