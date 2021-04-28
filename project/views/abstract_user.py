@@ -60,6 +60,15 @@ def get_comments_in_post(Pid):
     post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
                  "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
                  "owner": p.owner.nickname, "avatar": p.owner.avatar}
+    if not session.get("Uid"):
+        post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
+    else:
+        Uid = session["Uid"]
+        match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
+        if not match_status:
+            post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
+        else:
+            post_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
 
     order = request.args.get("order", "like_count")
     page = request.args.get("page", "1")
