@@ -163,9 +163,10 @@ def delete_comment():  # will not alter post lastCommentTime
     Pid = request.form.get("Pid")
     if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}}), 403
+    match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
 
-    match_post = my_db.query(Comment, Comment.Cid == Cid, first=True)
-    if not match_post or match_post.comment_in.Pid != int(Pid):
+    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
+    if not match_post or match_comment not in match_post.comments:
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
     match_post.commentCount -= 1
 
