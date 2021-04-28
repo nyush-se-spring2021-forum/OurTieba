@@ -41,6 +41,8 @@ def admin_dashboard():
 def admin_auth_login():
     aname = request.form.get("aname")
     password = request.form.get("password")
+    if not aname or not password:
+        return jsonify({"error": {"msg": "Invalid input."}, "status": 0})
 
     admin_result = my_db.query(Admin, Admin.aname == aname, first=True)
     if not admin_result:
@@ -109,13 +111,12 @@ def admin_comment_delete():
 def admin_user_ban():
     Uid = request.form.get("Uid")
     days = request.form.get("days")
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
-    if len(match_user) == 0:
+    if not Uid or not Uid.isnumeric() or not days or not days.isnumeric() or int(days) <= 0:
+        return jsonify({"error": {"msg": "Invalid data"}}), 403
+    affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 1,
+                                "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=days)})
+    if not affected_row:
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
-    if not days.isnumeric() or int(days) <= 0:
-        return jsonify({"error": {"msg": "Invalid Day"}}, 403)
-    match_user.banned = 1
-    match_user.banDuration = datetime.datetime.utcnow() + datetime.timedelta(days=days)
     return redirect("/admin/dashboard")
 
 
@@ -123,10 +124,11 @@ def admin_user_ban():
 @admin_login_required
 def admin_user_unban():
     Uid = request.form.get("Uid")
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
-    if len(match_user) == 0:
+    if not Uid or not Uid.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data"}}), 403
+    affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 0})
+    if not affected_row:
         return jsonify({"error": {"msg": "Uid not Found"}}, 403)
-    user.banned = 0
     return redirect("/admin/dashboard")
 
 
