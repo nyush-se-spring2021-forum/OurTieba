@@ -61,7 +61,7 @@ def admin_auth_login():
 @admin_login_required
 def admin_logout():
     session.clear()
-    return redirect("/admin/auth/login")
+    return redirect("/admin/login")
 
 
 @admin_blue.route("/board/delete", methods=["POST"])
