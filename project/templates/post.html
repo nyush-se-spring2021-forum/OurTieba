@@ -26,11 +26,26 @@
     </div>
     <br>
     <br>
+
     <div class="btn-group">
-        <button class="btn btn-outline-danger"><i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}
-        </button>
-        <button class="btn btn-outline-dark"><i class="bi bi-hand-thumbs-down"></i>{{ data.post_info['dislike_count'] }}
-        </button>
+        <form action="{{ url_for('api.like') }}" method="post">
+            <input type="hidden" name="target" value="post">
+            <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
+            <input type="hidden" name="like" value="{{ 0 if data.post_info['liked_by_user'] else 1 }}">
+            <button class="btn btn{% if data.post_info['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                    type="submit">
+                <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}</button>
+        </form>
+        <form action="{{ url_for('api.dislike') }}" method="post">
+            <input type="hidden" name="target" value="post">
+            <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
+            <input type="hidden" name="like" value="{{ 0 if data.post_info['disliked_by_user'] else 1 }}">
+            <button class="btn
+                            btn{% if data.post_info['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
+                    type="submit">
+                <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['dislike_count'] }}</button>
+        </form>
+
     </div>
 
     {% if session['Uid'] and session['Uid'] == data.post_info['Uid'] %}
