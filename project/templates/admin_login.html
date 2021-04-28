@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block page_content %}
-    <form class="form-signin" action="{{ url_for('admin.admin_login') }}" method="post" target="dummy">
+    <form class="form-signin" method="post" target="dummy">
         <img class="mb-4" src="{{ url_for("static", filename='ico/favicon.ico') }}" alt="" width="72" height="72">
         <h1 class="h3 mb-3 fw-normal">Admin Login</h1>
         <iframe name="dummy" id="dummy" style="display: none;"></iframe>
@@ -34,19 +34,19 @@
     <script>
         $(document).ready(function () {
             $("#btn_submit").click(function () {
-                let uname = $("#aname").val().trim();
+                let aname = $("#aname").val().trim();
                 let password = $("#password").val().trim();
 
-                if (uname !== "" && password !== "") {
+                if (aname !== "" && password !== "") {
                     $.ajax({
-                        url: '/admin/auth/login',
+                        url: '{{ url_for('admin.admin_auth_login') }}',
                         type: 'post',
                         dataType: 'json',
                         data: {aname: aname, password: password},
                         success: function (response) {
                             let msg = "";
                             if (response.status !== 0) {
-                                window.location = "/";
+                                window.location = "{{ url_for('admin.admin_hello') }}";
                             } else {
                                 msg = response.error['msg'];
                                 $("#username-err").html(msg).show();

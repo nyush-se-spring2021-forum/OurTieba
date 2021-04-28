@@ -44,17 +44,17 @@ def admin_auth_login():
 
     admin_result = my_db.query(Admin, Admin.aname == aname, first=True)
     if not admin_result:
-        return jsonify({"error": {"msg": "aname Not Found"}}, 403)
+        return jsonify({"error": {"msg": "Admin name Not Found"}, 'status': 0})
     encoded_password = hashlib.sha3_512(password.encode()).hexdigest()
     recorded_password = admin_result.password
     if encoded_password != recorded_password:
-        return jsonify({"error": {"msg": "Incorrect Password"}}, 403)
+        return jsonify({"error": {"msg": "Incorrect Password"}, 'status': 0})
 
     session["Aid"] = admin_result.Aid
     admin_info = {"nickname": admin_result.nickname, "avatar": admin_result.avatar}
     session["admin_info"] = admin_info
 
-    return redirect("/admin/dashboard")
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/auth/logout")
