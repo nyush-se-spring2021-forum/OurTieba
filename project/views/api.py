@@ -104,7 +104,7 @@ def add_report():
     new_report = Report(Uid, target, int(target_id), reason)
     my_db.add(new_report)
 
-    reporter = my_db.query(User, User.Uid == Uid)
+    reporter = my_db.query(User, User.Uid == Uid, first=True)
     reporter.reports.append(new_report)
     return redirect(f"/post/{Pid}")
 
