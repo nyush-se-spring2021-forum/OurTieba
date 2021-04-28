@@ -68,8 +68,10 @@ def admin_logout():
 @admin_login_required
 def admin_board_delete():
     Bid = request.form.get("Bid")
-    match_board = my_db.delete(Board, Board.Bid == Bid)
-    if len(match_board) == 0:
+    if not Bid or not Bid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+    affected_row = my_db.delete(Board, Board.Bid == Bid)
+    if affected_row == 0:
         return jsonify({"error": {"msg": "Bid not Found"}}, 403)
     return redirect("/admin/dashboard")
 
@@ -78,10 +80,13 @@ def admin_board_delete():
 @admin_login_required
 def admin_post_delete():
     Pid = request.form.get("Pid")
-    match_post = my_db.delete(Post, Post.Pid == Pid)
+    if not Pid or not Pid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}}, 403)
     match_post.under.postCount -= 1
+    my_db.delete(Post, Post.Pid == Pid)
     return redirect("/admin/dashboard")
 
 
@@ -89,10 +94,13 @@ def admin_post_delete():
 @admin_login_required
 def admin_comment_delete():
     Cid = request.form.get("Cid")
-    match_comment = my_db.delete(Comment, Comment.Cid == Cid)
+    if not Cid or not Cid.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}}), 403
+    match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}}, 403)
     match_comment.comment_in.commentCount -= 1
+    my_db.delete(Comment, Comment.Cid == Cid)
     return redirect("/admin/dashboard")
 
 
