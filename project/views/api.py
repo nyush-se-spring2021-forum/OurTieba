@@ -225,7 +225,7 @@ def add_personal_info():
     # check date of birth
     date_of_birth = request.form.get("date_of_birth")
     try:
-        date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d %H:%M:%S")
+        date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d")
     except Exception as e:
         return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
 
