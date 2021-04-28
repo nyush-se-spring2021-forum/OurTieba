@@ -14,7 +14,7 @@ class CommentStatus(my_db.Base):
     Cid = Column(Integer, ForeignKey("comment.Cid"), primary_key=True)
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
-    lastModified = Column(DateTime, default=datetime.datetime.now)  # timestamp of last action
+    lastModified = Column(DateTime, default=datetime.datetime.utcnow)  # timestamp of last action
 
     by_user = relationship("User", back_populates="status_comment")
     on_comment = relationship("Comment", back_populates="status_by")

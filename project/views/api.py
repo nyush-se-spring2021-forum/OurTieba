@@ -18,7 +18,7 @@ def add_post():
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
-        if match_user.banDuration > datetime.datetime.now():
+        if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "user banned"}}), 404
 
     Bid = request.form.get("Bid")
@@ -116,7 +116,7 @@ def add_comment():
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
-        if match_user.banDuration > datetime.datetime.now():
+        if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "user banned"}}), 404
 
     Pid = request.form.get("Pid")
@@ -128,7 +128,7 @@ def add_comment():
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}}), 403
     match_post.commentCount += 1
-    match_post.latestCommentTime = datetime.datetime.now()
+    match_post.latestCommentTime = datetime.datetime.utcnow()
 
     new_comment = Comment(Uid, Pid, content)
     my_db.add(new_comment)
@@ -320,7 +320,7 @@ def save_file():
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
-    src = str(hash(str(Uid) + str(datetime.datetime.now()))) + "." + file_type
+    src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
     with open(path + src, "wb") as f:
         file.save(f)
 
@@ -353,7 +353,7 @@ def subscribe():
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
     match_board.subscribeCount += 1 if action == "1" else -1
 
-    new_sub = Subscription(Uid, Bid, int(action), datetime.datetime.now())
+    new_sub = Subscription(Uid, Bid, int(action))
     my_db.merge(new_sub)
     return jsonify({"status": 1})
 

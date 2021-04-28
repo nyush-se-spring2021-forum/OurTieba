@@ -17,7 +17,7 @@ def create_post():
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
-        if match_user.banDuration > datetime.datetime.now():
+        if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "user banned"}}), 404
     Bid = request.args.get("Bid")
     if not Bid or not Bid.isnumeric():

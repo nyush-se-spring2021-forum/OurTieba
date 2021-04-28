@@ -14,7 +14,7 @@ class Admin(my_db.Base):
     aname = Column(String, unique=True)
     nickname = Column(String)
     avatar = Column(String, default="default_avatar.jpg")  # upon uploading, link=hash(Aid + timestamp) + ".png"
-    timestamp = Column(DateTime, default=datetime.datetime.now)  # time of account creation
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
 
     def __init__(self, password, aname=None, nickname=None, avatar=None, timestamp=None):
         if isinstance(timestamp, str):

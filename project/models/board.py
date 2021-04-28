@@ -15,7 +15,7 @@ class Board(my_db.Base):
     postCount = Column(Integer, default=0)
     viewCount = Column(Integer, default=0)
     subscribeCount = Column(Integer, default=0)
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
 
     posts = relationship("Post", back_populates="under")
     subscribers = relationship("Subscription", back_populates="of_board")

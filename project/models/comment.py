@@ -11,7 +11,7 @@ class Comment(my_db.Base):
 
     Cid = Column(Integer, primary_key=True)
     content = Column(String)
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
     Uid = Column(Integer, ForeignKey("user.Uid"))

@@ -107,7 +107,7 @@ def admin_user_ban():
     if not days.isnumeric() or int(days) <= 0:
         return jsonify({"error": {"msg": "Invalid Day"}}, 403)
     match_user.banned = 1
-    match_user.banDuration = datetime.datetime.now() + datetime.timedelta(days=days)
+    match_user.banDuration = datetime.datetime.utcnow() + datetime.timedelta(days=days)
     return redirect("/admin/dashboard")
 
 

@@ -14,7 +14,7 @@ class Report(my_db.Base):
     target = Column(String)
     targetId = Column(Integer)  # can be Pid or Cid, for simplicity no foreignkey constraints nor relationship
     reason = Column(String)
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+    timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     resolved = Column(Integer, default=0)  # 0=False, 1=True
     Uid = Column(Integer, ForeignKey("user.Uid"))  # reporter
 
