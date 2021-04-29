@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import re
 
@@ -397,3 +398,36 @@ def set_password():
 
     my_db.update(User, User.Uid == Uid, values={"password": password})
     return jsonify({"status": 1})
+
+
+@api.route("/view")
+def get_info():
+    Cid = request.args.get("Cid", "").split(",")  # should separate by comma, e.g. Cid=1,2,3
+    Pid = request.args.get("Pid", "").split(",")
+    Bid = request.args.get("Bid", "").split(",")
+    base_info = {"time": datetime.datetime.utcnow(), "status": 1, "data": {"comments": [], "posts": [], "boards": []}}
+    for c in Cid:
+        target = my_db.query(Comment, Comment.Cid == c, first=True)
+        if not target:
+            continue
+        base_info["data"]["comments"].append({"Cid": target.Cid, "Pid": target.Pid, "Uid": target.Uid,
+                                              "content": target.content, "timestamp": target.timestamp,
+                                              "like_count": target.likeCount, "dislike_count": target.dislikeCount})
+    for p in Pid:
+        target = my_db.query(Post, Post.Pid == p, first=True)
+        if not target:
+            continue
+        base_info["data"]["posts"].append({"Pid": target.Pid, "Bid": target.Bid, "Uid": target.Uid,
+                                           "title": target.title, "content": target.content,
+                                           "timestamp": target.timestamp, "comment_count": target.commentCount,
+                                           "like_count": target.likeCount, "dislike_count": target.dislikeCount,
+                                           "view_count": target.viewCount,
+                                           "latest_comment_time": target.latestCommentTime})
+    for b in Bid:
+        target = my_db.query(Board, Board.Bid == b, first=True)
+        if not target:
+            continue
+        base_info["data"]["boards"].append({"Bid": target.Bid, "name": target.name, "hot": target.hot,
+                                            "timestamp": target.timestamp, "post_count": target.postCount,
+                                            "view_count": target.viewCount, "subscribe_count": target.subscribeCount})
+    return jsonify(base_info)
