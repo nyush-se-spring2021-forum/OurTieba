@@ -167,6 +167,12 @@ def delete_post():
     match_post.under.postCount -= 1
 
     my_db.delete(Post, Post.Pid == Pid)
+    #Then delete all corresponding data in other relating tables
+    result = my_db.query(Comment, Comment.Pid == Pid)
+    for i in result:
+        my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
+    my_db.delete(Comment, Comment.Pid == Pid)
+    my_db.delete(PostStatus, PostStatus.Pid == Pid)
     return redirect(f"/board/{Bid}")
 
 
@@ -189,6 +195,8 @@ def delete_comment():  # will not alter post lastCommentTime
     match_post.commentCount -= 1
 
     my_db.delete(Comment, Comment.Cid == Cid)
+    #Then delete all corresponding data in other relating tables
+    my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
     return redirect(f"/post/{Pid}")
 
 
