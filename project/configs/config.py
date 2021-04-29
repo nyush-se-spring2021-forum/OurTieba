@@ -1,3 +1,4 @@
+import datetime
 import os
 
 BASEDIR = os.path.abspath(os.path.dirname(__file__))
@@ -18,6 +19,7 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     ENV = "production"
     DEBUG = False
+    PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=15)  # default is 31 days
 
 
 config = {

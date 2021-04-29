@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 import re
 
@@ -311,6 +310,7 @@ def login_auth():
     session["Uid"] = match_user.Uid
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info
+    # session.permanent = True
     return jsonify({"status": 1})
 
 
@@ -318,7 +318,7 @@ def login_auth():
 @login_required
 def logout_auth():
     session.clear()
-    return redirect("/")
+    return "<script>location.replace(document.referrer);</script>", 200
 
 
 @api.route("/upload", methods=["POST"])

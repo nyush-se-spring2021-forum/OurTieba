@@ -46,7 +46,7 @@
                         success: function (response) {
                             let msg = "";
                             if (response.status !== 0) {
-                                window.location = "/";
+                                location.replace(document.referrer);
                             } else {
                                 msg = response.error['msg'];
                                 $("#username-err").html(msg).show();

@@ -33,14 +33,14 @@ class OTSpider:
 
     def get_hot_news(self, **kwargs):
         # if news is not cached, or cache has expired, update cache
-        if not self.cache.get("news") or self.cache["news"]["expires"] < datetime.datetime.now():
+        if not self.cache.get("news") or self.cache["news"]["expires"] < datetime.datetime.utcnow():
             url = "https://newsapi.org/v2/top-headlines?country=us&category=general&" \
                   "apiKey=9d51c192354848748d129b08faea32ea"
             res = self.session.get(url, headers=self.headers)
             data = res.json()
             num = kwargs["num"]
             self.cache["news"] = {"articles": data["articles"][:num],
-                                  "expires": datetime.datetime.now() + datetime.timedelta(seconds=kwargs["freq"])}
+                                  "expires": datetime.datetime.utcnow() + datetime.timedelta(seconds=kwargs["freq"])}
         return self.cache["news"]["articles"]
 
     def weibo_hot_search(self, **kwargs):  # cache not applied because change is rapid
