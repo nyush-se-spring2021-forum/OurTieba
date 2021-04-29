@@ -17,7 +17,7 @@ class PostStatus(my_db.Base):
     lastModified = Column(DateTime, default=datetime.datetime.utcnow)  # timestamp of last action
 
     by_user = relationship("User", back_populates="status_post")
-    on_post = relationship("Post", back_populates="status_by", cascade='all, delete', passive_delete=True)
+    on_post = relationship("Post", back_populates="status_by")
 
     def __init__(self, Uid, Pid, liked=None, disliked=None, lastModified=None):
         if isinstance(lastModified, str):

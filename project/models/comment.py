@@ -19,7 +19,7 @@ class Comment(my_db.Base):
 
     comment_by = relationship("User", back_populates="comments")
     comment_in = relationship("Post", back_populates="comments")
-    status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_delete=True)
+    status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_deletes=True)
 
     def __init__(self, Uid, Pid, content, timestamp=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
