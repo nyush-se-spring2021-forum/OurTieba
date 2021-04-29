@@ -70,20 +70,11 @@ def admin_logout():
 def admin_board_delete():
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     affected_row = my_db.delete(Board, Board.Bid == Bid)
     if not affected_row:
-        return jsonify({"error": {"msg": "Bid not Found"}}, 403)
-    # Then delete all corresponding data in other relating tables
-    match_posts = my_db.query(Post, Post.Bid == Bid)
-    for i in match_posts:
-        match_comments = my_db.query(Comment, Comment.Pid == i.Pid)
-        for j in match_comments:
-            my_db.delete(CommentStatus, CommentStatus.Cid == j.Cid)
-        my_db.delete(Comment, Comment.Pid == i.Pid)
-        my_db.delete(PostStatus, PostStatus.Pid == i.Pid)
-    my_db.delete(Post, Post.Bid == Bid)
-    return redirect("/admin/dashboard")
+        return jsonify({"error": {"msg": "Bid not Found"}, "status": 0})
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/post/delete", methods=["POST"])
@@ -91,19 +82,13 @@ def admin_board_delete():
 def admin_post_delete():
     Pid = request.form.get("Pid")
     if not Pid or not Pid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
-        return jsonify({"error": {"msg": "Pid not Found"}}, 403)
+        return jsonify({"error": {"msg": "Pid not Found"}, "status": 0})
     match_post.under.postCount -= 1
     my_db.delete(Post, Post.Pid == Pid)
-    # Then delete all corresponding data in other relating tables
-    result = my_db.query(Comment, Comment.Pid == Pid)
-    for i in result:
-        my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
-    my_db.delete(Comment, Comment.Pid == Pid)
-    my_db.delete(PostStatus, PostStatus.Pid == Pid)
-    return redirect("/admin/dashboard")
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/comment/delete", methods=["POST"])
@@ -111,15 +96,13 @@ def admin_post_delete():
 def admin_comment_delete():
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
     if not match_comment:
-        return jsonify({"error": {"msg": "Cid not Found"}}, 403)
+        return jsonify({"error": {"msg": "Cid not Found"}, "status": 0})
     match_comment.comment_in.commentCount -= 1
     my_db.delete(Comment, Comment.Cid == Cid)
-    # Then delete all corresponding data in other relating tables
-    my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
-    return redirect("/admin/dashboard")
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/user/ban", methods=["POST"])
@@ -128,12 +111,12 @@ def admin_user_ban():
     Uid = request.form.get("Uid")
     days = request.form.get("days")
     if not Uid or not Uid.isnumeric() or not days or not days.isnumeric() or int(days) <= 0:
-        return jsonify({"error": {"msg": "Invalid data"}}), 403
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 1,
                                 "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=days)})
     if not affected_row:
-        return jsonify({"error": {"msg": "Uid not Found"}}, 403)
-    return redirect("/admin/dashboard")
+        return jsonify({"error": {"msg": "Uid not Found"}, "status": 0})
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/user/unban", methods=["POST"])
@@ -141,11 +124,11 @@ def admin_user_ban():
 def admin_user_unban():
     Uid = request.form.get("Uid")
     if not Uid or not Uid.isnumeric():
-        return jsonify({"error": {"msg": "Invalid data"}}), 403
+        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 0})
     if not affected_row:
-        return jsonify({"error": {"msg": "Uid not Found"}}, 403)
-    return redirect("/admin/dashboard")
+        return jsonify({"error": {"msg": "Uid not Found"}, "status": 0})
+    return jsonify({'status': 1})
 
 
 @admin_blue.route("/report/resolve", methods=["POST"])
@@ -153,8 +136,8 @@ def admin_user_unban():
 def admin_report_resolve():
     Rid = request.form.get("Rid")
     if not Rid or not Rid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
     affected_row = my_db.update(Report, Report.Rid == Rid, values={"resolved": 1})
     if not affected_row:
-        return jsonify({"error": {"msg": "Rid not Found"}}, 403)
-    return redirect("/admin/dashboard")
+        return jsonify({"error": {"msg": "Rid not Found"}, "status": 0})
+    return jsonify({'status': 1})
