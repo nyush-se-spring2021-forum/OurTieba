@@ -11,7 +11,7 @@ class CommentStatus(my_db.Base):
     __tablename__ = "comment_status"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
-    Cid = Column(Integer, ForeignKey("comment.Cid"), primary_key=True)
+    Cid = Column(Integer, ForeignKey("comment.Cid", ondelete='CASCADE'), primary_key=True)
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
     lastModified = Column(DateTime, default=datetime.datetime.utcnow)  # timestamp of last action

@@ -15,11 +15,11 @@ class Comment(my_db.Base):
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
     Uid = Column(Integer, ForeignKey("user.Uid"))
-    Pid = Column(Integer, ForeignKey("post.Pid"))
+    Pid = Column(Integer, ForeignKey("post.Pid", ondelete='CASCADE'))
 
     comment_by = relationship("User", back_populates="comments")
     comment_in = relationship("Post", back_populates="comments")
-    status_by = relationship("CommentStatus", back_populates="on_comment")
+    status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_delete=True)
 
     def __init__(self, Uid, Pid, content, timestamp=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):

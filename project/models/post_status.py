@@ -11,13 +11,13 @@ class PostStatus(my_db.Base):
     __tablename__ = "post_status"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
-    Pid = Column(Integer, ForeignKey("post.Pid"), primary_key=True)
+    Pid = Column(Integer, ForeignKey("post.Pid", ondelete='CASCADE'), primary_key=True)
     liked = Column(Integer, default=0)  # 0 = False, 1 = True
     disliked = Column(Integer, default=0)
     lastModified = Column(DateTime, default=datetime.datetime.utcnow)  # timestamp of last action
 
     by_user = relationship("User", back_populates="status_post")
-    on_post = relationship("Post", back_populates="status_by")
+    on_post = relationship("Post", back_populates="status_by", cascade='all, delete', passive_delete=True)
 
     def __init__(self, Uid, Pid, liked=None, disliked=None, lastModified=None):
         if isinstance(lastModified, str):
