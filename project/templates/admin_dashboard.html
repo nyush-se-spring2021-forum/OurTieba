@@ -16,39 +16,38 @@
         <div class="d-flex justify-content-between bg-light">
             {# Delete board #}
             <div class="form-group">
-                <form action="{{ url_for('admin.admin_board_delete') }}" method="post">
+                <form>
                     <h3>Delete Board</h3>
                     <div class="mb-3">
                         <label class="form-label" for="Bid">Board ID</label>
                         <input class="form-control" type="text" name="Bid" id="Bid">
-
                     </div>
-                    <button class="btn btn-primary" type="submit">Confirm</button>
                 </form>
+                <button class="btn btn-primary" onclick="submitDeleteBoard();">Confirm</button>
             </div>
 
             {# Delete post #}
             <div class="form-group">
-                <form action="{{ url_for('admin.admin_post_delete') }}" method="post">
+                <form>
                     <h3>Delete Post</h3>
                     <div class="mb-3">
                         <label class="form-label" for="Pid">Post ID</label>
                         <input class="form-control" type="text" name="Pid" id="Pid">
                     </div>
-                    <button class="btn btn-primary" type="submit">Confirm</button>
                 </form>
+                <button class="btn btn-primary" onclick="submitDeletePost();">Confirm</button>
             </div>
 
             {# Delete comment #}
             <div class="form-group">
-                <form action="{{ url_for('admin.admin_comment_delete') }}" method="post">
+                <form>
                     <h3>Delete Comment</h3>
                     <div class="mb-3">
                         <label class="form-label" for="Cid">Comment ID</label>
                         <input class="form-control" type="text" name="Cid" id="Cid">
                     </div>
-                    <button class="btn btn-primary" type="submit">Confirm</button>
                 </form>
+                <button class="btn btn-primary" onclick="submitDeleteComment();">Confirm</button>
             </div>
         </div>
 
@@ -65,10 +64,10 @@
                 <div class="text-muted">Reporter ID: {{ report['Uid'] }}</div>
                 <div class="float-end blockquote-footer">{{ moment(report['timestamp']).fromNow() }}</div>
                 <div class="lead">{{ report['reason'] }}</div>
-                <form action="{{ url_for('admin.admin_report_resolve') }}" method="post">
+                <form>
                     <input name="Rid" type="hidden" value="{{ report['Rid'] }}">
-                    <button class="btn btn-outline-dark" type="submit">Resolve</button>
                 </form>
+                <button class="btn btn-outline-dark" data-rid="{{ report['Rid'] }}" onclick="resolve(this);">Resolve</button>
                 <hr>
             {% endfor %}
 
@@ -94,4 +93,74 @@
         </div>
 
     </div>
+    <script>
+        function submitDeleteBoard() {
+            let Bid = $('#Bid').val().trim();
+            $.ajax({
+                method: 'post',
+                url: '/admin/board/delete',
+                dataType: 'json',
+                data: {Bid: Bid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Delete successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+        function submitDeletePost() {
+            let Pid = $('#Pid').val().trim();
+            $.ajax({
+                method: 'post',
+                url: '/admin/post/delete',
+                dataType: 'json',
+                data: {Pid: Pid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Delete successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+        function submitDeleteComment() {
+            let Cid = $('#Cid').val().trim();
+            $.ajax({
+                method: 'post',
+                url: '/admin/comment/delete',
+                dataType: 'json',
+                data: {Cid: Cid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Delete successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+        function resolve(ele) {
+            let Rid = ele.getAttribute("data-rid");
+            $.ajax({
+                method: 'post',
+                url: '/admin/report/resolve',
+                dataType: 'json',
+                data: {Rid: Rid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Resolve successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+    </script>
 {% endblock %}
