@@ -322,15 +322,14 @@ def save_file():
     # check if file
     if not file:
         return jsonify({"error": {"msg": "please upload a file"}})
-    # check file size
-    if int(request.headers["Content-Length"]) > 3 * 1024 * 1024:
-        return jsonify({"error": {"msg": "image too large"}})
-
-    file_type = file.content_type
     # check file type
+    file_type = file.content_type
     if not file_type or not file_type.startswith("image"):
         return jsonify({"error": {"msg": "invalid file type"}})
     file_type = file_type.split("/")[1]
+    # check file size
+    if int(request.headers["Content-Length"]) > 3 * 1024 * 1024:
+        return jsonify({"error": {"msg": "image too large"}})
 
     path = CDN_PATH
     if not os.path.exists(path):  # os is imported in config.py
@@ -348,9 +347,8 @@ def save_file():
             os.remove(old_path)
 
     my_db.update(User, User.Uid == Uid, values={"avatar": src})
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
-    session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
+    session["user_info"] = {"nickname": match_user.nickname, "avatar": src}
     return jsonify({"status": 1})
 
 
