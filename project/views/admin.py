@@ -1,4 +1,3 @@
-import datetime
 import hashlib
 
 from flask import Blueprint, jsonify, render_template, request
@@ -55,7 +54,7 @@ def admin_auth_login():
     session["Aid"] = admin_result.Aid
     admin_info = {"nickname": admin_result.nickname, "avatar": admin_result.avatar}
     session["admin_info"] = admin_info
-
+    # session.permanent = True
     return jsonify({'status': 1})
 
 

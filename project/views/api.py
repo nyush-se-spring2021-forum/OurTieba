@@ -303,6 +303,7 @@ def login_auth():
     session["Uid"] = match_user.Uid
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info
+    # session.permanent = True
     return jsonify({"status": 1})
 
 
