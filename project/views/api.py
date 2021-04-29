@@ -310,7 +310,7 @@ def login_auth():
 @login_required
 def logout_auth():
     session.clear()
-    return redirect("/")
+    return "<script>location.replace(document.referrer);</script>", 200
 
 
 @api.route("/upload", methods=["POST"])
