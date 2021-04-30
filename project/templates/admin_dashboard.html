@@ -15,42 +15,74 @@
 
         <div class="d-flex justify-content-between bg-light">
             {# Delete board #}
-            <div class="form-group">
-                <form>
-                    <h3>Delete Board</h3>
-                    <div class="mb-3">
-                        <label class="form-label" for="Bid">Board ID</label>
-                        <input class="form-control" type="text" name="Bid" id="Bid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <form>
+                            <h3>Delete Board</h3>
+                            <div class="mb-3">
+                                <label class="form-label" for="Bid">Board ID</label>
+                                <input class="form-control" type="text" name="Bid" id="Bid">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onclick="submitDeleteBoard();">Confirm</button>
                     </div>
-                </form>
-                <button class="btn btn-primary" onclick="submitDeleteBoard();">Confirm</button>
+                </div>
             </div>
 
             {# Delete post #}
-            <div class="form-group">
-                <form>
-                    <h3>Delete Post</h3>
-                    <div class="mb-3">
-                        <label class="form-label" for="Pid">Post ID</label>
-                        <input class="form-control" type="text" name="Pid" id="Pid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <form>
+                            <h3>Delete Post</h3>
+                            <div class="mb-3">
+                                <label class="form-label" for="Pid">Post ID</label>
+                                <input class="form-control" type="text" name="Pid" id="Pid">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onclick="submitDeletePost();">Confirm</button>
                     </div>
-                </form>
-                <button class="btn btn-primary" onclick="submitDeletePost();">Confirm</button>
+                </div>
             </div>
 
             {# Delete comment #}
-            <div class="form-group">
-                <form>
-                    <h3>Delete Comment</h3>
-                    <div class="mb-3">
-                        <label class="form-label" for="Cid">Comment ID</label>
-                        <input class="form-control" type="text" name="Cid" id="Cid">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <form>
+                            <h3>Delete Comment</h3>
+                            <div class="mb-3">
+                                <label class="form-label" for="Cid">Comment ID</label>
+                                <input class="form-control" type="text" name="Cid" id="Cid">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onclick="submitDeleteComment();">Confirm</button>
                     </div>
-                </form>
-                <button class="btn btn-primary" onclick="submitDeleteComment();">Confirm</button>
+                </div>
             </div>
-        </div>
 
+            {# Ban user #}
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group">
+                        <form>
+                            <h3>Ban/Unban user</h3>
+                            <div class="mb-3">
+                                <label class="form-label" for="Uid">User ID</label>
+                                <input class="form-control" type="text" name="Uid" id="Uid">
+                                <label for="days">Length(days):</label>
+                                <input type="text" class="form-control" name="days" id="days">
+                            </div>
+                        </form>
+                        <button class="btn btn-primary" onclick="banUser();">Ban</button>
+                        <button class="btn btn-primary" onclick="unbanUser();">Unban</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <br>
 
         {# Admin report handling #}
         <div class="container">
@@ -67,7 +99,8 @@
                 <form>
                     <input name="Rid" type="hidden" value="{{ report['Rid'] }}">
                 </form>
-                <button class="btn btn-outline-dark" data-rid="{{ report['Rid'] }}" onclick="resolve(this);">Resolve</button>
+                <button class="btn btn-outline-dark" data-rid="{{ report['Rid'] }}" onclick="resolve(this);">Resolve
+                </button>
                 <hr>
             {% endfor %}
 
@@ -111,6 +144,7 @@
                 }
             });
         }
+
         function submitDeletePost() {
             let Pid = $('#Pid').val().trim();
             $.ajax({
@@ -128,6 +162,7 @@
                 }
             });
         }
+
         function submitDeleteComment() {
             let Cid = $('#Cid').val().trim();
             $.ajax({
@@ -145,6 +180,7 @@
                 }
             });
         }
+
         function resolve(ele) {
             let Rid = ele.getAttribute("data-rid");
             $.ajax({
@@ -157,6 +193,48 @@
                         alert(data.error.msg);
                     } else {
                         alert('Resolve successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+
+        function banUser() {
+            let Uid = $('#Uid').val().trim();
+            let days = $('#days').val().trim();
+            $.ajax({
+                method: 'post',
+                url: '/admin/user/ban',
+                dataType: 'json',
+                data: {
+                    Uid: Uid,
+                    days: days
+                },
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Ban successful!');
+                    }
+                    location.reload();
+                }
+            });
+        }
+
+        function unbanUser() {
+            let Uid = $('#Uid').val().trim();
+            $.ajax({
+                method: 'post',
+                url: '/admin/user/unban',
+                dataType: 'json',
+                data: {
+                    Uid: Uid
+                },
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        alert('Unban successful!');
                     }
                     location.reload();
                 }
