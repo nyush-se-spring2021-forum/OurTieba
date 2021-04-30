@@ -113,7 +113,7 @@ def admin_user_ban():
     if not Uid or not Uid.isnumeric() or not days or not days.isnumeric() or int(days) <= 0:
         return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 1,
-                                "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=days)})
+                                "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=int(days))})
     if not affected_row:
         return jsonify({"error": {"msg": "Uid not Found"}, "status": 0})
     return jsonify({'status': 1})
