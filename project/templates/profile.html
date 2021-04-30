@@ -51,11 +51,11 @@
                         </div>
                         <div class="mb-3">
                             <label for="dateOfBirth" class="col-form-label">Date of Birth:</label>
-                            <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth" required>
+                            <input type="date" class="form-control" id="dateOfBirth" name="date_of_birth">
                         </div>
                         <div class="mb-3">
                             <label for="gender" class="col-form-label">Gender</label>
-                            <select id="gender" name="gender" class="form-select" required>
+                            <select id="gender" name="gender" class="form-select">
                                 <option selected disabled value="">{{ 'Not set' if data['gender'] is none }}</option>
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -65,13 +65,13 @@
                         <div class="mb-3">
                             <label for="email" class="col-form-label">Email</label>
                             <input id="email" class="form-control" name="email" type="email"
-                                   placeholder="{{ 'john@example.com' if data['email'] is none }}" required>
+                                   placeholder="{{ 'john@example.com' if data['email'] is none }}">
                         </div>
                         <div class="mb-3">
                             <label for="phone" class="col-form-label">Phone number</label>
                             <input type="tel" id="phone" class="form-control" name="phone_number"
                                    placeholder="123456789"
-                                   value="{{ '' if data['phoneNumber'] is none else data['phoneNumber'] }}" required>
+                                   value="{{ '' if data['phoneNumber'] is none else data['phoneNumber'] }}">
                         </div>
                         <div class="mb-3">
                             <label for="address" class="col-form-label">Address</label>
