@@ -3,6 +3,7 @@
 {% block title %} Boards {% endblock %}
 
 {% block page_content %}
+    {{ data }}
     <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
     <br>
     <br>
@@ -21,8 +22,25 @@
 
                     <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
 
-                    <i class="bi bi-hand-thumbs-up"></i>{{ post['like_count'] }}
-                    <i class="bi bi-hand-thumbs-down"></i>{{ post['dislike_count'] }}
+                    <div class="btn-group">
+                        <form action="{{ url_for('api.like') }}" method="post">
+                            <input type="hidden" name="target" value="post">
+                            <input type="hidden" name="id" value={{ post['Cid'] }}>
+                            <input type="hidden" name="like" value="{{ 0 if post['liked_by_user'] else 1 }}">
+                            <button class="btn btn-sm btn{% if post['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                                    type="submit">
+                                <i class="bi bi-hand-thumbs-up"></i>{{ post['like_count'] }}</button>
+                        </form>
+                        <form action="{{ url_for('api.dislike') }}" method="post">
+                            <input type="hidden" name="target" value="post">
+                            <input type="hidden" name="id" value={{ post['Cid'] }}>
+                            <input type="hidden" name="like" value="{{ 0 if post['disliked_by_user'] else 1 }}">
+                            <button class="btn btn-sm
+                            btn{% if post['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit">
+                                <i class="bi bi-hand-thumbs-up"></i>{{ post['dislike_count'] }}</button>
+                        </form>
+
+                    </div>
 
                 </div>
             </header>

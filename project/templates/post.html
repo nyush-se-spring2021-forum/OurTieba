@@ -4,107 +4,110 @@
 
 {% block page_content %}
     {{ data }}
-    <p style="font-size:50px">{{ data['post_info']['name'] }}</p>
-    <div style="text-align: right; {% if data['num_page'] <= 1 %}display: none{% endif %}">
-        Rank by:
-        <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
-        <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
-    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="display-1">{{ data['post_info']['title'] }}</div>
 
-    <h1>{{ data['post_info']['title'] }}</h1>
+            <br>
 
-    <div class="blockquote-footer">{{ moment(data['post_info']['publish_time']).fromNow() }}</div>
-    <div class="float-start">
-        <a class="text-decoration-none"
-           href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">
-            <img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32" class="rounded-circle">
-        </a>
-    </div>
-    <div class="lead float-start">
-        <a class="text-body text-decoration-none"
-           href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">&nbsp;{{ data.post_info['owner'] }}</a>
-    </div>
-    <br>
-    <br>
+            <div class="blockquote-footer">{{ moment(data['post_info']['publish_time']).fromNow() }}</div>
+            <div style="text-align: right; {% if data['num_page'] <= 1 %}display: none{% endif %}">
+                Rank by:
+                <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
+                <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
+            </div>
+            <div class="float-start">
+                <a class="text-decoration-none"
+                   href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">
+                    <img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32" class="rounded-circle">
+                </a>
+            </div>
+            <div class="lead float-start">
+                <a class="text-body text-decoration-none"
+                   href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">&nbsp;{{ data.post_info['owner'] }}</a>
+            </div>
+            <br>
+            <br>
 
-    <div class="btn-group">
-        <form action="{{ url_for('api.like') }}" method="post">
-            <input type="hidden" name="target" value="post">
-            <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
-            <input type="hidden" name="like" value="{{ 0 if data.post_info['liked_by_user'] else 1 }}">
-            <button class="btn btn{% if data.post_info['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
-                    type="submit">
-                <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}</button>
-        </form>
-        <form action="{{ url_for('api.dislike') }}" method="post">
-            <input type="hidden" name="target" value="post">
-            <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
-            <input type="hidden" name="like" value="{{ 0 if data.post_info['disliked_by_user'] else 1 }}">
-            <button class="btn
+            <div class="btn-group">
+                <form action="{{ url_for('api.like') }}" method="post">
+                    <input type="hidden" name="target" value="post">
+                    <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
+                    <input type="hidden" name="like" value="{{ 0 if data.post_info['liked_by_user'] else 1 }}">
+                    <button class="btn btn-sm
+                    btn{% if data.post_info['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                            type="submit">
+                        <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}</button>
+                </form>
+                <form action="{{ url_for('api.dislike') }}" method="post">
+                    <input type="hidden" name="target" value="post">
+                    <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
+                    <input type="hidden" name="like" value="{{ 0 if data.post_info['disliked_by_user'] else 1 }}">
+                    <button class="btn btn-sm
                             btn{% if data.post_info['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
-                    type="submit">
-                <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['dislike_count'] }}</button>
-        </form>
+                            type="submit">
+                        <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['dislike_count'] }}</button>
+                </form>
 
-    </div>
+            </div>
+            {# Report post button #}
+            <div class="float-end">
+                <a class="text-decoration-none text-body"
+                   href="{{ url_for('user.report', target='post', id=data.post_info['Pid']) }}">
+                    <div class="btn btn-outline-info">Report</div>
+                </a>
+            </div>
 
-    {% if session['Uid'] and session['Uid'] == data.post_info['Uid'] %}
-        {# Delete post trigger #}
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deletePostModal">
-            Delete Post
-        </button>
+            {% if session['Uid'] and session['Uid'] == data.post_info['Uid'] %}
+                {# Delete post trigger #}
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#deletePostModal">
+                    Delete Post
+                </button>
 
-        {# Delete post modal #}
-        <div class="modal fade" id="deletePostModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Delete Post</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete the post?
-                        <br>
-                        (All the comments are also deleted!)
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <form action="{{ url_for('api.delete_post') }}" method="post">
-                            <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
-                            <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
-                            <button class="btn btn-primary" type="submit">Delete</button>
-                        </form>
+                {# Delete post modal #}
+                <div class="modal fade" id="deletePostModal" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Delete Post</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure you want to delete the post?
+                                <br>
+                                (All the comments are also deleted!)
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <form action="{{ url_for('api.delete_post') }}" method="post">
+                                    <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
+                                    <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
+                                    <button class="btn btn-primary" type="submit">Delete</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
+            {% endif %}
+
+            {# Post content #}
+            <hr>
+
+            <p>{{ data['post_info']['content'] }}</p>
         </div>
-    {% endif %}
-
-    {# Post content #}
-    <hr>
-    <p>{{ data['post_info']['content'] }}</p>
-
-    {# Report post button #}
-    <div class="float-end">
-        <a class="text-decoration-none text-body"
-           href="{{ url_for('user.report', target='post', id=data.post_info['Pid']) }}">
-            <div class="btn btn-outline-info">Report</div>
-        </a>
     </div>
-    <br>
-    <br>
 
     {# Comments #}
     {% if data['comments']|length > 0 %}
-        <hr>
-        <div class="h2 lead">Comments:</div>
-        <hr>
+        <br>
+        <div class="display-6">Comments:</div>
+        <br>
     {% endif %}
 
     {% for comment in data['comments'] %}
-        <article class="post">
-            <header>
-                <div>
+        <div class="card">
+            <div class="card-body">
+                <div class="card-title">
                     <div class="float-start">
                         <a class="text-body text-decoration-none"
                            href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
@@ -116,9 +119,9 @@
                        href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
                         <div class="lead">&nbsp;{{ comment['publish_user'] }}</div>
                     </a>
-                    <br>
-                    <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
-
+                </div>
+                <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
+                <div class="card-body">
                     {# Add like and dislike logic #}
                     {# TODO: change this code to ajax #}
                     <div class="btn-group">
@@ -126,17 +129,23 @@
                             <input type="hidden" name="target" value="comment">
                             <input type="hidden" name="id" value={{ comment['Cid'] }}>
                             <input type="hidden" name="like" value="{{ 0 if comment['liked_by_user'] else 1 }}">
-                            <button class="btn btn{% if comment['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
+                            <button class="btn btn-sm" style="color: red"
                                     type="submit">
-                                <i class="bi bi-hand-thumbs-up"></i>{{ comment['like_count'] }}</button>
+                                <i class="bi
+                                bi-hand-thumbs-up{% if comment['liked_by_user'] %}-fill{% endif %}"></i>
+                                {{ comment['like_count'] }}
+                            </button>
                         </form>
                         <form action="{{ url_for('api.dislike') }}" method="post">
                             <input type="hidden" name="target" value="comment">
                             <input type="hidden" name="id" value={{ comment['Cid'] }}>
                             <input type="hidden" name="like" value="{{ 0 if comment['disliked_by_user'] else 1 }}">
-                            <button class="btn
+                            <button class="btn btn-sm
                             btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit">
-                                <i class="bi bi-hand-thumbs-up"></i>{{ comment['dislike_count'] }}</button>
+                                <i class="bi
+                                bi-hand-thumbs-up{% if comment['disliked_by_user'] %}-fill{% endif %}"></i>
+                                {{ comment['dislike_count'] }}
+                            </button>
                         </form>
 
                     </div>
@@ -172,7 +181,6 @@
                             </div>
                         </div>
                     {% endif %}
-                    <div>liked by {{ comment['like_count'] }} </div>
                     <div class="float-end">
                         <a class="text-decoration-none text-body"
                            href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
@@ -180,30 +188,35 @@
                         </a>
                     </div>
                 </div>
-            </header>
-            <p class="body">{{ comment['content'] }}</p>
-        </article>
+                <div class="card-body">{{ comment['content'] }}</div>
+            </div>
+        </div>
         {% if not loop.last %}
-            <hr>
+            <br>
         {% endif %}
     {% endfor %}
     <hr>
     {# Add comment #}
-    <form action="{{ url_for('api.add_comment') }}" method="post">
-        <div class="form-group row">
-            <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
-            <div class="col-sm-10">
-                <textarea class="form-control" name="content" id="content" rows="5" placeholder="Comment"></textarea>
-            </div>
+    <div class="card">
+        <div class="card-body">
+            <form action="{{ url_for('api.add_comment') }}" method="post">
+                <div class="form-group row">
+                    <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
+                    <div class="col-sm-10">
+                    <textarea class="form-control" name="content" id="content" rows="5"
+                              placeholder="Comment"></textarea>
+                    </div>
+                </div>
+                <br>
+                <input type="hidden" name="Pid" value="{{ data['post_info']['Pid'] }}">
+                <div class="form-group row">
+                    <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Comment</button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <br>
-        <input type="hidden" name="Pid" value="{{ data['post_info']['Pid'] }}">
-        <div class="form-group row">
-            <div class="col-sm-10">
-                <button type="submit" class="btn btn-primary">Comment</button>
-            </div>
-        </div>
-    </form>
+    </div>
     <br>
 
     {# Pagination #}
