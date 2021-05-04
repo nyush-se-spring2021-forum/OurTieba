@@ -1,4 +1,7 @@
 import hashlib
+import json
+import os
+import random
 import re
 
 from flask import Blueprint, jsonify, request
@@ -21,16 +24,18 @@ def add_post():
             return jsonify({"error": {"msg": "user banned"}}), 404
 
     Bid = request.form.get("Bid")
-    if not Bid or not Bid.isnumeric():
+    title = request.form.get("title")
+    if not Bid or not Bid.isnumeric() or not title:
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}}), 403
     match_board.postCount += 1
-    title = request.form.get("title")
-    content = request.form.get("content")
 
+    content = request.form.get("content")
+    if not content:
+        content = " "
     new_post = Post(Uid, int(Bid), title, content)
     my_db.add(new_post)
     return redirect(f"/board/{Bid}")
