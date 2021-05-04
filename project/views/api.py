@@ -343,7 +343,10 @@ def save_file():
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
-    src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    filename_hash = hash(str(Uid) + str(datetime.datetime.utcnow))
+    src = str(filename_hash) + "." + file_type
+    while os.path.exists(path + src):
+        src = str(filename_hash) + "." + file_type
     with open(path + src, "wb") as f:
         file.save(f)
 
