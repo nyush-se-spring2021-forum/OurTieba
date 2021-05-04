@@ -43,8 +43,9 @@ def get_posts_in_board(Bid):
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    posts = [{"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.content[:100] + '...', "publish_time": p.timestamp,
-              "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount}
+    posts = [{"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.content[:100] + '...',
+              "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
+              "dislike_count": p.dislikeCount}
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
@@ -57,9 +58,9 @@ def get_comments_in_post(Pid):
     if not p:
         return "Not Found", 404
     p.viewCount += 1  # when page is accessed, increment view count
-    post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content, "publish_time": p.timestamp,
-                 "comment_count": p.commentCount, "like_count": p.likeCount, "dislike_count": p.dislikeCount,
-                 "owner": p.owner.nickname, "avatar": p.owner.avatar}
+    post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content,
+                 "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
+                 "dislike_count": p.dislikeCount, "owner": p.owner.nickname, "avatar": p.owner.avatar}
     if not session.get("Uid"):
         post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
     else:
