@@ -3,6 +3,16 @@
 {% block title %} Post {% endblock %}
 
 {% block page_content %}
+    {# Should be the same as iframe.css (.card-body = body) #}
+    <style>
+        .card-body {
+            font-size: 18px;
+        }
+        .card-body img {
+            max-width: 384px;
+            max-height: 384px;
+        }
+    </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }} >
     {{ data }}
     <div class="card">
