@@ -21,16 +21,16 @@ def add_post():
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
         if match_user.banDuration > datetime.datetime.utcnow():
-            return jsonify({"error": {"msg": "user banned"}}), 404
+            return jsonify({"error": {"msg": "user banned"}, "status": 0})
 
     Bid = request.form.get("Bid")
     title = request.form.get("title")
     if not Bid or not Bid.isnumeric() or not title:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "invalid board ID"}}), 403
+        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     match_board.postCount += 1
 
     content = request.form.get("content")
@@ -137,22 +137,22 @@ def add_comment():
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
         if match_user.banDuration > datetime.datetime.utcnow():
-            return jsonify({"error": {"msg": "user banned"}}), 404
+            return jsonify({"error": {"msg": "user banned"}, "status": 0})
 
     Pid = request.form.get("Pid")
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
-        return jsonify({"error": {"msg": "invalid post ID"}}), 403
+        return jsonify({"error": {"msg": "invalid post ID"}, "status": 0})
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
     new_comment = Comment(Uid, Pid, content)
     my_db.add(new_comment)
-    return redirect(f"/post/{Pid}?order=newest")
+    return jsonify({"status": 1})
 
 
 @api.route('/post/delete', methods=["POST"])

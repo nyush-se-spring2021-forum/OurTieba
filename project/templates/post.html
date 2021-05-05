@@ -3,6 +3,7 @@
 {% block title %} Post {% endblock %}
 
 {% block page_content %}
+    <input id="init-data" type="hidden" value={{ session["Uid"] }} >
     {{ data }}
     <div class="card">
         <div class="card-body">
@@ -199,25 +200,81 @@
     {# Add comment #}
     <div class="card">
         <div class="card-body">
-            <form action="{{ url_for('api.add_comment') }}" method="post">
+            <div>
                 <div class="form-group row">
                     <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
                     <div class="col-sm-10">
-                    <textarea class="form-control" name="content" id="content" rows="5"
-                              placeholder="Comment"></textarea>
+                    <!-- <textarea class="form-control" name="content" id="content" rows="5"
+                              placeholder="Comment"></textarea> -->
+                        <script id="editor" type="text/plain" style="width: 100%; height: 200px"></script>
                     </div>
                 </div>
                 <br>
-                <input type="hidden" name="Pid" value="{{ data['post_info']['Pid'] }}">
+                <input type="hidden" id="Pid" value="{{ data['post_info']['Pid'] }}">
                 <div class="form-group row">
                     <div class="col-sm-10">
-                        <button type="submit" class="btn btn-primary">Comment</button>
+                        <button class="btn btn-primary">Comment</button>
                     </div>
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     <br>
+    <script charset="UTF-8" src="/ueditor/ueditor.config.js"></script>
+    <script charset="UTF-8" src="/ueditor/ueditor.all.min.js"></script>
+    <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
+    <script>
+        var Uid = $("#init-data").val();
+        var ue = UE.getEditor('editor', {
+            toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
+            enterTag: "br",  // user "br" instead of "p" to escape line
+            imageScaleEnabled: false,
+            elementPathEnabled : false,
+            maximumWords: 1000
+        });
+        ue.ready(() => {
+            // get rid of popup messages
+            $(".edui-editor-messageholder.edui-default").css({ "visibility": "hidden" });
+            if (!Uid) {
+                // disable editor
+                ue.setDisabled();
+                // add log in display info
+                var view = $("iframe#ueditor_0").contents().find("body.view");
+                view.html("Please <a href='/login' target='_top'>log in</a> to create comment.");
+            }
+        })
+
+        $(".btn-primary").on("click", () => {
+            // check login status
+            if (!Uid) {
+                alert("Please log in to create a comment!");
+                location.href = "/login";
+                return
+            }
+            // check content not null
+            if (!ue.hasContents()) {
+                alert("You must enter comment content!");
+                return
+            }
+            // if everything ok, send request
+            var Pid = $("#Pid").val();
+            $.ajax({
+                method: "POST",
+                url: "/api/comment/add",
+                dataType: "json",
+                data: {
+                    Pid: Pid,
+                    content: ue.getContent()
+                },
+                success: data => {
+                    if (data.status !== 1) {
+                        alert("Create comment failed. Please try again!")
+                    }
+                    location.href = "/post/" + Pid + "?order=desc";
+                }
+            })
+        })
+    </script>
 
     {# Pagination #}
     <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>

@@ -71,13 +71,15 @@ def get_comments_in_post(Pid):
         else:
             post_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
 
-    order = request.args.get("order", "like_count")
+    order = request.args.get("order")
     page = request.args.get("page", "1")
 
-    if order == "like_count":
-        order = Comment.likeCount.desc()
-    else:
+    if order == "desc":
         order = Comment.timestamp.desc()
+    elif order == "asc":
+        order = Comment.timestamp  # default order is asc()
+    else:  # if order is None or invalid parameters
+        order = Comment.likeCount.desc()
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
