@@ -30,7 +30,8 @@
             <div class="float-start">
                 <a class="text-decoration-none"
                    href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">
-                    <img src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32" class="rounded-circle">
+                    <img alt="avatar" src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32"
+                         class="rounded-circle">
                 </a>
             </div>
             <div class="lead float-start">
@@ -123,7 +124,7 @@
                         <a class="text-body text-decoration-none"
                            href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
                             <img src="{{ '/cdn/'+ comment["user_avatar"] }}" width="32" height="32"
-                                 alt="" class="rounded-circle">
+                                 alt="avatar" class="rounded-circle">
                         </a>
                     </div>
                     <a class="text-body text-decoration-none"
@@ -214,7 +215,7 @@
                 <div class="form-group row">
                     <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
                     <div class="col-sm-10">
-                    <!-- <textarea class="form-control" name="content" id="content" rows="5"
+                        <!-- <textarea class="form-control" name="content" id="content" rows="5"
                               placeholder="Comment"></textarea> -->
                         <script id="editor" type="text/plain" style="width: 100%; height: 200px"></script>
                     </div>
@@ -235,6 +236,7 @@
     <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
     <script>
         var Uid = $("#init-data").val();
+        // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line

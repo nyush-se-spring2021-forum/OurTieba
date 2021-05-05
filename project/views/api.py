@@ -41,7 +41,7 @@ def add_post():
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
-    for ele in html.find("img"):
+    for ele in html.find("img.OT_image"):
         src = ele.attrs.get("src")
         if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
             photos.append(src[5:])
@@ -162,7 +162,7 @@ def add_comment():
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
-    for ele in html.find("img"):
+    for ele in html.find("img.OT_image"):
         src = ele.attrs.get("src")
         if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
             photos.append(src[5:])
