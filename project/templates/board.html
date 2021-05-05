@@ -125,12 +125,13 @@
                 return
             }
             // if everything ok, send request
+            var Bid = $("#Bid").val()
             $.ajax({
                 method: "POST",
                 url: "/api/post/add",
                 dataType: "json",
                 data: {
-                    Bid: $("#Bid").val(),
+                    Bid: Bid,
                     title: title,
                     content: ue.getContent(),
                     text: ue.getContentTxt()
@@ -139,7 +140,7 @@
                     if (data.status !== 1) {
                         alert("Create post failed. Please try again!")
                     }
-                    location.reload();
+                    location.href = "/board/" + Bid + "?order=newest"
                 }
             })
         })
