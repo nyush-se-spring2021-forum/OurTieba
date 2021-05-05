@@ -54,7 +54,8 @@
             <p class="body">{{ post['summary'] }}</p>
         </article>
             {% if post["preview_photo"] %}
-            <img class="preview-img" style="max-height: 192px; max-width: 192px" alt="" src={{ post["preview_photo"] }}>
+            <img class="preview-img" data-Pid="{{ post['Pid'] }}" style="max-height: 192px; max-width: 192px" alt=""
+                 src="{{ post["preview_photo"] }}">
             {% endif %}
         </div>
         {% if not loop.last %}
@@ -96,8 +97,9 @@
     <script>
         var Uid = $("#init-data").val();
         // set preview-img link
-        $(".preview-img").on("click", () => {
-            window.open("/photos");
+        $(".preview-img").on("click", function () {
+            var Pid = this.getAttribute("data-Pid");
+            window.open("/photos?pid="+Pid);
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {

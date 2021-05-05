@@ -241,8 +241,9 @@
     <script>
         var Uid = $("#init-data").val();
         // set OT_image link
-        $(".OT_image").on("click", () => {
-            window.open("/photos");
+        $(".OT_image").on("click", function (){
+            var cur_index = $(".OT_image").index(this);
+            window.open("/photos?index="+cur_index);
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
