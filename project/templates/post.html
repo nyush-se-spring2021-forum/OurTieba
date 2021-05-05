@@ -18,6 +18,7 @@
         }
     </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }} >
+    <input id="cur-page" type="hidden" value={{ data["page"] }}>
     {{ data }}
     <div class="card">
         <div class="card-body">
@@ -240,10 +241,12 @@
     <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
     <script>
         var Uid = $("#init-data").val();
+        var Pid = $("#Pid").val();
+        var page = $("#cur-page").val();
         // set OT_image link
         $(".OT_image").on("click", function (){
-            var cur_index = $(".OT_image").index(this);
-            window.open("/photos?index="+cur_index);
+            let cur_index = $(".OT_image").index(this);
+            window.open("/photos?pid="+ Pid + "&page=" + page + "&index="+cur_index);
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
