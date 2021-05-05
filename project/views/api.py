@@ -1,7 +1,5 @@
 import hashlib
 import json
-import os
-import random
 import re
 
 from flask import Blueprint, jsonify, request
@@ -348,12 +346,10 @@ def save_file():
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
-    filename_hash = hash(str(Uid) + str(datetime.datetime.utcnow))
-    src = str(filename_hash) + "." + file_type
-    while os.path.exists(path + src):
-        src = str(filename_hash) + "." + file_type
-    with open(path + src, "wb") as f:
-        file.save(f)
+    filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    while os.path.exists(filepath):
+        filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    file.save(filepath)
 
     match_user = my_db.query(User, User.Uid == Uid, first=True)
     avatar = match_user.avatar
@@ -443,11 +439,15 @@ def get_info():
 @api.route("/img/add", methods=["GET", "POST"])
 def upload_img():
     action = request.args.get("action")
-    if action == "config":
+    if action == "config":  # config the ueditor, user may not be logged-in
         with open("project/static/ueditor/config.json", "r") as f:
             content = f.read()
         result = json.loads(content)
     elif action == "uploadimage":
+        if not session.get("Uid"):
+            return jsonify({"error": {"msg": "not logged in"}, "status": 0})
+        Uid = session["Uid"]
+
         file = request.files.get("upfile")
         file_type = file.content_type
         file_type = file_type.split("/")[1]
@@ -456,11 +456,10 @@ def upload_img():
         if not os.path.exists(path):  # os is imported in config.py
             os.mkdir(path)
         file_size = request.headers["content-length"]
-        filename_hash = hash(str(datetime.datetime.utcnow) + str(file_size))  # allow un-logged-in user to upload
-        src = str(filename_hash) + "." + file_type
-        while os.path.exists(path + src):
-            src = str(filename_hash) + "." + file_type
-        filepath = path + src
+
+        filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        while os.path.exists(filepath):
+            filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
         file.save(filepath)
 
         result = {
