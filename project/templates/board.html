@@ -102,7 +102,8 @@
                 ue.setDisabled();
                 // add log in display info
                 var view = $("iframe#ueditor_0").contents().find("body.view");
-                view.html("Please <a href='/login' target='_top'>log in</a> to create post.");
+                var login_href = "/login?redirect=" + parent.location.href;
+                view.html("Please <a href='" + login_href + "' target='_top'>log in</a> to create post.");
                 // disable button
                 $(".btn-primary").attr("disabled", "disabled");
             }

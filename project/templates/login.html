@@ -32,6 +32,16 @@
 {% block scripts %}
     {{ super() }}
     <script>
+        // parse url to find "redirect" param (this is needed because login requests may come from iframes)
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        var r_link;
+        vars.forEach((e) => {
+            if (e.startsWith("redirect=")) {
+                r_link = e.substring(9);
+            }
+        })
+
         $(document).ready(function () {
             $("#btn_submit").click(function () {
                 let uname = $("#uname").val().trim();
@@ -46,7 +56,10 @@
                         success: function (response) {
                             let msg = "";
                             if (response.status !== 0) {
-                                history.go(-1);
+                                if (!r_link) {
+                                    r_link = document.referrer;
+                                }
+                                location.href = r_link;
                             } else {
                                 msg = response.error['msg'];
                                 $("#username-err").html(msg).show();
