@@ -103,6 +103,8 @@
                 // add log in display info
                 var view = $("iframe#ueditor_0").contents().find("body.view");
                 view.html("Please <a href='/login' target='_top'>log in</a> to create post.");
+                // disable button
+                $(".btn-primary").attr("disabled", "disabled");
             }
         })
 
