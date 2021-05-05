@@ -87,6 +87,8 @@
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line
+            retainOnlyLabelPasted: true, // remove all attributes of pasted tag
+            pasteplain: true,  // paste as plaintext
             imageScaleEnabled: false,
             elementPathEnabled : false,
             wordCount: !!Uid,

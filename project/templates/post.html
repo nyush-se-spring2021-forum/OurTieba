@@ -7,6 +7,7 @@
     <style>
         .card-body {
             font-size: 18px;
+            font-family: "Times New Roman", Sans-Serif, sans-serif;
         }
         .card-body img {
             max-width: 384px;
@@ -238,6 +239,8 @@
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line
+            retainOnlyLabelPasted: true, // remove all attributes of pasted tag
+            pasteplain: true,  // paste as plaintext
             imageScaleEnabled: false,
             elementPathEnabled : false,
             wordCount: !!Uid,
