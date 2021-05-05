@@ -135,3 +135,8 @@ def get_personal_profile(Uid):
         "banned": u.banned, "banDuration": u.banDuration, "isCurrent": int(Uid == session.get("Uid", -1))
     }
     return render_template("profile.html", data=user_info)
+
+
+@a_user.route("/photos")
+def photo_gallery():
+    return render_template("photos.html")
