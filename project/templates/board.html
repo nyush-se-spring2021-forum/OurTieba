@@ -3,6 +3,11 @@
 {% block title %} Boards {% endblock %}
 
 {% block page_content %}
+    <style>
+        .preview-img:hover {
+            cursor: pointer;
+        }
+    </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }} >
     {{ data }}
     <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
@@ -16,7 +21,8 @@
     </div>
     <hr>
     {% for post in data['posts'] %}
-        <article class="post">
+        <div style="display: flex; justify-content: space-between">
+            <article class="post">
             <header>
                 <div>
                     <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none">{{ post['title'] }}</a></h3>
@@ -47,6 +53,10 @@
             </header>
             <p class="body">{{ post['summary'] }}</p>
         </article>
+            {% if post["preview_photo"] %}
+            <img class="preview-img" style="max-height: 192px; max-width: 192px" alt="" src={{ post["preview_photo"] }}>
+            {% endif %}
+        </div>
         {% if not loop.last %}
             <hr>
         {% endif %}
@@ -84,6 +94,7 @@
     <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
     <script>
         var Uid = $("#init-data").val();
+        // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line
@@ -107,7 +118,7 @@
                 var login_href = "/login?redirect=" + parent.location.href;
                 view.html("Please <a href='" + login_href + "' target='_top'>log in</a> to create post.");
                 // disable button
-                $(".btn-primary").attr("disabled", "disabled");
+                $(".btn-submit").attr("disabled", "disabled");
             }
         })
 
