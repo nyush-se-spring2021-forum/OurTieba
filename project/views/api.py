@@ -3,6 +3,7 @@ import json
 import re
 
 from flask import Blueprint, jsonify, request
+from requests_html import HTML
 
 from ..configs import *
 from ..database import *
@@ -31,10 +32,21 @@ def add_post():
         return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     match_board.postCount += 1
 
-    content = request.form.get("content")
-    if not content:
-        content = " "
-    new_post = Post(Uid, int(Bid), title, content)
+    content = request.form.get("content", "<p></p>")
+    text = request.form.get("text", "")
+
+    photos = []
+    try:
+        html = HTML(html=content)
+    except Exception as e:
+        return jsonify({"error": {"msg": e}, "status": 0})
+
+    for ele in html.find("img"):
+        src = ele.attrs.get("src")
+        if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
+            photos.append(src[5:])
+
+    new_post = Post(Uid, int(Bid), title, content, photos, text)
     my_db.add(new_post)
     return jsonify({"status": 1})
 
@@ -142,13 +154,26 @@ def add_comment():
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
+    text = request.form.get("text", "")  # can be None because comment may only contain photo
+
+    photos = []
+    try:
+        html = HTML(html=content)
+    except Exception as e:
+        return jsonify({"error": {"msg": e}, "status": 0})
+
+    for ele in html.find("img"):
+        src = ele.attrs.get("src")
+        if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
+            photos.append(src[5:])
+
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}, "status": 0})
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
-    new_comment = Comment(Uid, Pid, content)
+    new_comment = Comment(Uid, Pid, content, photos, text)
     my_db.add(new_comment)
     return jsonify({"status": 1})
 

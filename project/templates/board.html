@@ -132,7 +132,8 @@
                 data: {
                     Bid: $("#Bid").val(),
                     title: title,
-                    content: ue.getContent()
+                    content: ue.getContent(),
+                    text: ue.getContentTxt()
                 },
                 success: data => {
                     if (data.status !== 1) {

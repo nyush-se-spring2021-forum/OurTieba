@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
 from ..database import my_db
@@ -10,8 +10,10 @@ class Post(my_db.Base):
     __tablename__ = "post"
 
     Pid = Column(Integer, primary_key=True)
-    title = Column(String)
-    content = Column(String)
+    title = Column(String, nullable=False)
+    content = Column(String, default="<p></p>")
+    photos = Column(PickleType, default=[])  # parsed from "content" column (see api.add_post)
+    text = Column(String, default="")  # plain text in "content" column
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
@@ -27,8 +29,8 @@ class Post(my_db.Base):
     comments = relationship("Comment", back_populates="comment_in", cascade='all, delete', passive_deletes=True)
     status_by = relationship("PostStatus", back_populates="on_post", cascade='all, delete', passive_deletes=True)
 
-    def __init__(self, Uid, Bid, title, content, timestamp=None, LCT=None, viewCount=None,
-                 commentCount=None, likeCount=None, dislikeCount=None):
+    def __init__(self, Uid, Bid, title, content=None, photos=None, text=None, timestamp=None, LCT=None,
+                 viewCount=None, commentCount=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         if isinstance(LCT, str):
@@ -37,6 +39,8 @@ class Post(my_db.Base):
         self.Bid = Bid
         self.title = title
         self.content = content
+        self.photos = photos
+        self.text = text
         self.timestamp = timestamp
         self.latestCommentTime = LCT if LCT else self.timestamp
         self.viewCount = viewCount
