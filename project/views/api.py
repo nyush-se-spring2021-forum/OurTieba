@@ -346,9 +346,11 @@ def save_file():
     if not os.path.exists(path):  # os is imported in config.py
         os.mkdir(path)
 
-    filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    filepath = path + src
     while os.path.exists(filepath):
-        filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        filepath = path + src
     file.save(filepath)
 
     match_user = my_db.query(User, User.Uid == Uid, first=True)
@@ -457,9 +459,11 @@ def upload_img():
             os.mkdir(path)
         file_size = request.headers["content-length"]
 
-        filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        filepath = path + src
         while os.path.exists(filepath):
-            filepath = path + str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+            src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+            filepath = path + src
         file.save(filepath)
 
         result = {
