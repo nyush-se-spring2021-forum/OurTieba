@@ -37,7 +37,7 @@ class myDb:
         with auto_scope(self._session) as _db_session:
             if first:
                 return _db_session.query(target).filter(condition).order_by(order).first()
-            return _db_session.query(target).filter(condition).order_by(order).all()  # can be None
+            return _db_session.query(target).filter(condition).order_by(order).all() or []  # if None return []
 
     def add(self, new):
         with auto_scope(self._session) as _db_session:
