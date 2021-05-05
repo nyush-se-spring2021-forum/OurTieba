@@ -38,7 +38,7 @@ def add_post():
         content = " "
     new_post = Post(Uid, int(Bid), title, content)
     my_db.add(new_post)
-    return redirect(f"/board/{Bid}")
+    return jsonify({"status": 1})
 
 
 @api.route('/like', methods=["POST"])
@@ -316,7 +316,7 @@ def login_auth():
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info
     # session.permanent = True
-    return jsonify({"status": 1})
+    return jsonify({"status": 1, "Uid": match_user.Uid})
 
 
 @api.route('/auth/logout', methods=["POST", "GET"])
@@ -438,3 +438,37 @@ def get_info():
                                             "timestamp": target.timestamp, "post_count": target.postCount,
                                             "view_count": target.viewCount, "subscribe_count": target.subscribeCount})
     return jsonify(base_info)
+
+
+@api.route("/img/add", methods=["GET", "POST"])
+def upload_img():
+    action = request.args.get("action")
+    if action == "config":
+        with open("project/static/ueditor/config.json", "r") as f:
+            content = f.read()
+        result = json.loads(content)
+    elif action == "uploadimage":
+        file = request.files.get("upfile")
+        file_type = file.content_type
+        file_type = file_type.split("/")[1]
+
+        path = CDN_PATH
+        if not os.path.exists(path):  # os is imported in config.py
+            os.mkdir(path)
+        file_size = request.headers["content-length"]
+        filename_hash = hash(str(datetime.datetime.utcnow) + str(file_size))  # allow un-logged-in user to upload
+        src = str(filename_hash) + "." + file_type
+        while os.path.exists(path + src):
+            src = str(filename_hash) + "." + file_type
+        filepath = path + src
+        file.save(filepath)
+
+        result = {
+            "state": "SUCCESS",
+            "url": "/" + filepath,
+            "title": "",
+            "original": ""
+        }
+    else:
+        result = {"error": 1}
+    return jsonify(result)
