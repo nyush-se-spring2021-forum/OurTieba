@@ -8,9 +8,13 @@
         .card-body {
             font-size: 18px;
         }
-        .card-body img {
+        {# Normally, the selectors ".card-body img" and ".OT_image" are the same. #}
+        .card-body img {  {# in case users insert <img> by themselves #}
             max-width: 384px;
             max-height: 384px;
+        }
+        .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
+            cursor: pointer;
         }
     </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }} >
@@ -236,6 +240,10 @@
     <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
     <script>
         var Uid = $("#init-data").val();
+        // set OT_image link
+        $(".OT_image").on("click", () => {
+            window.open("/photos");
+        })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],

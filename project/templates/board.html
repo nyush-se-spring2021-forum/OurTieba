@@ -95,6 +95,10 @@
     <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
     <script>
         var Uid = $("#init-data").val();
+        // set preview-img link
+        $(".preview-img").on("click", () => {
+            window.open("/photos");
+        })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
