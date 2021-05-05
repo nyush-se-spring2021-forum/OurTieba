@@ -99,7 +99,7 @@
         // set preview-img link
         $(".preview-img").on("click", function () {
             var Pid = this.getAttribute("data-Pid");
-            window.open("/photos?pid="+Pid);
+            window.open("/photos?pid="+Pid);  // show images within the post content
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
