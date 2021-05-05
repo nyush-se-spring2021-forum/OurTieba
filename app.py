@@ -44,7 +44,8 @@ def set_res_headers(response):
 def sql_test():
     A = Admin(password="root", aname="root", timestamp="2000-01-01 00:00:00")
 
-    u1 = User(uname="U1", password="111", nickname="user1", timestamp="2020-12-25 10:00:00")
+    u1 = User(uname="U1", password="111", nickname="user1", timestamp="2020-12-25 10:00:00",
+              avatar="-2837748924044579792.png")
     u2 = User(uname="U2", password="222", nickname="user2", timestamp="2020-12-26 08:00:00")
     u3 = User(uname="U3", password="333", nickname="user3", timestamp="2020-12-27 19:00:00")
     u4 = User(uname="U4", password="444", nickname="user4", timestamp="2020-12-28 20:00:00")
@@ -83,7 +84,10 @@ def sql_test():
     p17 = Post(Uid=2, Bid=1, title="P17", content="<p>1717</p>", timestamp="2021-03-21 12:01:00", text="1717")
     p18 = Post(Uid=2, Bid=1, title="P18", content="<p>1818</p>", timestamp="2021-03-21 12:01:00", text="1818")
     p19 = Post(Uid=2, Bid=1, title="P19", content="<p>1919</p>", timestamp="2021-03-21 12:01:00", text="1919")
-    p20 = Post(Uid=2, Bid=1, title="P20", content="<p>2020</p>", timestamp="2021-03-21 12:01:00", text="2020")
+    p20 = Post(Uid=2, Bid=1, title="Game Visual", content='<p>Found on official twitter account:<br/>'
+                                                          '<img src="/cdn/-3701751787780283978.jpeg" title="" '
+                                                          'alt=""/></p>', photos=["-3701751787780283978.jpeg"],
+               timestamp="2021-05-05 12:11:11", text='Found on official twitter account:')
 
     c1 = Comment(Uid=6, Pid=1, content="<p>wtf</p>", timestamp="2021-01-01 02:00:00", dislikeCount=1, text="wtf")
     c2 = Comment(Uid=1, Pid=1, content="<p>c111</p>", timestamp="2021-01-01 09:00:00", text="c111")
