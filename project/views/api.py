@@ -391,7 +391,7 @@ def handle_upload():
             if os.path.exists(old_path):
                 os.remove(old_path)
 
-        my_db.update(User, User.Uid == Uid, values={"avatar": src})
+        my_db.update(User, User.Uid == Uid, values={"avatar": AVATAR_PATH + src})
         session.pop("user_info")
         session["user_info"] = {"nickname": match_user.nickname, "avatar": src}
         result = {"status": 1}

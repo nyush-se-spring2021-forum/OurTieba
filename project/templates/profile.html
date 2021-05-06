@@ -2,6 +2,7 @@
 
 {% block title %} Profile {% endblock %}
 {% block page_content %}
+    {{ data }}
     <div class="display-6">{{ data['nickname'] }}</div>
     <hr>
     {% if data['banned'] == 1 %}
@@ -106,10 +107,9 @@
             }
             const formData = new FormData();
             formData.append("file", file);
-            formData.append("action", "uploadavatar");
             $.ajax({
                 method: "post",
-                url: "/api/upload",
+                url: "/api/upload?action=uploadavatar",
                 data: formData,
                 processData: false,
                 contentType: false,
