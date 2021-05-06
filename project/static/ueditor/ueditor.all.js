@@ -17664,9 +17664,13 @@ UE.plugins['video'] = function (){
             case 'video':
                 var ext = url.substr(url.lastIndexOf('.') + 1);
                 if(ext == 'ogv') ext = 'ogg';
-                str = '<video' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + ' video-js" ' + (align ? ' style="float:' + align + '"': '') +
-                    ' controls preload="none" width="' + width + '" height="' + height + '" src="' + url + '" data-setup="{}">' +
-                    '<source src="' + url + '" type="video/' + ext + '" /></video>';
+                // str = '<video' + (id ? ' id="' + id + '"' : '') + ' class="' + classname + ' video-js" ' + (align ? ' style="float:' + align + '"': '') +
+                // ' controls preload="none" width="' + width + '" height="' + height + '" src="' + url + '" data-setup="{}">' +
+                // '<source src="' + url + '" type="video/' + ext + '" /></video>';
+                // line 13 : column 2964 in ueditor.all.min.js:
+                // i="<video"+(e?' id="'+e+'"':"")+' class="'+g+' video-js" '+(f?' style="float:'+f+'"':"")+' controls preload="none" width="'+b+'" height="'+d+'" src="'+a+'" data-setup="{}"><source src="'+a+'" type="video/'+j+'" /></video>'
+                str = '<iframe class="OT_video OT_iframe" ' + (align ? ' style="float:' + align + '"': '') + ' width="'
+                    + width + '" height="' + height + '" src="/play?src=' + url + '"' + '></iframe>'
                 break;
         }
         return str;
