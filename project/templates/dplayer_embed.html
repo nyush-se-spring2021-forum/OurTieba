@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Loading...</title>
+    <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
 	<script type="text/javascript" src="/js/DPlayer.min.js"></script>
     <style>
         body, html {
@@ -43,6 +44,7 @@
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
         theme: '#FADFA3',
+        mutex: true,
         autoplay: a,
         loop: l,
         video: {
