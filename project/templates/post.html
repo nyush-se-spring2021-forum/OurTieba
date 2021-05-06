@@ -10,8 +10,8 @@
         }
 
         {# Normally, the selectors ".card-body img" and ".OT_image" are the same. #}
-        .card-body img {
-        {# in case users insert <img> by themselves #} max-width: 384px;
+        .card-body img {  {# in case users insert <img> by themselves #}
+            max-width: 384px;
             max-height: 384px;
         }
 
@@ -20,8 +20,8 @@
             max-height: 30vh;
         }
 
-        .OT_image:hover {
-        {# only OT_image has hover effect (is clickable) #} cursor: pointer;
+        .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
+            cursor: pointer;
         }
     </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }}>
@@ -280,10 +280,11 @@
             if (!Uid) {
                 // disable editor
                 ue.setDisabled();
+
                 // add log in display info
-                var view = $("iframe#ueditor_0").contents().find("body.view");
                 var login_href = "/login?redirect=" + parent.location.href;
-                view.html("Please <a href='" + login_href + "' target='_top'>log in</a> to create comment.");
+                ue.setContent("Please <a href='" + login_href + "' target='_top'>log in</a> to create comment.")
+
                 // disable button
                 $(".btn-submit").attr("disabled", "disabled");
             }
@@ -322,6 +323,7 @@
         })
 
         function insertReply(uid, uname) {
+            if (!Uid) {return}  // do not insert any content if not logged in
             ue.ready(() => {
                 if (ue.hasContents()) {  // append if there is text
                     ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +

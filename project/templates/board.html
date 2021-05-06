@@ -120,12 +120,14 @@
             if (!Uid) {
                 // disable title
                 $("#title").attr("disabled", "disabled").attr("placeholder", "You must log in to create a post!");
+
                 // disable editor
                 ue.setDisabled();
+
                 // add log in display info
-                var view = $("iframe#ueditor_0").contents().find("body.view");
                 var login_href = "/login?redirect=" + parent.location.href;
-                view.html("Please <a href='" + login_href + "' target='_top'>log in</a> to create post.");
+                ue.setContent("Please <a href='" + login_href + "' target='_top'>log in</a> to create comment.")
+
                 // disable button
                 $(".btn-submit").attr("disabled", "disabled");
             }
