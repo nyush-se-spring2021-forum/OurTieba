@@ -35,18 +35,18 @@ def add_post():
     content = request.form.get("content", "<p></p>")
     text = request.form.get("text", "")
 
-    photos = []
     try:
         html = HTML(html=content)
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
-    for ele in html.find("img.OT_image"):
+    medias = []
+    for ele in html.find("img.OT_image,iframe.OT_video"):
         src = ele.attrs.get("src")
-        if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
-            photos.append(src.split("/")[-1])
+        if src:  # src = "/cdn/-3578255560995509753.png" or "/play?src=/cdn/xxx.mp4"
+            medias.append(src.split("/")[-1])
 
-    new_post = Post(Uid, int(Bid), title, content, photos, text)
+    new_post = Post(Uid, int(Bid), title, content, medias, text)
     my_db.add(new_post)
     return jsonify({"status": 1})
 
@@ -491,6 +491,16 @@ def upload_img():
             filepath = path + src
         file.save(filepath)
 
+        result = {
+            "state": "SUCCESS",
+            "url": "/" + filepath,
+            "title": "",
+            "original": ""
+        }
+    elif action == "uploadvideo":
+        file = request.files.get("upfile")
+        filepath = CDN_PATH + "a.mp4"
+        file.save(filepath)
         result = {
             "state": "SUCCESS",
             "url": "/" + filepath,
