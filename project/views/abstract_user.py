@@ -53,7 +53,6 @@ def get_posts_in_board(Bid):
                      "dislike_count": p.dislikeCount, "preview_type": None, "preview_src": None}
         if p.medias:
             preview_media = p.medias[0].split("/")
-            print(p.medias, type(p.medias))
             post_info.update({"preview_type": preview_media[0], "preview_src": preview_media[1]})
         posts.append(post_info)
 

@@ -43,8 +43,10 @@ def add_post():
     medias = []
     for ele in html.find("img.OT_image,iframe.OT_video"):
         src = ele.attrs.get("src")
-        if src:  # src = "/cdn/-3578255560995509753.png" or "/play?src=/cdn/xxx.mp4"
-            medias.append(src.split("/")[-1])
+        if src:
+            tag = ele.tag
+            path = PHOTO_PATH if tag == "img" else VIDEO_PATH
+            medias.append(path + src.split("/")[-1])
 
     new_post = Post(Uid, int(Bid), title, content, medias, text)
     my_db.add(new_post)

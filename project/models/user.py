@@ -4,6 +4,7 @@ import hashlib
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
+from ..configs.macros import AVATAR_PATH
 from ._tables import user_report_table
 from ..database import my_db
 
@@ -15,7 +16,7 @@ class User(my_db.Base):
     password = Column(String)
     uname = Column(String, unique=True)
     nickname = Column(String)
-    avatar = Column(String, default="default_avatar.jpg")  # upon uploading, link=hash(Uid + timestamp) + ".png"
+    avatar = Column(String, default=AVATAR_PATH+"default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
     # personal info
     gender = Column(String)

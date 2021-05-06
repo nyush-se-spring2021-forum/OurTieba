@@ -19,7 +19,7 @@ class Post(my_db.Base):
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
     viewCount = Column(Integer, default=0)
-    latestCommentTime = Column(DateTime)
+    latestCommentTime = Column(DateTime, default=datetime.datetime.utcnow)
 
     Uid = Column(Integer, ForeignKey("user.Uid"))
     Bid = Column(Integer, ForeignKey("board.Bid"))
@@ -39,10 +39,10 @@ class Post(my_db.Base):
         self.Bid = Bid
         self.title = title
         self.content = content
-        self.photos = medias
+        self.medias = medias
         self.text = text
         self.timestamp = timestamp
-        self.latestCommentTime = LCT if LCT else self.timestamp
+        self.latestCommentTime = LCT
         self.viewCount = viewCount
         self.commentCount = commentCount
         self.likeCount = likeCount

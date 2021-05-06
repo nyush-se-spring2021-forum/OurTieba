@@ -57,7 +57,7 @@
                 <img class="preview-img" data-Pid="{{ post['Pid'] }}" style="max-height: 192px; max-width: 192px" alt=""
                     src="{{ "/cdn/" + post["preview_type"] + "/" + post["preview_src"] }}">
             {% elif post["preview_type"] == "video" %}
-                <iframe src="{{ "/play?src=" + post["preview_type"] + post["preview_src"] }}"></iframe>
+                <iframe src="{{ "/play?src=" + post["preview_type"] + "/" +post["preview_src"] }}"></iframe>
             {% endif %}
         </div>
         {% if not loop.last %}
