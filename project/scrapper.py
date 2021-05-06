@@ -17,6 +17,12 @@ class OTSpider:
                                       "like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.57"}
         self.cache = dict()  # note that this is stateless, which means it is cleared on every restart
 
+    def get(self, *arg, **kwargs):
+        return self.session.get(*arg, **kwargs)
+
+    def post(self, *arg, **kwargs):
+        return self.session.post(*arg, **kwargs)
+
     def set_cookie(self, cookie):  # if cookie set to None, remove cookie
         self.headers.update({"Cookie": cookie})
         if not cookie:
@@ -59,7 +65,7 @@ class OTSpider:
                         '"chat_group_client":0,"chat_group_notice":0,"allcountNum":11,"msgbox":0}')
         res = self.session.get("https://s.weibo.com/top/summary?Refer=top_hot&topnav=1&wvr=6", headers=self.headers)
         selectors = [f"#pl_top_realtimehot > table > tbody > tr:nth-child({i}) > td.td-02 > a"
-                     for i in range(2, 2+int(kwargs["num"]))]
+                     for i in range(2, 2 + int(kwargs["num"]))]
         top_list = []
         for s in selectors:
             element = res.html.find(s, first=True)
