@@ -158,16 +158,18 @@ def add_comment():
 
     text = request.form.get("text", "")  # can be None because comment may only contain photo
 
-    photos = []
     try:
         html = HTML(html=content)
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
-    for ele in html.find("img.OT_image"):
+    medias = []
+    for ele in html.find("img.OT_image,iframe.OT_video"):
         src = ele.attrs.get("src")
-        if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
-            photos.append(src.split("/")[-1])
+        if src:
+            tag = ele.tag
+            path = PHOTO_PATH if tag == "img" else VIDEO_PATH
+            medias.append(path + src.split("/")[-1])
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
@@ -175,7 +177,7 @@ def add_comment():
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
-    new_comment = Comment(Uid, Pid, content, photos, text)
+    new_comment = Comment(Uid, Pid, content, medias, text)
     my_db.add(new_comment)
     return jsonify({"status": 1})
 
