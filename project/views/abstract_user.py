@@ -12,6 +12,7 @@ a_user = Blueprint("abstract_user", __name__)
 
 @a_user.route("/")
 def index():
+    my_db.update(Post, Post.Pid == 20, values={"medias": ["photo/-3701751787780283978.jpeg"]})
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
@@ -45,10 +46,17 @@ def get_posts_in_board(Bid):
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    posts = [{"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text[:100] + '...',
-              "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
-              "dislike_count": p.dislikeCount, "preview_photo": "/" + CDN_ROOT_PATH + p.medias[0] if p.medias else None}
-             for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    posts = []
+    for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
+        post_info = {"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text[:100] + '...',
+                     "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
+                     "dislike_count": p.dislikeCount, "preview_type": None, "preview_src": None}
+        if p.medias:
+            preview_media = p.medias[0].split("/")
+            print(p.medias, type(p.medias))
+            post_info.update({"preview_type": preview_media[0], "preview_src": preview_media[1]})
+        posts.append(post_info)
+
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
     return render_template("board.html", data=data)

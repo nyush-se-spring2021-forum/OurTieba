@@ -53,11 +53,11 @@
             </header>
             <p class="body">{{ post['summary'] }}</p>
         </article>
-            {% if post["preview_photo"] %}
+            {% if post["preview_type"] == "photo" %}
                 <img class="preview-img" data-Pid="{{ post['Pid'] }}" style="max-height: 192px; max-width: 192px" alt=""
-                    src="{{ post["preview_photo"] }}">
-            {% else %}
-                <iframe src="/play?src=a.mp4"></iframe>
+                    src="{{ "/cdn/" + post["preview_type"] + "/" + post["preview_src"] }}">
+            {% elif post["preview_type"] == "video" %}
+                <iframe src="{{ "/play?src=" + post["preview_type"] + post["preview_src"] }}"></iframe>
             {% endif %}
         </div>
         {% if not loop.last %}
