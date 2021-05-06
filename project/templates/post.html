@@ -35,7 +35,8 @@
             <div class="blockquote-footer">{{ moment(data['post_info']['publish_time']).fromNow() }}</div>
             <div style="text-align: right; {% if data['num_page'] <= 1 %}display: none{% endif %}">
                 Rank by:
-                <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
+                <a class="text-decoration-none" href="javascript:setParam('order', 'desc')">desc</a>
+                <a class="text-decoration-none" href="javascript:setParam('order', 'asc')">asc</a>
                 <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
             </div>
             <div class="float-start">
