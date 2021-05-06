@@ -8,20 +8,23 @@
         .card-body {
             font-size: 18px;
         }
+
         {# Normally, the selectors ".card-body img" and ".OT_image" are the same. #}
-        .card-body img {  {# in case users insert <img> by themselves #}
-            max-width: 384px;
+        .card-body img {
+        {# in case users insert <img> by themselves #} max-width: 384px;
             max-height: 384px;
         }
+
         iframe.OT_video {
             max-width: 30vw;
             max-height: 30vh;
         }
-        .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
-            cursor: pointer;
+
+        .OT_image:hover {
+        {# only OT_image has hover effect (is clickable) #} cursor: pointer;
         }
     </style>
-    <input id="init-data" type="hidden" value={{ session["Uid"] }} >
+    <input id="init-data" type="hidden" value={{ session["Uid"] }}>
     {{ data }}
     <div class="card">
         <div class="card-body">
@@ -201,6 +204,7 @@
                             </div>
                         </div>
                     {% endif %}
+                    <br>
                     <div class="float-end">
                         {# report button #}
                         <a class="text-decoration-none text-body"
@@ -208,8 +212,11 @@
                             <div class="btn btn-outline-info">Report</div>
                         </a>
                         {# reply button #}
-                        <a href="#ue-anchor" onclick="insertReply('{{ comment['Uid'] }}',
-                                '{{ comment['publish_user'] }}');">Reply</a>
+                        <a class="text-decoration-none text-body" href="#ue-anchor"
+                           onclick="insertReply('{{ comment['Uid'] }}',
+                                   '{{ comment['publish_user'] }}');">
+                            <div class="btn btn-outline-info">Reply</div>
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">{{ comment['content']|safe }}</div>
@@ -250,10 +257,10 @@
         var Uid = $("#init-data").val();
         var Pid = $("#Pid").val();
         // set OT_image link
-        $(".OT_image").on("click", function (){
+        $(".OT_image").on("click", function () {
             // let cur_index = $(".OT_image").index(this);
             let cur_src = $(this).attr("src")
-            window.open("/photos?pid="+Pid+"&src="+cur_src);  // show images within both the post and comment content
+            window.open("/photos?pid=" + Pid + "&src=" + cur_src);  // show images within both the post and comment content
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
@@ -262,13 +269,13 @@
             retainOnlyLabelPasted: true, // remove all attributes of pasted tag
             pasteplain: true,  // paste as plaintext
             imageScaleEnabled: false,
-            elementPathEnabled : false,
+            elementPathEnabled: false,
             wordCount: !!Uid,
             maximumWords: 1000
         });
         ue.ready(() => {
             // get rid of popup messages
-            $(".edui-editor-messageholder.edui-default").css({ "visibility": "hidden" });
+            $(".edui-editor-messageholder.edui-default").css({"visibility": "hidden"});
             if (!Uid) {
                 // disable editor
                 ue.setDisabled();
@@ -312,11 +319,12 @@
                 }
             })
         })
+
         function insertReply(uid, uname) {
             ue.ready(() => {
-                if (ue.hasContents()){  // append if there is text
+                if (ue.hasContents()) {  // append if there is text
                     ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +
-                        '_href="/profile/'+ uid + '">@' + uname + '</a>' + ':&nbsp;', true)
+                        '_href="/profile/' + uid + '">@' + uname + '</a>' + ':&nbsp;', true)
                 } else {  // else set as new text
                     ue.setContent('<p><a href="/profile/' + uid + '" target="_self" ' +
                         '_href="/profile/' + uid + '">@' + uname + '</a>' + ':&nbsp;</p>')
