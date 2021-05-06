@@ -404,6 +404,7 @@
 			header: [],
 			hr:     [],
 			i:      ['class', 'style'],
+			iframe: ['src', 'class', 'id', 'style'],
 			img:    ['src', 'alt', 'title', 'width', 'height', 'id', '_src', 'loadingclass', 'class', 'data-latex'],
 			ins:    ['datetime'],
 			li:     ['class', 'style'],
