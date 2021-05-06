@@ -11,7 +11,7 @@ class Comment(my_db.Base):
 
     Cid = Column(Integer, primary_key=True)
     content = Column(String, nullable=False)
-    photos = Column(PickleType, default=[])  # parsed from "content" column (see api.add_comment)
+    medias = Column(PickleType, default=[])  # parsed from "content" column (see api.add_comment)
     text = Column(String, default="")  # plain text in "content" column
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     likeCount = Column(Integer, default=0)
@@ -23,13 +23,13 @@ class Comment(my_db.Base):
     comment_in = relationship("Post", back_populates="comments")
     status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_deletes=True)
 
-    def __init__(self, Uid, Pid, content, photos=None, text=None, timestamp=None, likeCount=None, dislikeCount=None):
+    def __init__(self, Uid, Pid, content, medias=None, text=None, timestamp=None, likeCount=None, dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Pid = Pid
         self.content = content
-        self.photos = photos
+        self.medias = medias
         self.text = text
         self.timestamp = timestamp
         self.likeCount = likeCount
