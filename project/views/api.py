@@ -349,46 +349,126 @@ def logout_auth():
     return "<script>location.replace(document.referrer);</script>", 200
 
 
-@api.route("/upload", methods=["POST"])
-@login_required
-def save_file():
-    Uid = session["Uid"]
+@api.route("/upload", methods=["POST", "GET"])
+def handle_upload():
+    action = request.args.get("action")
+    method = request.method.upper()
 
-    file = request.files.get("file")
-    # check if file
-    if not file:
-        return jsonify({"error": {"msg": "please upload a file"}})
-    # check file type
-    file_type = file.content_type
-    if not file_type or not file_type.startswith("image"):
-        return jsonify({"error": {"msg": "invalid file type"}})
-    file_type = file_type.split("/")[1]
-    # check file size
-    if int(request.headers["Content-Length"]) > 3 * 1024 * 1024:
-        return jsonify({"error": {"msg": "image too large"}})
+    if action == "uploadavatar" and method == "POST":  # user action. Upload avatar
+        if not session.get("Uid"):
+            return redirect("/login")
 
-    path = CDN_PATH
-    if not os.path.exists(path):  # os is imported in config.py
-        os.mkdir(path)
+        Uid = session["Uid"]
+        file = request.files.get("file")
+        # check if file
+        if not file:
+            return jsonify({"error": {"msg": "Please upload a file"}})
+        # check file type
+        file_type = file.content_type
+        if not file_type or not file_type.startswith("image"):
+            return jsonify({"error": {"msg": "Invalid file type"}})
+        file_type = file_type.split("/")[-1]
+        # check file size
+        file_size = int(request.headers.get("Content-Length", 0))
+        if file_size > 3 * 1024 * 1024:
+            return jsonify({"error": {"msg": "Image too large"}})
 
-    src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
-    filepath = path + src
-    while os.path.exists(filepath):
+        path = CDN_ROOT_PATH + AVATAR_PATH
+        if not os.path.exists(path):  # os is imported in config.py
+            os.mkdir(path)
+
         src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
         filepath = path + src
-    file.save(filepath)
+        while os.path.exists(filepath):
+            src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+            filepath = path + src
+        file.save(filepath)
 
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
-    avatar = match_user.avatar
-    if avatar != "default_avatar.jpg":
-        old_path = path + avatar
-        if os.path.exists(old_path):
-            os.remove(old_path)
+        match_user = my_db.query(User, User.Uid == Uid, first=True)
+        avatar = match_user.avatar
+        if avatar != "default_avatar.jpg":
+            old_path = path + avatar
+            if os.path.exists(old_path):
+                os.remove(old_path)
 
-    my_db.update(User, User.Uid == Uid, values={"avatar": src})
-    session.pop("user_info")
-    session["user_info"] = {"nickname": match_user.nickname, "avatar": src}
-    return jsonify({"status": 1})
+        my_db.update(User, User.Uid == Uid, values={"avatar": src})
+        session.pop("user_info")
+        session["user_info"] = {"nickname": match_user.nickname, "avatar": src}
+        result = {"status": 1}
+
+    elif action == "config" and method == "GET":  # ueditor action. Config the ueditor, user may not be logged-in
+        with open("project/static/ueditor/config.json", "r") as f:
+            content = f.read()
+        result = json.loads(content)
+
+    elif action == "uploadimage" and method == "POST":  # ueditor + user action. Upload photo within post and comment
+        if not session.get("Uid"):
+            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE: can be any error, ignored by ueditor
+        Uid = session["Uid"]
+
+        file = request.files.get("upfile")
+        file_type = file.content_type
+        if not file_type or not file_type.startswith("image"):
+            return jsonify({"error": {"msg": "Invalid file type"}})
+        file_type = file_type.split("/")[-1]
+
+        file_size = int(request.headers.get("Content-Length", 0))
+        if file_size > 2048000:  # must be the same as in static/ueditor/config.json ("imageMaxSize")
+            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE
+
+        path = CDN_ROOT_PATH + PHOTO_PATH
+        if not os.path.exists(path):  # os is imported in config.py
+            os.mkdir(path)
+
+        src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        filepath = path + src
+        while os.path.exists(filepath):
+            src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+            filepath = path + src
+        file.save(filepath)
+
+        result = {
+            "state": "SUCCESS",
+            "url": "/" + filepath,
+            "title": "",
+            "original": ""
+        }
+
+    elif action == "uploadvideo" and method == "POST":  # ueditor + user action. Upload video within post and comment
+        if not session.get("Uid"):
+            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})
+        Uid = session["Uid"]
+
+        file = request.files.get("upfile")
+        file_type = file.content_type
+        if not file_type or not file_type.startswith("video"):
+            return jsonify({"error": {"msg": "Invalid file type"}})
+        file_type = file_type.split("/")[-1]
+
+        file_size = int(request.headers.get("Content-Length", 0))
+        if file_size > 102400000:  # must be the same as in static/ueditor/config.json ("videoMaxSize")
+            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE
+
+        path = CDN_ROOT_PATH + VIDEO_PATH
+        if not os.path.exists(path):  # os is imported in config.py
+            os.mkdir(path)
+
+        src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+        filepath = path + src
+        while os.path.exists(filepath):
+            src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
+            filepath = path + src
+        file.save(filepath)
+
+        result = {
+            "state": "SUCCESS",
+            "url": "/" + filepath,
+            "title": "",
+            "original": ""
+        }
+    else:
+        result = {"error": {"msg": "Something went wrong"}, "status": 0}
+    return jsonify(result)
 
 
 @api.route("/subscribe", methods=["POST"])
@@ -461,52 +541,3 @@ def get_info():
                                             "timestamp": target.timestamp, "post_count": target.postCount,
                                             "view_count": target.viewCount, "subscribe_count": target.subscribeCount})
     return jsonify(base_info)
-
-
-@api.route("/img/add", methods=["GET", "POST"])
-def upload_img():
-    action = request.args.get("action")
-    if action == "config":  # config the ueditor, user may not be logged-in
-        with open("project/static/ueditor/config.json", "r") as f:
-            content = f.read()
-        result = json.loads(content)
-    elif action == "uploadimage":
-        if not session.get("Uid"):
-            return jsonify({"error": {"msg": "not logged in"}, "status": 0})
-        Uid = session["Uid"]
-
-        file = request.files.get("upfile")
-        file_type = file.content_type
-        file_type = file_type.split("/")[1]
-
-        path = CDN_PATH
-        if not os.path.exists(path):  # os is imported in config.py
-            os.mkdir(path)
-        file_size = request.headers["content-length"]
-
-        src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
-        filepath = path + src
-        while os.path.exists(filepath):
-            src = str(hash(str(Uid) + str(datetime.datetime.utcnow()))) + "." + file_type
-            filepath = path + src
-        file.save(filepath)
-
-        result = {
-            "state": "SUCCESS",
-            "url": "/" + filepath,
-            "title": "",
-            "original": ""
-        }
-    elif action == "uploadvideo":
-        file = request.files.get("upfile")
-        filepath = CDN_PATH + "a.mp4"
-        file.save(filepath)
-        result = {
-            "state": "SUCCESS",
-            "url": "/" + filepath,
-            "title": "",
-            "original": ""
-        }
-    else:
-        result = {"error": 1}
-    return jsonify(result)

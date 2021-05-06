@@ -47,7 +47,7 @@ def get_posts_in_board(Bid):
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     posts = [{"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text[:100] + '...',
               "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
-              "dislike_count": p.dislikeCount, "preview_photo": "/" + CDN_PATH + p.medias[0] if p.medias else None}
+              "dislike_count": p.dislikeCount, "preview_photo": "/" + CDN_ROOT_PATH + p.medias[0] if p.medias else None}
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
@@ -164,7 +164,7 @@ def render_dplayer():
     if not src:
         abort(404)
     if not src.startswith("http"):  # inner src link
-        src = os.path.join(CDN_PATH, src)
+        src = os.path.join(CDN_ROOT_PATH, src)
     autoplay = request.args.get("autoplay")
     if not autoplay or not autoplay.isnumeric():
         autoplay = 0  # default is no autoplay
