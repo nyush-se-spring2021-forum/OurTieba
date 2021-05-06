@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>OT Redirect</title>
+</head>
+<body>
+{% if data["status"] %}
+    <p>Click the link below to redirect. Make sure the source is trustworthy.</p>
+    <a href="{{ data["link"] }}" target="_self">{{ data["link"] }}</a>
+{% else %}
+    <p>Invalid link!</p>
+    <a href="javascript:history.back()">Go back</a>
+{% endif %}
+</body>
+</html>

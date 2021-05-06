@@ -11,7 +11,7 @@ a_user = Blueprint("abstract_user", __name__)
 @a_user.route("/")
 def index():
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
-    hot_news = [{"title": a["title"], "abstract": a["description"], "link": a["url"],
+    hot_news = [{"title": a["title"], "abstract": a["description"], "link": "/redirect?link=" + a["url"],
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
@@ -139,4 +139,16 @@ def get_personal_profile(Uid):
 
 @a_user.route("/photos")
 def photo_gallery():
+    # if only "pid" param, show all images in post content, else if valid "src" param,
+    # show all images in both post and comment content, else show nothing
     return render_template("photos.html")
+
+
+@a_user.route("/redirect")
+def redirect_page():
+    link = request.args.get("link")
+    if not link or not link.startswith("http") or not link.startswith("https"):
+        data = {"error": {"msg": "Invalid link!"}, "status": 0}
+    else:
+        data = {"link": link, "status": 1}
+    return render_template("redirect.html", data=data)
