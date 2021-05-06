@@ -6,7 +6,7 @@ from ..configs import *
 cdn = Blueprint("cdn", __name__, url_prefix="/cdn")
 
 
-@cdn.route("/<filename>")
+@cdn.route("/<path:filename>")
 def cdn_send_file(filename):
     # check whether file exists
     if not os.path.isfile(CDN_PATH + filename):
