@@ -47,7 +47,7 @@ def get_posts_in_board(Bid):
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     posts = [{"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text[:100] + '...',
               "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
-              "dislike_count": p.dislikeCount, "preview_photo": "/" + CDN_PATH + p.photos[0] if p.photos else None}
+              "dislike_count": p.dislikeCount, "preview_photo": "/" + CDN_PATH + p.medias[0] if p.medias else None}
              for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
