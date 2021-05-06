@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session
+from flask import Blueprint, render_template, request, session, abort
 
 from ..configs.macros import *
 from ..database import *
@@ -152,3 +152,21 @@ def redirect_page():
     else:
         data = {"link": link, "status": 1}
     return render_template("redirect.html", data=data)
+
+
+# mainly for pasring url, can also do in "dplayer_embed.html" by pure javascript
+@a_user.route("/play")
+def render_dplayer():
+    src = request.args.get("src")
+    if not src:
+        abort(404)
+    if not src.startswith("http"):  # inner src link
+        src = CDN_PATH + src
+    autoplay = request.args.get("autoplay")
+    if not autoplay or not autoplay.isnumeric():
+        autoplay = 0  # default is no autoplay
+    loop = request.args.get("loop")
+    if not loop or not loop.isnumeric():
+        loop = 0  # default is no loop
+    data = {"src": src, "autoplay": autoplay, "loop": loop}
+    return render_template("dplayer_embed.html", data=data)
