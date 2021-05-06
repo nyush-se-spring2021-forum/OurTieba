@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Loading...</title>
 	<script type="text/javascript" src="/js/DPlayer.min.js"></script>
-    <script type="text/javascript" src="/js/jquery-3.6.0.min.js"></script>
     <style>
         body, html {
             width: 100%;
@@ -30,9 +29,6 @@
 </head>
 <body>
 <div id="dplayer"></div>
-<input id="src" type="hidden" value="{{ data["src"] }}">
-<input id="autoplay" type="hidden" value="{{ data["autoplay"] }}">
-<input id="loop" type="hidden" value="{{ data["loop"] }}">
 <script>
     // Pure JavaScript way (can add error handling):
     // let keyword = location.href.split(/[=&]/);
@@ -40,10 +36,9 @@
     // document.title = id;
 
     document.title = "OurTieba Player"
-
-    var s = $("#src").val().trim();
-    var a = parseInt($("#autoplay").val());
-    var l = parseInt($("#loop").val());
+    var s = "{{ data["src"] }}";
+    var a = parseInt("{{ data["autoplay"] }}");
+    var l = parseInt("{{ data["loop"] }}");
 
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
