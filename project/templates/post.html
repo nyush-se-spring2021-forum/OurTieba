@@ -13,6 +13,10 @@
             max-width: 384px;
             max-height: 384px;
         }
+        iframe.OT_video {
+            max-width: 30vw;
+            max-height: 30vh;
+        }
         .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
             cursor: pointer;
         }
@@ -253,7 +257,7 @@
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
-            toolbars: [["simpleupload", "link", "|", "undo", "redo"]],
+            toolbars: [["simpleupload", "insertimage", "insertvideo", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line
             retainOnlyLabelPasted: true, // remove all attributes of pasted tag
             pasteplain: true,  // paste as plaintext

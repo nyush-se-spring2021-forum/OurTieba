@@ -86,7 +86,7 @@ def sql_test():
     p19 = Post(Uid=2, Bid=1, title="P19", content="<p>1919</p>", timestamp="2021-03-21 12:01:00", text="1919")
     p20 = Post(Uid=2, Bid=1, title="Game Visual", content='<p>Found on official twitter account:<br/>'
                                                           '<img class="OT_image" src="/cdn/-3701751787780283978.jpeg" '
-                                                          'title="" alt=""/></p>', photos=["-3701751787780283978.jpeg"],
+                                                          'title="" alt=""/></p>', medias=["-3701751787780283978.jpeg"],
                timestamp="2021-05-05 08:11:11", text='Found on official twitter account:')
 
     c1 = Comment(Uid=6, Pid=1, content="<p>wtf</p>", timestamp="2021-01-01 02:00:00", dislikeCount=1, text="wtf")
