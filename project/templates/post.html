@@ -198,10 +198,14 @@
                         </div>
                     {% endif %}
                     <div class="float-end">
+                        {# report button #}
                         <a class="text-decoration-none text-body"
                            href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
                             <div class="btn btn-outline-info">Report</div>
                         </a>
+                        {# reply button #}
+                        <a href="#ue-anchor" onclick="insertReply('{{ comment['Uid'] }}',
+                                '{{ comment['publish_user'] }}');">Reply</a>
                     </div>
                 </div>
                 <div class="card-body">{{ comment['content']|safe }}</div>
@@ -217,10 +221,10 @@
         <div class="card-body">
             <div>
                 <div class="form-group row">
-                    <label for="content" class="col-sm-2 col-form-label">Add Comment</label>
+                    <label for="editor" class="col-sm-2 col-form-label">Add Comment</label>
                     <div class="col-sm-10">
-                        <!-- <textarea class="form-control" name="content" id="content" rows="5"
-                              placeholder="Comment"></textarea> -->
+                        {# anchor for editor #}
+                        <a id="ue-anchor"></a>
                         <script id="editor" type="text/plain" style="width: 100%; height: 200px"></script>
                     </div>
                 </div>
@@ -304,6 +308,12 @@
                 }
             })
         })
+        function insertReply(uid, uname) {
+            ue.ready(() => {
+                ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +
+                    '_href="https://bilibili.com">@' + uname + '</a>', ue.hasContents())
+            })
+        }
     </script>
 
     {# Pagination #}
