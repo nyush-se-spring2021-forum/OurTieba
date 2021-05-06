@@ -44,7 +44,7 @@ def add_post():
     for ele in html.find("img.OT_image"):
         src = ele.attrs.get("src")
         if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
-            photos.append(src[5:])
+            photos.append(src.split("/")[-1])
 
     new_post = Post(Uid, int(Bid), title, content, photos, text)
     my_db.add(new_post)
@@ -165,7 +165,7 @@ def add_comment():
     for ele in html.find("img.OT_image"):
         src = ele.attrs.get("src")
         if src and src.startswith("/cdn/"):  # src = "/cdn/-3578255560995509753.png"
-            photos.append(src[5:])
+            photos.append(src.split("/")[-1])
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
