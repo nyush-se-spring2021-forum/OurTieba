@@ -1,3 +1,5 @@
+import os.path
+
 from flask import Blueprint, render_template, request, session, abort
 
 from ..configs.macros import *
@@ -161,7 +163,7 @@ def render_dplayer():
     if not src:
         abort(404)
     if not src.startswith("http"):  # inner src link
-        src = CDN_PATH + src
+        src = os.path.join(CDN_PATH, src)
     autoplay = request.args.get("autoplay")
     if not autoplay or not autoplay.isnumeric():
         autoplay = 0  # default is no autoplay
