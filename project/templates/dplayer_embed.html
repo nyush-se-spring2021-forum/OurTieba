@@ -31,13 +31,13 @@
 <body>
 <div id="dplayer"></div>
 <script>
-    document.title = "OurTieba Player"
+    document.title = "OurTieba Player";
 
     var s = "{{ data["src"] }}";
     var a = parseInt("{{ data["autoplay"] }}");
     var l = parseInt("{{ data["loop"] }}");
 
-    var dp = new DPlayer({
+    const dp = new DPlayer({
         container: document.getElementById('dplayer'),
         theme: '#FADFA3',
         mutex: true,
