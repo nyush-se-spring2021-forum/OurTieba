@@ -1,17 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>OT Redirect</title>
-</head>
-<body>
-{% if data["status"] %}
-    <p>Click the link below to redirect. Make sure the source is trustworthy.</p>
-    <a href="{{ data["link"] }}" target="_self">{{ data["link"] }}</a>
-{% else %}
-    <p>Invalid link!</p>
-    <a href="/" target="_self">Back to homepage</a>
-{% endif %}
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Redirect{% endblock %}
+
+{% block page_content %}
+    {% if data["status"] %}
+        <div class="display-6">Click the link below to redirect. Make sure the source is trustworthy.</div>
+        <hr>
+        <a class="link-danger text-decoration-none" href="{{ data["link"] }}" target="_self">{{ data["link"] }}</a>
+    {% else %}
+        <div class="display-4">Invalid link!</div>
+        <hr>
+        <a class="display-6 text-decoration-none" href="/" target="_self">Back to homepage</a>
+    {% endif %}
+{% endblock %}
