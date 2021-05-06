@@ -21,7 +21,7 @@
         }
 
         .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
-            cursor: pointer;
+            cursor: zoom-in;
         }
     </style>
     <input id="init-data" type="hidden" value={{ session["Uid"] }}>
@@ -260,8 +260,8 @@
         // set OT_image link
         $(".OT_image").on("click", function () {
             // let cur_index = $(".OT_image").index(this);
-            let cur_src = $(this).attr("src")
-            window.open("/photos?pid=" + Pid + "&src=" + cur_src);  // show images within both the post and comment content
+            let src = $(this).attr("src");
+            window.open("/photos?Pid="+Pid+"&src="+src);  // show images within both the post and comment content
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
