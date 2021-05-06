@@ -391,9 +391,10 @@ def handle_upload():
             if os.path.exists(old_path):
                 os.remove(old_path)
 
-        my_db.update(User, User.Uid == Uid, values={"avatar": AVATAR_PATH + src})
+        new_avatar = AVATAR_PATH + src
+        my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
         session.pop("user_info")
-        session["user_info"] = {"nickname": match_user.nickname, "avatar": src}
+        session["user_info"] = {"nickname": match_user.nickname, "avatar": new_avatar}
         result = {"status": 1}
 
     elif action == "config" and method == "GET":  # ueditor action. Config the ueditor, user may not be logged-in
