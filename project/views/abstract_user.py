@@ -149,9 +149,42 @@ def get_personal_profile(Uid):
 
 @a_user.route("/photos")
 def photo_gallery():
-    # if only "pid" param, show all images in post content, else if valid "src" param,
+    # if only "Pid" param, show all images in post content, else if valid "src" param,
     # show all images in both post and comment content, else show nothing
-    return render_template("photos.html")
+    Pid = request.args.get("Pid")
+    src = request.args.get("src")
+    if not Pid:
+        abort(404)
+    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
+    if not match_post:
+        abort(404)
+
+    photos = []
+    position = None
+    # get photos in post
+    medias = match_post.medias
+    for i, m in enumerate(medias):
+        if m.startswith(PHOTO_PATH):
+            cur_src = "/" + CDN_ROOT_PATH + m
+            photos.append(cur_src)
+            if cur_src == src:
+                position = i
+    base_len = len(photos)
+    # also get photos in comment if "src" specified
+    if src:
+        comments = my_db.query(Comment, Comment.Pid == Pid)
+        for c in comments:
+            medias = c.medias
+            for i, m in enumerate(medias):
+                if m.startswith(PHOTO_PATH):
+                    cur_src = "/" + CDN_ROOT_PATH + m
+                    photos.append(cur_src)
+                    if cur_src == src:
+                        position = i + base_len
+        if position is None:  # which means invalid "src"
+            abort(404)
+    data = {"photos": photos, "init_index": position}
+    return render_template("photos.html", data=data)
 
 
 @a_user.route("/redirect")

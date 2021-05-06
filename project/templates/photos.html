@@ -5,17 +5,46 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Photo Gallery</title>
     <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
+    <script src="/js/jquery-3.6.0.min.js"></script>
+    <script src="/js/fullpage.min.js"></script>
+    <link rel="stylesheet" href="/css/fullpage.min.css">
+    <script>
+        $(function(){
+            let init = parseInt("{{ data["init_index"] }}");
+            $(".slide").eq(init).addClass("active");
+
+	        $('#main-page').fullpage({
+            });
+        });
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-        }
-        body {
+        .section {
             background-color: black;
+        }
+        .content-wrapper {
+            width: 100%;
+        }
+        .OT_image {
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            max-width: 83vmax;
+            max-height: 83vmin;
         }
     </style>
 </head>
 <body>
+<div id="main-page">
+    <div class="section">
+        {% for p in data["photos"] %}
+            <div class="slide">
+                <div class="content-wrapper">
+                    <img data-src="{{ p }}" alt class="OT_image">
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 </body>
 </html>
