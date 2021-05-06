@@ -32,7 +32,7 @@
 
     "videoActionName": "uploadvideo",
     "videoFieldName": "upfile",
-    "videoPathFormat": "/ueditor/php/upload/video/{yyyy}{mm}{dd}/{time}{rand:6}",
+    "videoPathFormat": "/cdn/{filename}",
     "videoUrlPrefix": "",
     "videoMaxSize": 102400000,
     "videoAllowFiles": [
