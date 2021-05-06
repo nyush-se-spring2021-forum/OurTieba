@@ -310,8 +310,14 @@
         })
         function insertReply(uid, uname) {
             ue.ready(() => {
-                ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +
-                    '_href="https://bilibili.com">@' + uname + '</a>', ue.hasContents())
+                if (ue.hasContents()){  // append if there is text
+                    ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +
+                        '_href="/profile/'+ uid + '">@' + uname + '</a>' + ':&nbsp;', true)
+                } else {  // else set as new text
+                    ue.setContent('<p><a href="/profile/' + uid + '" target="_self" ' +
+                        '_href="/profile/' + uid + '">@' + uname + '</a>' + ':&nbsp;</p>')
+                }
+                ue.focus(true);  // focus cursor at the end of text
             })
         }
     </script>
