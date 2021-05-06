@@ -31,26 +31,30 @@
 <body>
 <div id="dplayer"></div>
 <script>
-    // Pure JavaScript way (can add error handling):
-    // let keyword = location.href.split(/[=&]/);
-    // let id = keyword[1], autoplay = parseInt(keyword[3]) || 0, loop = parseInt(keyword[5]) || 0;
-    // document.title = id;
-
     document.title = "OurTieba Player"
+
     var s = "{{ data["src"] }}";
     var a = parseInt("{{ data["autoplay"] }}");
     var l = parseInt("{{ data["loop"] }}");
 
-    const dp = new DPlayer({
+    var dp = new DPlayer({
         container: document.getElementById('dplayer'),
         theme: '#FADFA3',
         mutex: true,
+        screenshot: true,
         autoplay: a,
         loop: l,
         video: {
             url: s,
         },
     });
+
+    window.onblur = function () {
+        dp.pause();
+    }
+    window.onfocus = function () {
+        dp.play();
+    }
 </script>
 </body>
 </html>
