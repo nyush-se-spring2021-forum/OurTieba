@@ -2,7 +2,7 @@
 
 {% block title %} Profile {% endblock %}
 {% block page_content %}
-    {{ data }}
+
     <div class="display-6">{{ data['nickname'] }}</div>
     <hr>
     {% if data['banned'] == 1 %}
