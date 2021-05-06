@@ -181,6 +181,7 @@ def photo_gallery():
                     photos.append(cur_src)
                     if cur_src == src:
                         position = i + base_len
+            base_len = len(photos)
         if position is None:  # which means invalid "src"
             abort(404)
     data = {"photos": photos, "init_index": position}
