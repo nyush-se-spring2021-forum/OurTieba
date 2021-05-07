@@ -37,6 +37,7 @@ def filter_request():
 def set_res_headers(response):
     response.headers["Server"] = "OurTieba"
     response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "sameorigin"
     return response
 
 
