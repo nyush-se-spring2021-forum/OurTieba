@@ -220,12 +220,13 @@ def photo_gallery():
 @a_user.route("/redirect")
 def redirect_page():
     """
-    This function is used to redirect the users to outside news
+    This function is used to redirect user when user clicks an external link. Valid links begins with "http://",
+    "https://" or "ftp://".
     :return: redirect.html, which contains the link of the outside news
     """
-    link = request.args.get("link")
-    if not link or not link.startswith("http") or not link.startswith("https"):
-        data = {"error": {"msg": "Invalid link!"}, "status": 0}
+    link: str = request.args.get("link")
+    if not link or not (link.startswith("http://") or link.startswith("https://") or link.startswith("ftp://")):
+        data = {"status": 0}
     else:
         data = {"link": link, "status": 1}
     return render_template("redirect.html", data=data)
