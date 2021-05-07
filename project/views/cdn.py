@@ -8,6 +8,11 @@ cdn = Blueprint("cdn", __name__, url_prefix="/cdn")
 
 @cdn.route("/<path:filename>")
 def cdn_send_file(filename):
+    """
+    This function is used to show corresponding photo to the users based on 'filename'
+    :param filename:
+    :return: response
+    """
     # check whether file exists
     if not os.path.isfile(CDN_ROOT_PATH + filename):
         abort(404)

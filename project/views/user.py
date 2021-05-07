@@ -12,6 +12,10 @@ user_blue = Blueprint("user", __name__)
 @user_blue.route("/board/create")
 @login_required
 def create_post():
+    """
+    not used
+    :return:
+    """
     Uid = session["Uid"]
 
     # check whether user is banned
@@ -33,6 +37,10 @@ def create_post():
 @user_blue.route("/report")
 @login_required
 def report():
+    """
+    This function is used to redirect the users to the report page
+    :return: report.html
+    """
     target = request.args.get("target", 0)
     id = request.args.get("id")
     data = {"id": id, "target": target}
