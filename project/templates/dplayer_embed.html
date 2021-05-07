@@ -34,8 +34,8 @@
     document.title = "OurTieba Player";
 
     var s = "{{ data["src"] }}";
-    var a = parseInt("{{ data["autoplay"] }}");
-    var l = parseInt("{{ data["loop"] }}");
+    var a = {{ data["autoplay"] }};
+    var l = {{ data["loop"] }};
 
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),

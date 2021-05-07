@@ -16,28 +16,68 @@
             width: 100%;
             height: 100%;
         }
+        .img-box {
+            width: 100%;
+            height: 90%;  /* h1.  make sure h1 + h2 = 100% */
+        }
+        .index-box {
+            width: 100%;
+            height: 10%;  /* h2.  make sure h1 + h2 = 100% */
+        }
         .OT_image {
+            max-width: 83vmax;
+            max-height: 83vmin;
+
             position: relative;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            max-width: 83vmax;
-            max-height: 83vmin;
         }
-        .index p {
+        .index{
+            width: 20%;
+            font-size: 2rem;
+            font-family: Calibri, Sans-Serif, sans-serif;
             color: white;
+            text-align: center;
+
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .arrow {
+            width: 2.5vmax;
+            height: 5vmax;
+            background-color: greenyellow;
+            z-index: 100;
+
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .left-arrow {
+            left: 10px;
+            border-width: 38px 35px 38px 0
+        }
+        .right-arrow {
+            right: 10px;
+            border-width: 38px 0 38px 35px
         }
     </style>
 </head>
 <body>
 <div id="main-page">
     <div class="section">
+        <div class="left-arrow arrow"></div>
+        <div class="right-arrow arrow"></div>
         {% for p in data["photos"] %}
             <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
                 <div class="content-wrapper">
-                    <img data-src="{{ p }}" alt class="OT_image">
-                    <div class="index">
-                        <p>{{ loop.index }}</p>
+                    <div class="img-box">
+                        <img class="OT_image" data-src="{{ p }}" alt="" src="">
+                    </div>
+                    <div class="index-box">
+                        <div class="index">{{ loop.index | index_format(loop.length) }}{{ " / " }}
+                            {{ loop.length | index_format(loop.length) }}</div>
                     </div>
                 </div>
             </div>

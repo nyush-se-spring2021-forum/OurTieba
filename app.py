@@ -40,6 +40,11 @@ def set_res_headers(response):
     return response
 
 
+@app.template_filter("index_format")
+def add_zeros(i, length):  # format index in photos.html
+    return ("{:0>" + str(max(len(str(length)), 2)) + "d}").format(i)
+
+
 @app.route("/test")
 def sql_test():
     A = Admin(password="root", aname="root", timestamp="2000-01-01 00:00:00")
