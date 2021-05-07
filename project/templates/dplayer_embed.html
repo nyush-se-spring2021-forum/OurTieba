@@ -37,17 +37,43 @@
     var a = {{ data["autoplay"] }};
     var l = {{ data["loop"] }};
 
+    var autopause = true;
+
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
         theme: '#FADFA3',
+        lang: "en",
         mutex: true,
         screenshot: true,
         autoplay: a,
         loop: l,
+        contextmenu:[
+            {
+                text: "Disable auto pause",
+                click: (player) => {
+                    let des = document.getElementsByClassName("dplayer-menu-item")[0].getElementsByTagName("a")[0];
+                    if (autopause) {
+                        des.text = "Enable auto pause";
+                        window.onblur = ()=>{};
+                        window.onfocus = ()=>{};
+                        autopause = false;
+                    } else  {
+                        des.text = "Disable auto pause";
+                        window.onblur = function () {
+                            player.pause();
+                        }
+                        window.onfocus = function () {
+                            player.play();
+                        }
+                        autopause = true;
+                    }
+                }
+            }
+        ],
         video: {
             url: s,
         },
-    });
+    })
 
     window.onblur = function () {
         dp.pause();
