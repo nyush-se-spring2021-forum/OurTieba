@@ -11,17 +11,29 @@ admin_blue = Blueprint("admin", __name__, url_prefix="/admin")
 
 @admin_blue.route("/")
 def admin_hello():
+    """
+    This function is used to redirect to admin dashboard
+    :return: redirect to another path of '/admin/dashboard'
+    """
     return redirect("/admin/dashboard")
 
 
 @admin_blue.route("/login")
 def admin_login():
+    """
+    This function is used to show the admin login page
+    :return: admin_login.html
+    """
     return render_template("admin_login.html")
 
 
 @admin_blue.route("/dashboard")
 @admin_login_required
 def admin_dashboard():
+    """
+    This function is used for logged admins to show their dashboard
+    :return: admin_dashboard.html
+    """
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
 
@@ -38,6 +50,11 @@ def admin_dashboard():
 
 @admin_blue.route("/auth/login", methods=["POST"])
 def admin_auth_login():
+    """
+    This function is to evaluate the process of login of the admins
+    :return: json information
+    if the process is successful it will return status 1 otherwise it will return error message
+    """
     aname = request.form.get("aname")
     password = request.form.get("password")
     if not aname or not password:
@@ -61,6 +78,10 @@ def admin_auth_login():
 @admin_blue.route("/auth/logout")
 @admin_login_required
 def admin_logout():
+    """
+    This function is used for logged in admins to logout
+    :return: redirect to another path of '/admin/login'
+    """
     session.clear()
     return redirect("/admin/login")
 
@@ -68,6 +89,11 @@ def admin_logout():
 @admin_blue.route("/board/delete", methods=["POST"])
 @admin_login_required
 def admin_board_delete():
+    """
+    This function is used for logged in admin to delete a board
+    :return: json information
+    if the deletion is successful it will return status 1 otherwise it will return error message
+    """
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
@@ -80,6 +106,11 @@ def admin_board_delete():
 @admin_blue.route("/post/delete", methods=["POST"])
 @admin_login_required
 def admin_post_delete():
+    """
+    This function is used for logged in admin to delete a post
+    :return: json information
+    if the deletion is successful it will return status 1 otherwise it will return error message
+    """
     Pid = request.form.get("Pid")
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
@@ -94,6 +125,11 @@ def admin_post_delete():
 @admin_blue.route("/comment/delete", methods=["POST"])
 @admin_login_required
 def admin_comment_delete():
+    """
+    This function is used for logged in admin to delete a comment
+    :return: json information
+    if the deletion is successful it will return status 1 otherwise it will return error message
+    """
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
@@ -108,6 +144,11 @@ def admin_comment_delete():
 @admin_blue.route("/user/ban", methods=["POST"])
 @admin_login_required
 def admin_user_ban():
+    """
+    This function is used for logged in admin to ban a user
+    :return: json information
+    if the ban is successful it will return status 1 otherwise it will return error message
+    """
     Uid = request.form.get("Uid")
     days = request.form.get("days")
     if not Uid or not Uid.isnumeric() or not days or not days.isnumeric() or int(days) <= 0:
@@ -122,6 +163,11 @@ def admin_user_ban():
 @admin_blue.route("/user/unban", methods=["POST"])
 @admin_login_required
 def admin_user_unban():
+    """
+    This function is user for logged in admin to unban a user
+    :return: json information
+    if the ban is successful it will return status 1 otherwise it will return error message
+    """
     Uid = request.form.get("Uid")
     if not Uid or not Uid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
@@ -134,6 +180,11 @@ def admin_user_unban():
 @admin_blue.route("/report/resolve", methods=["POST"])
 @admin_login_required
 def admin_report_resolve():
+    """
+    This function is used for logged in admin to resolve a report
+    :return: json information
+    if the process of resolution is successful it will return status 1 otherwise it will return error message
+    """
     Rid = request.form.get("Rid")
     if not Rid or not Rid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
