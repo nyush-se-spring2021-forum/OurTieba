@@ -16,9 +16,15 @@
             width: 100%;
             height: 100%;
         }
-        .img-box {
+        .content-box {
             width: 100%;
             height: 90%;  /* h1.  make sure h1 + h2 = 100% */
+        }
+        .center-content {
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
         .index-box {
             width: 100%;
@@ -27,11 +33,6 @@
         .OT_image {
             max-width: 83vmax;
             max-height: 83vmin;
-
-            position: relative;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
         }
         .index{
             width: 20%;
@@ -66,6 +67,11 @@
             border-width: 2vmax 0 2vmax 3vmax;
             border-color: transparent transparent transparent #fff;
         }
+        .notice {
+            height: 80%;
+            width: 40%;
+            border: 2px solid white
+        }
     </style>
 </head>
 <body>
@@ -76,8 +82,8 @@
         {% for p in data["photos"] %}
             <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
                 <div class="content-wrapper">
-                    <div class="img-box">
-                        <img class="OT_image" data-src="{{ p }}" alt="" src="">
+                    <div class="img-box content-box">
+                        <img class="OT_image center-content" data-src="{{ p }}" alt="" src="">
                     </div>
                     <div class="index-box">
                         <div class="index">{{ loop.index | index_format(loop.length) }}{{ " / " }}
@@ -86,6 +92,19 @@
                 </div>
             </div>
         {% endfor %}
+        <!-- if no photos (init_index = -1) -->
+        {% if data["init_index"] == -1 %}
+            <div class="slide">
+                <div class="content-wrapper">
+                    <div class="img-box content-box">
+                        <div class="notice center-content">Sorry!<br>No Photos Available</div>
+                    </div>
+                    <div class="index-box">
+                        <div class="index">00 / 00</div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
     </div>
 </div>
 <script>
@@ -98,7 +117,7 @@
     $(function(){
         $('#main-page').fullpage({
             controlArrows: false,
-            afterSlideLoad: (section, origin, destination, direction) => {
+            onSlideLeave: (section, origin, destination, direction) => {
 
                 // first restore arrow style
                 left_arrow.css("border-color", "transparent #fff transparent transparent").removeAttr("disabled")
@@ -125,7 +144,7 @@
             fullpage_api.moveSlideRight();
         })
         // initial styling, this is necessary because "afterSlideLoad" is not triggered when page is first loaded
-        if (init_i === 1) {
+        if (init_i <= 1) {
             left_arrow.css("border-color", "transparent grey transparent transparent").attr("disabled", "disabled");
         }
         if (init_i === nb_photo) {
