@@ -207,6 +207,8 @@ def photo_gallery():
             base_len = len(photos)
         if position is None:  # which means invalid "src"
             abort(404)
+    else:
+        position = 0 if photos else -1
     data = {"photos": photos, "init_index": position}
     return render_template("photos.html", data=data)
 
