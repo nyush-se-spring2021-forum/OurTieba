@@ -173,8 +173,9 @@ def get_personal_profile(Uid):
 @a_user.route("/photos")
 def photo_gallery():
     """
-    This function is used to view the images in the board and post
-    :return: photos.html, which contains all photos related to this board or post
+    This function is used to view the images in the board and post.
+    :return: photos.html, which contains all photos related to this board or post, and
+    the initial position of photo in the slides (not photo list)
     """
     # if only "Pid" param, show all images in post content, else if valid "src" param,
     # show all images in both post and comment content, else show nothing
@@ -195,7 +196,7 @@ def photo_gallery():
             cur_src = "/" + CDN_ROOT_PATH + m
             photos.append(cur_src)
             if cur_src == src:
-                position = i
+                position = i + 1
     base_len = len(photos)
     # also get photos in comment if "src" specified
     if src:
@@ -207,12 +208,12 @@ def photo_gallery():
                     cur_src = "/" + CDN_ROOT_PATH + m
                     photos.append(cur_src)
                     if cur_src == src:
-                        position = i + base_len
+                        position = i + base_len + 1
             base_len = len(photos)
         if position is None:  # which means invalid "src"
             abort(404)
     else:
-        position = 0 if photos else -1
+        position = 1 if photos else 0
     data = {"photos": photos, "init_index": position}
     return render_template("photos.html", data=data)
 

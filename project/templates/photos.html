@@ -29,6 +29,9 @@
         .index-box {
             width: 100%;
             height: 10%;  /* h2.  make sure h1 + h2 = 100% */
+
+            position: absolute;
+            bottom: 0;
         }
         .OT_image {
             max-width: 83vmax;
@@ -116,29 +119,26 @@
         <!-- control arrows -->
         <button class="left-arrow arrow"></button>
         <button class="right-arrow arrow"></button>
+        <!-- index box -->
+        <div class="index-box">
+            <div class="index">00 / 00</div>
+        </div>
         <!-- prepare slides if photos -->
         {% for p in data["photos"] %}
-            <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
+            <div class="{{ "slide" + (" active" if loop.index == data["init_index"] else "") }}">
                 <div class="content-wrapper">
                     <div class="img-box content-box">
                         <img class="OT_image center-content" data-src="{{ p }}" alt="" src="">
                     </div>
-                    <div class="index-box">
-                        <div class="index">{{ loop.index | index_format(loop.length) }}{{ " / " }}
-                            {{ loop.length | index_format(loop.length) }}</div>
-                    </div>
                 </div>
             </div>
         {% endfor %}
-        <!-- if no photos (init_index = -1) -->
-        {% if data["init_index"] == -1 %}
+        <!-- if no photos (init_index = 0) -->
+        {% if data["init_index"] == 0 %}
             <div class="slide">
                 <div class="content-wrapper">
                     <div class="img-box content-box">
                         <div class="notice center-content"><br>Sorry!<br><br>No Photos Available</div>
-                    </div>
-                    <div class="index-box">
-                        <div class="index">00 / 00</div>
                     </div>
                 </div>
             </div>
@@ -146,16 +146,22 @@
     </div>
 </div>
 <script>
-    var nb_photo = {{ data["photos"]| length }};
-    var init_i = {{ data["init_index"] }} + 1;
+    var nb_photo = {{ data["photos"] | length }};
+    var init_i = {{ data["init_index"] }};
 
     var left_arrow = $(".left-arrow");
     var right_arrow = $(".right-arrow");
 
     $(function(){
-        setInterval(() => {
+        setInterval(() => {  // display notice-bar for 1 sec then dismiss
             $("#notice-bar").css("opacity", "0");
         }, 1000)
+
+        //var len = num.toString().length;
+        //while(len < n) {
+           // num = "0" + num;
+            //len++;
+        //}
 
         $('#main-page').fullpage({
             controlArrows: false,
