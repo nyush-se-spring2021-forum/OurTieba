@@ -12,6 +12,10 @@ a_user = Blueprint("abstract_user", __name__)
 
 @a_user.route("/")
 def index():
+    """
+    This function is used to show the main page of our system with recommend boards and hot news
+    :return: index.html, which is our main page
+    """
     my_db.update(Post, Post.Pid == 20, values={"medias": ["photo/-3701751787780283978.jpeg"]})
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
@@ -24,6 +28,11 @@ def index():
 
 @a_user.route("/board/<int:Bid>")
 def get_posts_in_board(Bid):
+    """
+    This function is used to show the corresponding board page according to Bid with several posts in it.
+    :param Bid: the id of a Board
+    :return: board.html, a board with corresponding Bid
+    """
     b = my_db.query(Board, Board.Bid == Bid, first=True)
     if not b:
         return "Not Found!", 404
@@ -63,6 +72,11 @@ def get_posts_in_board(Bid):
 
 @a_user.route("/post/<int:Pid>")
 def get_comments_in_post(Pid):
+    """
+    This function is used to show the corresponding post page according to Pid with several comments in it
+    :param Pid: the id of a Post
+    :return: post.html, a post with corresponding Pid
+    """
     p = my_db.query(Post, Post.Pid == Pid, first=True)
     if not p:
         return "Not Found", 404
@@ -118,6 +132,10 @@ def get_comments_in_post(Pid):
 
 @a_user.route("/search_board")
 def search_board():
+    """
+    This function is used to search for relating board based on the key words users give.
+    :return: search_result.html, which shows all corresponding boards satisfying the demand
+    """
     keyword = request.args.get("kw")
     if not keyword:
         return render_template("search_result.html", error="Please enter a keyword!")
@@ -136,6 +154,11 @@ def search_board():
 
 @a_user.route("/profile/<int:Uid>")
 def get_personal_profile(Uid):
+    """
+    This function is used to show the corresponding profile page according to Uid
+    :param Uid:
+    :return: profile.html, which contains many information of corresponding user
+    """
     u = my_db.query(User, User.Uid == Uid, first=True)
     if not u:
         return "Not Found", 404

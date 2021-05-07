@@ -15,6 +15,11 @@ api = Blueprint("api", __name__, url_prefix="/api")
 @api.route('/post/add', methods=["POST"])
 @login_required
 def add_post():
+    """
+    This function is used for logged in users to create new post under a board
+    :return: json information:
+    if the creation is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
@@ -56,6 +61,11 @@ def add_post():
 @api.route('/like', methods=["POST"])
 @login_required
 def like():
+    """
+    This function is used for logged in users to like a comment or post
+    :return: json information:
+    if the process is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
@@ -87,6 +97,11 @@ def like():
 @api.route('/dislike', methods=["POST"])
 @login_required
 def dislike():
+    """
+    This function is used for logged in users to dislike a comment or post
+    :return: json information:
+    if the process is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
@@ -118,6 +133,11 @@ def dislike():
 @api.route('/report/add', methods=["POST"])
 @login_required
 def add_report():
+    """
+    This function is used for logged in users to report a post
+    :return: if the report is successful, it will redirect the user to the previous post page
+    otherwise, it will return json error message
+    """
     Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
@@ -144,6 +164,11 @@ def add_report():
 @api.route('/comment/add', methods=["POST"])
 @login_required
 def add_comment():
+    """
+    This function is used for logged in users to create new comment under a post
+    :return: json information:
+    if the creation is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
     # check whether user is banned
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
@@ -185,6 +210,11 @@ def add_comment():
 @api.route('/post/delete', methods=["POST"])
 @login_required
 def delete_post():
+    """
+    THis function is used for logged in users to delete a post created by himself
+    :return: if successful, it will redirect to the previous board
+    otherwise, it will return json error message
+    """
     Uid = session['Uid']
 
     Pid = request.form.get("Pid")
@@ -210,6 +240,11 @@ def delete_post():
 @api.route('/comment/delete', methods=["POST"])
 @login_required
 def delete_comment():  # will not alter post lastCommentTime
+    """
+    THis function is used for logged in users to delete a comment created by himself
+    :return: if successful, it will redirect to the previous post
+    otherwise, it will return json error message
+    """
     Uid = session['Uid']
 
     Cid = request.form.get("Cid")
@@ -234,6 +269,11 @@ def delete_comment():  # will not alter post lastCommentTime
 @api.route('/personal_info/add', methods=["POST"])
 @login_required
 def add_personal_info():
+    """
+    This function is used for logged in users to add information in their profile
+    :return: if successful, it will redirect to the profile page of this user
+    otherwise, it will return json error message
+    """
     Uid = session["Uid"]
 
     nickname = request.form.get("nickname")
@@ -278,6 +318,11 @@ def add_personal_info():
 
 @api.route('/auth/register', methods=["POST"])
 def register_auth():
+    """
+    This function is to evaluate the registration
+    :return: json information:
+    if the registration is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session.get("Uid")
     if Uid:
         return redirect("/")  # if already logged in, redirect to homepage
@@ -324,6 +369,11 @@ def register_auth():
 
 @api.route('/auth/login', methods=["POST"])
 def login_auth():
+    """
+    This function is to evaluate the log in
+    :return: json information:
+    if the log in is successful it will return status 1 and corresponding Uid otherwise it will return error message
+    """
     Uid = session.get("Uid")
     if Uid:
         return redirect("/")  # if already logged in, redirect to homepage
@@ -349,12 +399,21 @@ def login_auth():
 @api.route('/auth/logout', methods=["POST", "GET"])
 @login_required
 def logout_auth():
+    """
+    This function is used for logged in user to logout
+    :return: a html text message
+    """
     session.clear()
     return "<script>location.replace(document.referrer);</script>", 200
 
 
 @api.route("/upload", methods=["POST", "GET"])
 def handle_upload():
+    """
+    This function is used for users to change their avatar in their profile page
+    :return: if this user is not logged in, it will redirect to the log in page
+    if the uploading failed, it will return json error message
+    """
     action = request.args.get("action")
     method = request.method.upper()
 
@@ -479,6 +538,11 @@ def handle_upload():
 @api.route("/subscribe", methods=["POST"])
 @login_required
 def subscribe():
+    """
+    This function is used for logged in users to subscribe a board
+    :return: json information
+    if the subscribe is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
 
     Bid = request.form.get("Bid")
@@ -499,6 +563,11 @@ def subscribe():
 @api.route("/auth/set_password")
 @login_required
 def set_password():
+    """
+    This function is used for logged in users to evaluate password setting process
+    :return: json information
+    if the setting is successful it will return status 1 otherwise it will return error message
+    """
     Uid = session["Uid"]
 
     # check password
