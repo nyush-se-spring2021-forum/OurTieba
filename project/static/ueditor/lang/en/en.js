@@ -557,7 +557,7 @@ UE.I18N['en'] = {
             'lang_input_title':'Title：',
         },
         'validLink':'Supports only effective when a link is selected',
-        'httpPrompt':'Hyperlink should start with "http://", "https://" or "ftp://"!'
+        'httpPrompt':'Valid schemes: "https://" (default), "http://", "ftp://"'
     },
     map:{
         'static':{
