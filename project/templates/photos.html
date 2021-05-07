@@ -121,7 +121,8 @@
         <button class="right-arrow arrow"></button>
         <!-- index box -->
         <div class="index-box">
-            <div class="index">00 / 00</div>
+            <div class="index">{{ data["init_index"] | index_format(data["photos"].__len__()) }} /
+                {{ data["photos"].__len__() | index_format(data["photos"].__len__()) }}</div>
         </div>
         <!-- prepare slides if photos -->
         {% for p in data["photos"] %}
@@ -153,26 +154,34 @@
     var right_arrow = $(".right-arrow");
 
     $(function(){
-        setInterval(() => {  // display notice-bar for 1 sec then dismiss
-            $("#notice-bar").css("opacity", "0");
-        }, 1000)
-
-        //var len = num.toString().length;
-        //while(len < n) {
-           // num = "0" + num;
-            //len++;
-        //}
+        if (nb_photo === 0) {  // hide notice bar if no photos to display
+            $("#notice-bar").css("display", "none");
+        } else {
+            setInterval(() => {  // display notice bar for 1 sec then dismiss
+                $("#notice-bar").css("opacity", "0");
+            }, 1000)
+        }
 
         $('#main-page').fullpage({
             controlArrows: false,
             onSlideLeave: (section, origin, destination, direction) => {
+                let d_index = destination.index + 1;
+
+                // alter index, pad zeros before (just for visual effect)
+                let p_index = d_index.toString();
+                let p_nb = nb_photo.toString();
+                for (let i=0;i<p_nb.length-p_index.length;i++) {
+                    p_index = "0" + p_index;
+                }
+                if (p_index.length<=1) {p_index = "0" + p_index;}
+                if (p_nb.length<=1) {p_nb = "0" + p_nb;}
+                $(".index").text(p_index + " / " + p_nb);
 
                 // first restore arrow style
                 left_arrow.css("border-color", "transparent #fff transparent transparent").removeAttr("disabled")
                 right_arrow.css("border-color", "transparent transparent transparent #fff").removeAttr("disabled")
 
                 // then change if needed
-                let d_index = destination.index + 1;
                 if (d_index === 1) {
                     left_arrow.css("border-color", "transparent grey transparent transparent")
                         .attr("disabled", "disabled");
