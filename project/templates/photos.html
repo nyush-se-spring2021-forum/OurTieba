@@ -8,28 +8,24 @@
     <script src="/js/jquery-3.6.0.min.js"></script>
     <script src="/js/fullpage.min.js"></script>
     <link rel="stylesheet" href="/css/fullpage.min.css">
-    <script>
-        $(function(){
-            let init = parseInt("{{ data["init_index"] }}");
-            $(".slide").eq(init).addClass("active");
-
-	        $('#main-page').fullpage({
-            });
-        });
-    </script>
     <style>
         .section {
             background-color: black;
         }
         .content-wrapper {
             width: 100%;
+            height: 100%;
         }
         .OT_image {
             position: relative;
+            top: 50%;
             left: 50%;
-            transform: translateX(-50%);
+            transform: translate(-50%, -50%);
             max-width: 83vmax;
             max-height: 83vmin;
+        }
+        .index p {
+            color: white;
         }
     </style>
 </head>
@@ -37,14 +33,22 @@
 <div id="main-page">
     <div class="section">
         {% for p in data["photos"] %}
-            <div class="slide">
+            <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
                 <div class="content-wrapper">
                     <img data-src="{{ p }}" alt class="OT_image">
+                    <div class="index">
+                        <p>{{ loop.index }}</p>
+                    </div>
                 </div>
             </div>
         {% endfor %}
     </div>
 </div>
-
+<script>
+    $(function(){
+        $('#main-page').fullpage({
+        });
+    });
+</script>
 </body>
 </html>
