@@ -15,7 +15,7 @@
     <table>
         <tr>
             <td><label for="text"> <var id="lang_input_text"></var></label></td>
-            <td><input class="txt" id="text" type="text" disabled="true"/></td>
+            <td><input class="txt" id="text" type="text" disabled="disabled"/></td>
         </tr>
         <tr>
             <td><label for="href"> <var id="lang_input_url"></var></label></td>
@@ -24,12 +24,6 @@
         <tr>
             <td><label for="title"> <var id="lang_input_title"></var></label></td>
             <td><input class="txt" id="title" type="text"/></td>
-        </tr>
-        <tr>
-             <td colspan="2">
-                 <label for="target"><var id="lang_input_target"></var></label>
-                 <input id="target" type="checkbox"/>
-             </td>
         </tr>
         <tr>
             <td colspan="2" id="msg"></td>
@@ -59,28 +53,30 @@
             text.removeAttribute('disabled');
             text.value = '';
         }else{
-            text.setAttribute('disabled','true');
+            text.setAttribute('disabled','disabled');
             text.value = lang.validLink;
         }
 
     }
     $G("title").value = url ? link.title : "";
     $G("href").value = url ? url: '';
-    $G("target").checked = url && link.target === "_blank" ? true :  false;
     $focus($G("href"));
+
+    var allowed_schemes = ["http://","https://","ftp://"];
 
     function handleDialogOk(){
         var href =$G('href').value.replace(/^\s+|\s+$/g, '');
         if(href){
-            if(!hrefStartWith(href,["http","/","ftp://",'#'])) {
-                href  = "http://" + href;
+            if(!hrefStartWith(href,allowed_schemes)) {
+                href  = "https://" + href;
             }
             var obj = {
                 'href' : href,
-                'target' : $G("target").checked ? "_blank" : '_self',
+                'target' : "_blank",  // force target be _blank
                 'title' : $G("title").value.replace(/^\s+|\s+$/g, ''),
                 '_href':href
             };
+
             //修改链接内容的情况太特殊了，所以先做到这里了
             //todo:情况多的时候，做到command里
             if(orgText && text.value !== orgText){
@@ -103,7 +99,7 @@
         }
     };
     $G('href').onblur = function(){
-        if(!hrefStartWith(this.value,["http","/","ftp://",'#'])){
+        if(!hrefStartWith(this.value,allowed_schemes)){
             $G("msg").innerHTML = "<span style='color: red'>"+lang.httpPrompt+"</span>";
         }else{
             $G("msg").innerHTML = "";
@@ -112,8 +108,9 @@
 
     function hrefStartWith(href,arr){
         href = href.replace(/^\s+|\s+$/g, '');
-        for(var i=0,ai; ai === arr[i++];){
-            if(href.indexOf(ai)===0){
+        for (let i=0;i<arr.length;i++) {
+            let scheme = arr[i];
+            if (href.indexOf(scheme) === 0) {
                 return true;
             }
         }
