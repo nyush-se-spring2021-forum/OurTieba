@@ -3,6 +3,7 @@ import json
 import re
 
 from flask import Blueprint, jsonify, request
+from lxml.html import fromstring, tostring
 from requests_html import HTML
 
 from ..configs import *
@@ -42,6 +43,7 @@ def add_post():
 
     try:
         html = HTML(html=content)
+        doc = fromstring(content)
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
@@ -52,6 +54,17 @@ def add_post():
             tag = ele.tag
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
+
+    # make links go to redirect page, unless inner src
+    for ele in doc.iter("a"):
+        try:
+            src = ele.attrib["href"]
+            if not src.startswith("/profile"):
+                ele.attrib["href"] = "/redirect?link=" + src
+        except Exception as e:
+            print(e)
+            continue
+    content = tostring(doc).decode("utf-8")
 
     new_post = Post(Uid, int(Bid), title, content, medias, text)
     my_db.add(new_post)
@@ -185,6 +198,7 @@ def add_comment():
 
     try:
         html = HTML(html=content)
+        doc = fromstring(content)
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
@@ -195,6 +209,17 @@ def add_comment():
             tag = ele.tag
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
+
+    # make links go to redirect page, unless inner src
+    for ele in doc.iter("a"):
+        try:
+            src = ele.attrib["href"]
+            if not src.startswith("/profile"):
+                ele.attrib["href"] = "/redirect?link=" + src
+        except Exception as e:
+            print(e)
+            continue
+    content = tostring(doc).decode("utf-8")
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
@@ -263,7 +288,7 @@ def delete_comment():  # will not alter post lastCommentTime
     my_db.delete(Comment, Comment.Cid == Cid)
     # Then delete all corresponding data in other relating tables
     my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
-    return redirect(f"/post/{Pid}")
+    return redirect(f"/post/{Pid}?order=desc")
 
 
 @api.route('/personal_info/add', methods=["POST"])
