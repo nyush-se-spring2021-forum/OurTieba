@@ -45,30 +45,34 @@
             transform: translateX(-50%);
         }
         .arrow {
-            width: 2.5vmax;
-            height: 5vmax;
-            background-color: greenyellow;
-            z-index: 100;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            cursor: pointer;
+            background: none;
 
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
+            z-index: 100;
         }
         .left-arrow {
-            left: 10px;
-            border-width: 38px 35px 38px 0
+            left: 15px;
+            border-width: 2vmax 3vmax 2vmax 0;
+            border-color: transparent #fff transparent transparent;
         }
         .right-arrow {
-            right: 10px;
-            border-width: 38px 0 38px 35px
+            right: 15px;
+            border-width: 2vmax 0 2vmax 3vmax;
+            border-color: transparent transparent transparent #fff;
         }
     </style>
 </head>
 <body>
 <div id="main-page">
     <div class="section">
-        <div class="left-arrow arrow"></div>
-        <div class="right-arrow arrow"></div>
+        <button class="left-arrow arrow"></button>
+        <button class="right-arrow arrow"></button>
         {% for p in data["photos"] %}
             <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
                 <div class="content-wrapper">
@@ -85,9 +89,48 @@
     </div>
 </div>
 <script>
+    var nb_photo = {{ data["photos"]| length }};
+    var init_i = {{ data["init_index"] }} + 1;
+
+    var left_arrow = $(".left-arrow");
+    var right_arrow = $(".right-arrow")
+
     $(function(){
         $('#main-page').fullpage({
+            controlArrows: false,
+            afterSlideLoad: (section, origin, destination, direction) => {
+
+                // first restore arrow style
+                left_arrow.css("border-color", "transparent #fff transparent transparent").removeAttr("disabled")
+                right_arrow.css("border-color", "transparent transparent transparent #fff").removeAttr("disabled")
+
+                // then change if needed
+                let d_index = destination.index + 1;
+                if (d_index === 1) {
+                    left_arrow.css("border-color", "transparent grey transparent transparent")
+                        .attr("disabled", "disabled");
+                }
+                if (d_index === nb_photo) {
+                    right_arrow.css("border-color", "transparent transparent transparent grey")
+                        .attr("disabled", "disabled");
+                }
+            }
         });
+
+        // bind turn-page to arrows
+        left_arrow.on("click", () => {
+            fullpage_api.moveSlideLeft();
+        })
+        right_arrow.on("click", () => {
+            fullpage_api.moveSlideRight();
+        })
+        // initial styling, this is necessary because "afterSlideLoad" is not triggered when page is first loaded
+        if (init_i === 1) {
+            left_arrow.css("border-color", "transparent grey transparent transparent").attr("disabled", "disabled");
+        }
+        if (init_i === nb_photo) {
+            right_arrow.css("border-color", "transparent transparent transparent grey").attr("disabled", "disabled");
+        }
     });
 </script>
 </body>
