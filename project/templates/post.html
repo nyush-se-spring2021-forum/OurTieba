@@ -24,8 +24,7 @@
             cursor: zoom-in;
         }
     </style>
-    <input id="init-data" type="hidden" value={{ session["Uid"] }}>
-    {{ data }}
+
     <div class="card">
         <div class="card-body">
             <div class="display-1">{{ data['post_info']['title'] }}</div>
@@ -251,11 +250,11 @@
         </div>
     </div>
     <br>
-    <script charset="UTF-8" src="/ueditor/ueditor.config.js"></script>
-    <script charset="UTF-8" src="/ueditor/ueditor.all.min.js"></script>
-    <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.config.js") }}"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
-        var Uid = $("#init-data").val();
+        var Uid = {{ session["Uid"] }};
         var Pid = $("#Pid").val();
         // set OT_image link
         $(".OT_image").on("click", function () {

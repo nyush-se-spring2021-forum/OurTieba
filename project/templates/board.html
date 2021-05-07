@@ -12,8 +12,7 @@
             cursor: zoom-in;
         }
     </style>
-    <input id="init-data" type="hidden" value={{ session["Uid"] }} >
-    {{ data }}
+
     <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
     <br>
     <br>
@@ -96,11 +95,11 @@
         </div>
     </div>
     <br>
-    <script charset="UTF-8" src="/ueditor/ueditor.config.js"></script>
-    <script charset="UTF-8" src="/ueditor/ueditor.all.min.js"></script>
-    <script charset="UTF-8" src="/ueditor/lang/en/en.js"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.config.js") }}"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
+    <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
-        var Uid = $("#init-data").val();
+        var Uid = {{ session["Uid"] }};
         // set preview-img link
         $(".preview-img").on("click", function () {
             let Pid = this.getAttribute("data-Pid");
