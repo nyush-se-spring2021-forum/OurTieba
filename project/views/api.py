@@ -410,7 +410,7 @@ def logout_auth():
 @api.route("/upload", methods=["POST", "GET"])
 def handle_upload():
     """
-    This function is used for users to change their avatar in their profile page
+    This function is used for users to upload their avatar, image or video
     :return: if this user is not logged in, it will redirect to the log in page
     if the uploading failed, it will return json error message
     """
