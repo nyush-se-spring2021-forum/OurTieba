@@ -172,6 +172,10 @@ def get_personal_profile(Uid):
 
 @a_user.route("/photos")
 def photo_gallery():
+    """
+    This function is used to view the images in the board and post
+    :return: photos.html, which contains all photos related to this board or post
+    """
     # if only "Pid" param, show all images in post content, else if valid "src" param,
     # show all images in both post and comment content, else show nothing
     Pid = request.args.get("Pid")
@@ -215,6 +219,10 @@ def photo_gallery():
 
 @a_user.route("/redirect")
 def redirect_page():
+    """
+    This function is used to redirect the users to outside news
+    :return: redirect.html, which contains the link of the outside news
+    """
     link = request.args.get("link")
     if not link or not link.startswith("http") or not link.startswith("https"):
         data = {"error": {"msg": "Invalid link!"}, "status": 0}
@@ -226,6 +234,10 @@ def redirect_page():
 # mainly for pasring url, can also do in "dplayer_embed.html" by pure javascript
 @a_user.route("/play")
 def render_dplayer():
+    """
+    This function is used to help the users to view videos
+    :return: dplayer_embed.html, which can allow the users to view videos
+    """
     src = request.args.get("src")
     if not src:
         abort(404)
