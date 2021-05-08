@@ -77,11 +77,22 @@
         },
     })
 
-    window.onblur = function () {
-        dp.pause();
-    }
-    window.onfocus = function () {
-        dp.play();
+    //  display notice when in/out fullscreen mode
+    dp.on("fullscreen", () => {
+        dp.notice("Enter Fullscreen", 1000);
+    })
+    dp.on("fullscreen_cancel", () => {
+        dp.notice("Exit Fullscreen", 1000);
+    })
+
+    //  init autopause handlers
+    if (autopause) {
+        window.onblur = function () {
+            dp.pause();
+        }
+        window.onfocus = function () {
+            dp.play();
+        }
     }
 </script>
 </body>
