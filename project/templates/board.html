@@ -109,7 +109,7 @@
         })
         // prepare ueditor
         var ue = UE.getEditor('editor', {
-            toolbars: [["simpleupload", "insertimage", "insertvideo", "link", "|", "undo", "redo"]],
+            toolbars: [["emotion", "simpleupload", "insertimage", "insertvideo", "link", "|", "undo", "redo"]],
             enterTag: "br",  // user "br" instead of "p" to escape line
             retainOnlyLabelPasted: true, // remove all attributes of pasted tag
             pasteplain: true,  // paste as plaintext
@@ -134,8 +134,9 @@
                 var login_href = "/login?redirect=" + parent.location.href;
                 ue.setContent("Please <a href='" + login_href + "' target='_top'>log in</a> to create comment.")
 
-                // disable button
+                // disable buttons
                 $(".btn-submit").attr("disabled", "disabled");
+                $("#btn-preview").attr("disabled", "disabled");
             }
 
             // disable popup window to modify/clear link
