@@ -1,11 +1,8 @@
 import hashlib
 import json
 import re
-import os
-import shutil
-import threading
 
-from flask import Blueprint, jsonify, request, current_app
+from flask import Blueprint, jsonify, request
 from requests_html import HTML
 
 from ..configs import *
@@ -13,6 +10,7 @@ from ..database import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
+
 
 @api.route('/post/add', methods=["POST"])
 @login_required
@@ -39,8 +37,10 @@ def add_post():
         return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     match_board.postCount += 1
 
-    content = request.form.get("content", "<p></p>")
+    content = request.form.get("content")
     text = request.form.get("text", "")
+    if not content:  # unknown bug, should write in this way instead of setting as default in get
+        content = "<p></p>"
 
     try:
         html = HTML(html=content)

@@ -145,9 +145,9 @@ def sql_test():
     s1 = Subscription(Uid=1, Bid=1, subscribed=1, lastModified="2020-12-30 09:00:00")
     s2 = Subscription(Uid=4, Bid=3, subscribed=1, lastModified="2021-02-03 14:50:00")
 
-    h1 = History(Uid=1, Pid=1, LastVisitTime="2021-04-01 16:00:59")
-    h2 = History(Uid=1, Pid=21, LastVisitTime="2021-03-24 18:00:59")
-    h3 = History(Uid=2, Pid=3, LastVisitTime="2021-02-04 08:45:32")
+    h1 = History(Uid=1, Pid=1, lastVisitTime="2021-04-01 16:00:59")
+    h2 = History(Uid=1, Pid=21, lastVisitTime="2021-03-24 18:00:59")
+    h3 = History(Uid=2, Pid=3, lastVisitTime="2021-02-04 08:45:32")
 
     my_db.add(A)
     for u in [u1, u2, u3, u4, u5, u6]:
