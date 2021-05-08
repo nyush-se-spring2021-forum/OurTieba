@@ -17669,7 +17669,7 @@ UE.plugins['video'] = function (){
                 // '<source src="' + url + '" type="video/' + ext + '" /></video>';
                 // line 13 : column 2964 in ueditor.all.min.js:
                 // i="<video"+(e?' id="'+e+'"':"")+' class="'+g+' video-js" '+(f?' style="float:'+f+'"':"")+' controls preload="none" width="'+b+'" height="'+d+'" src="'+a+'" data-setup="{}"><source src="'+a+'" type="video/'+j+'" /></video>'
-                str = '<iframe class="OT_video OT_iframe" ' + (align ? ' style="float:' + align + '"': '') + ' width="'
+                str = '<iframe allowfullscreen class="OT_video OT_iframe" ' + (align ? ' style="float:' + align + '"': '') + ' width="'
                     + width + '" height="' + height + '" src="/play?src=' + url + '"' + '></iframe>'
                 break;
         }
