@@ -37,9 +37,9 @@ def add_post():
         return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     match_board.postCount += 1
 
-    content = request.form.get("content")
+    content = request.form.get("content", "<p></p>")
     text = request.form.get("text", "")
-    if not content:  # unknown bug, should write in this way instead of setting as default in get
+    if not content:  # unknown bug, the get above does not work
         content = "<p></p>"
 
     try:
