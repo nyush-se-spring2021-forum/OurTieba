@@ -28,6 +28,7 @@ class Post(my_db.Base):
     owner = relationship("User", back_populates="posts")
     comments = relationship("Comment", back_populates="comment_in", cascade='all, delete', passive_deletes=True)
     status_by = relationship("PostStatus", back_populates="on_post", cascade='all, delete', passive_deletes=True)
+    view = relationship("History", back_populates="related_post")
 
     def __init__(self, Uid, Bid, title, content=None, medias=None, text=None, timestamp=None, LCT=None,
                  viewCount=None, commentCount=None, likeCount=None, dislikeCount=None):

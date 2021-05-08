@@ -8,3 +8,4 @@ from ..models.post_status import PostStatus
 from ..models.report import Report
 from ..models.subscription import Subscription
 from ..models.user import User
+from ..models.view_history import History

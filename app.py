@@ -104,7 +104,7 @@ def sql_test():
     p20 = Post(Uid=2, Bid=1, title="Game Visual", content='<p>Found on official twitter account:<br/>'
                                                           '<img class="OT_image" src="/cdn/photo/-3701751787780283978'
                                                           '.jpeg" title="" alt=""/></p>',
-               medias=["-3701751787780283978.jpeg"],
+               medias=["photo/-3701751787780283978.jpeg"],
                timestamp="2021-05-05 08:11:11", text='Found on official twitter account:')
     p21 = Post(Uid=1, Bid=1, title="Edel Lilie Last Bullet Remix", content='<p>Song in the video below. '
                                                                            'Enjoy~<br/><iframe class="OT_video '

@@ -34,6 +34,7 @@ class User(my_db.Base):
     status_comment = relationship("CommentStatus", back_populates="by_user")
     status_post = relationship("PostStatus", back_populates="by_user")
     subscriptions = relationship("Subscription", back_populates="by_user")
+    view = relationship('History', back_populates="by_user")
 
     def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, gender=None,
                  phone_number=None, email=None, address=None, dateOfBirth=None, banned=None, banDuration=None):
