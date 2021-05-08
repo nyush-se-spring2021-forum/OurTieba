@@ -334,9 +334,10 @@
                 },
                 success: data => {
                     if (data.status !== 1) {
-                        alert("Create comment failed. Please try again!")
+                        alert(data.error.msg)
+                    } else {
+                        location.href = "/post/" + Pid + "?order=desc";
                     }
-                    location.href = "/post/" + Pid + "?order=desc";
                 }
             })
         })

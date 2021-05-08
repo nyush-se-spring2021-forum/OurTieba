@@ -199,8 +199,9 @@
                 success: data => {
                     if (data.status !== 1) {
                         alert(data.error.msg);
+                    } else {
+                        location.href = "/board/" + Bid + "?order=newest"
                     }
-                    location.href = "/board/" + Bid + "?order=newest"
                 }
             })
         })
