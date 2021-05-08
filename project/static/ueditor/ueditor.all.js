@@ -740,6 +740,7 @@ var utils = UE.utils = {
      * 将str中的html符号转义,将转义“'，&，<，"，>”五个字符
      * @method unhtml
      * @param { String } str 需要转义的字符串
+     * @param reg
      * @return { String } 转义后的字符串
      * @example
      * ```javascript
@@ -753,6 +754,9 @@ var utils = UE.utils = {
     unhtml:function (str, reg) {
         return str ? str.replace(reg || /[&<">'](?:(amp|lt|quot|gt|#39|nbsp|#\d+);)?/g, function (a, b) {
             if (b) {
+                if (b === "amp") {
+                    return "&";
+                }
                 return a;
             } else {
                 return {
