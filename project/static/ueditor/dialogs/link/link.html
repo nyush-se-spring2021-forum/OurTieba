@@ -26,7 +26,7 @@
             <td><input class="txt" id="title" type="text"/></td>
         </tr>
         <tr>
-            <td colspan="2" id="msg"></td>
+            <td colspan="2" id="msg" style="line-height: 1rem; margin-top: 5px"></td>
         </tr>
     </table>
 <script type="text/javascript">
@@ -103,7 +103,7 @@
         }
     };
 
-    $G("msg").innerHTML = 'If scheme not specified, will add "https://" in front. ' + lang.httpPrompt;
+    $G("msg").innerHTML = '<p>If scheme not specified, will add "https://" in front. ' + lang.httpPrompt + '</p>';
 
     function hrefStartWith(href,arr){
         href = href.replace(/^\s+|\s+$/g, '');
