@@ -62,7 +62,7 @@ def sql_test():
     A = Admin(password="root", aname="root", timestamp="2000-01-01 00:00:00")
 
     u1 = User(uname="U1", password="111", nickname="user1", timestamp="2020-12-25 10:00:00",
-              avatar="-2837748924044579792.png")
+              avatar="avatar/-2837748924044579792.png")
     u2 = User(uname="U2", password="222", nickname="user2", timestamp="2020-12-26 08:00:00")
     u3 = User(uname="U3", password="333", nickname="user3", timestamp="2020-12-27 19:00:00")
     u4 = User(uname="U4", password="444", nickname="user4", timestamp="2020-12-28 20:00:00")
