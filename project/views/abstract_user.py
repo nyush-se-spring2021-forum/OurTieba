@@ -98,7 +98,7 @@ def get_comments_in_post(Pid):
             new_history = History(Uid, Pid)
             my_db.add(new_history)
         else:
-            match_history.LastVisitTime = datetime.datetime.utcnow
+            match_history.lastVisitTime = datetime.datetime.utcnow()
 
     order = request.args.get("order")
     page = request.args.get("page", "1")
