@@ -740,6 +740,7 @@ var utils = UE.utils = {
      * 将str中的html符号转义,将转义“'，&，<，"，>”五个字符
      * @method unhtml
      * @param { String } str 需要转义的字符串
+     * @param reg
      * @return { String } 转义后的字符串
      * @example
      * ```javascript
@@ -753,6 +754,9 @@ var utils = UE.utils = {
     unhtml:function (str, reg) {
         return str ? str.replace(reg || /[&<">'](?:(amp|lt|quot|gt|#39|nbsp|#\d+);)?/g, function (a, b) {
             if (b) {
+                if (b === "amp") {
+                    return "&";
+                }
                 return a;
             } else {
                 return {
@@ -17669,7 +17673,7 @@ UE.plugins['video'] = function (){
                 // '<source src="' + url + '" type="video/' + ext + '" /></video>';
                 // line 13 : column 2964 in ueditor.all.min.js:
                 // i="<video"+(e?' id="'+e+'"':"")+' class="'+g+' video-js" '+(f?' style="float:'+f+'"':"")+' controls preload="none" width="'+b+'" height="'+d+'" src="'+a+'" data-setup="{}"><source src="'+a+'" type="video/'+j+'" /></video>'
-                str = '<iframe class="OT_video OT_iframe" ' + (align ? ' style="float:' + align + '"': '') + ' width="'
+                str = '<iframe allowfullscreen class="OT_video OT_iframe" ' + (align ? ' style="float:' + align + '"': '') + ' width="'
                     + width + '" height="' + height + '" src="/play?src=' + url + '"' + '></iframe>'
                 break;
         }

@@ -1,8 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Redirect{% endblock %}
+{% block title %}OT Redirect{% endblock %}
 
 {% block page_content %}
+    <style>
+        .link-danger {
+            font-size: 1.5rem;
+        }
+    </style>
     {% if data["status"] %}
         <div class="display-6">Click the link below to redirect. Make sure the source is trustworthy.</div>
         <hr>

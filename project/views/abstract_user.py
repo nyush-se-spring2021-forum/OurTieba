@@ -16,7 +16,6 @@ def index():
     This function is used to show the main page of our system with recommend boards and hot news
     :return: index.html, which is our main page
     """
-    my_db.update(Post, Post.Pid == 20, values={"medias": ["photo/-3701751787780283978.jpeg"]})
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
@@ -173,8 +172,9 @@ def get_personal_profile(Uid):
 @a_user.route("/photos")
 def photo_gallery():
     """
-    This function is used to view the images in the board and post
-    :return: photos.html, which contains all photos related to this board or post
+    This function is used to view the images in the board and post.
+    :return: photos.html, which contains all photos related to this board or post, and
+    the initial position of photo in the slides (not photo list)
     """
     # if only "Pid" param, show all images in post content, else if valid "src" param,
     # show all images in both post and comment content, else show nothing
@@ -195,7 +195,7 @@ def photo_gallery():
             cur_src = "/" + CDN_ROOT_PATH + m
             photos.append(cur_src)
             if cur_src == src:
-                position = i
+                position = i + 1
     base_len = len(photos)
     # also get photos in comment if "src" specified
     if src:
@@ -207,12 +207,12 @@ def photo_gallery():
                     cur_src = "/" + CDN_ROOT_PATH + m
                     photos.append(cur_src)
                     if cur_src == src:
-                        position = i + base_len
+                        position = i + base_len + 1
             base_len = len(photos)
         if position is None:  # which means invalid "src"
             abort(404)
     else:
-        position = 0 if photos else -1
+        position = 1 if photos else 0
     data = {"photos": photos, "init_index": position}
     return render_template("photos.html", data=data)
 
@@ -220,12 +220,13 @@ def photo_gallery():
 @a_user.route("/redirect")
 def redirect_page():
     """
-    This function is used to redirect the users to outside news
+    This function is used to redirect user when user clicks an external link. Valid links begins with "http://",
+    "https://" or "ftp://".
     :return: redirect.html, which contains the link of the outside news
     """
-    link = request.args.get("link")
-    if not link or not link.startswith("http") or not link.startswith("https"):
-        data = {"error": {"msg": "Invalid link!"}, "status": 0}
+    link: str = request.args.get("link")
+    if not link or not (link.startswith("http://") or link.startswith("https://") or link.startswith("ftp://")):
+        data = {"status": 0}
     else:
         data = {"link": link, "status": 1}
     return render_template("redirect.html", data=data)

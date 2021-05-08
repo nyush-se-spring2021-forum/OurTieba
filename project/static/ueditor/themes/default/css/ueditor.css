@@ -1768,8 +1768,8 @@ div.edui-box {
 }
 .edui-default .edui-for-emotion .edui-popup-content iframe
 {
-    width: 514px;
-    height: 380px;
+    width: 20vmax;
+    height: 20vmin;
     overflow: hidden;
 }
 .edui-default .edui-for-emotion .edui-popup-content

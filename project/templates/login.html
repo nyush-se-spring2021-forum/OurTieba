@@ -57,7 +57,9 @@
                             let msg = "";
                             if (response.status !== 0) {
                                 if (!r_link) {
-                                    r_link = document.referrer;
+                                    let ref = document.referrer;
+                                    r_link = (ref.indexOf(location.protocol+"//"+location.host) === 0) ?
+                                        ref : "/redirect?link="+ref;
                                 }
                                 location.href = r_link;
                             } else {

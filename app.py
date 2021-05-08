@@ -37,11 +37,23 @@ def filter_request():
 def set_res_headers(response):
     response.headers["Server"] = "OurTieba"
     response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "sameorigin"
     return response
 
 
 @app.template_filter("index_format")
 def add_zeros(i, length):  # format index in photos.html
+    """
+    Pad zeros to i, and turn it into a string. The length is at least 2.
+    :param i: int. Integer to pad.
+    :param length: int. Base integer.
+    :return: A padded string.
+
+    For example,
+    add_zeros(1, 2) -> "01";
+    add_zeros(1, 12) -> "01";
+    add_zeros(13, 101) -> "013".
+    """
     return ("{:0>" + str(max(len(str(length)), 2)) + "d}").format(i)
 
 

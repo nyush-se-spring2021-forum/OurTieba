@@ -286,7 +286,7 @@ def delete_comment():  # will not alter post lastCommentTime
     my_db.delete(Comment, Comment.Cid == Cid)
     # Then delete all corresponding data in other relating tables
     my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
-    return redirect(f"/post/{Pid}")
+    return redirect(f"/post/{Pid}?order=desc")
 
 
 @api.route('/personal_info/add', methods=["POST"])

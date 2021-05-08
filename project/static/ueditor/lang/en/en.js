@@ -555,10 +555,9 @@ UE.I18N['en'] = {
             'lang_input_text':'Text：',
             'lang_input_url':'URL：',
             'lang_input_title':'Title：',
-            'lang_input_target':'open in new window：'
         },
         'validLink':'Supports only effective when a link is selected',
-        'httpPrompt':'The hyperlink you enter should start with "http|https|ftp://"!'
+        'httpPrompt':'Valid schemes: "https://", "http://", "ftp://".'
     },
     map:{
         'static':{

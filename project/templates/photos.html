@@ -29,10 +29,16 @@
         .index-box {
             width: 100%;
             height: 10%;  /* h2.  make sure h1 + h2 = 100% */
+
+            position: absolute;
+            bottom: 0;
         }
         .OT_image {
             max-width: 83vmax;
             max-height: 83vmin;
+        }
+        .OT_image:hover {
+            cursor: pointer;
         }
         .index{
             width: 20%;
@@ -45,6 +51,29 @@
             left: 50%;
             transform: translateX(-50%);
         }
+        #notice-bar {
+            width: 100%;
+            height: 10%;
+            z-index: 20;
+            background-color: gainsboro;
+
+            opacity: 1;
+            transition: opacity 1.5s;
+
+            position: absolute;
+            top: 0;
+        }
+        #notice-content {
+            color: darkolivegreen;
+            font-family: "Lucida Bright", Sans-Serif, sans-serif;
+            font-size: 2.5rem;
+
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            text-align: center;
+            overflow: hidden;
+        }
         .arrow {
             width: 0;
             height: 0;
@@ -52,10 +81,13 @@
             cursor: pointer;
             background: none;
 
+            opacity: 1;
+            transition: opacity 0.5s;
+
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            z-index: 100;
+            z-index: 10;
         }
         .left-arrow {
             left: 15px;
@@ -82,30 +114,32 @@
 <body>
 <div id="main-page">
     <div class="section">
+        <!-- notice bar -->
+        <div id="notice-bar"><div id="notice-content">Click on the image to view original</div></div>
+        <!-- control arrows -->
         <button class="left-arrow arrow"></button>
         <button class="right-arrow arrow"></button>
+        <!-- index box -->
+        <div class="index-box">
+            <div class="index">{{ data["init_index"] | index_format(data["photos"].__len__()) }} /
+                {{ data["photos"].__len__() | index_format(data["photos"].__len__()) }}</div>
+        </div>
+        <!-- prepare slides if photos -->
         {% for p in data["photos"] %}
-            <div class="{{ "slide" + (" active" if loop.index - 1 == data["init_index"] else "") }}">
+            <div class="{{ "slide" + (" active" if loop.index == data["init_index"] else "") }}">
                 <div class="content-wrapper">
                     <div class="img-box content-box">
                         <img class="OT_image center-content" data-src="{{ p }}" alt="" src="">
                     </div>
-                    <div class="index-box">
-                        <div class="index">{{ loop.index | index_format(loop.length) }}{{ " / " }}
-                            {{ loop.length | index_format(loop.length) }}</div>
-                    </div>
                 </div>
             </div>
         {% endfor %}
-        <!-- if no photos (init_index = -1) -->
-        {% if data["init_index"] == -1 %}
+        <!-- if no photos (init_index = 0) -->
+        {% if data["init_index"] == 0 %}
             <div class="slide">
                 <div class="content-wrapper">
                     <div class="img-box content-box">
                         <div class="notice center-content"><br>Sorry!<br><br>No Photos Available</div>
-                    </div>
-                    <div class="index-box">
-                        <div class="index">00 / 00</div>
                     </div>
                 </div>
             </div>
@@ -113,23 +147,41 @@
     </div>
 </div>
 <script>
-    var nb_photo = {{ data["photos"]| length }};
-    var init_i = {{ data["init_index"] }} + 1;
+    var nb_photo = {{ data["photos"] | length }};
+    var init_i = {{ data["init_index"] }};
 
     var left_arrow = $(".left-arrow");
-    var right_arrow = $(".right-arrow")
+    var right_arrow = $(".right-arrow");
 
     $(function(){
+        if (nb_photo === 0) {  // hide notice bar if no photos to display
+            $("#notice-bar").css("display", "none");
+        } else {
+            setInterval(() => {  // display notice bar for 1 sec then dismiss
+                $("#notice-bar").css("opacity", "0");
+            }, 1000)
+        }
+
         $('#main-page').fullpage({
             controlArrows: false,
             onSlideLeave: (section, origin, destination, direction) => {
+                let d_index = destination.index + 1;
+
+                // alter index, pad zeros before (just for visual effect)
+                let p_index = d_index.toString();
+                let p_nb = nb_photo.toString();
+                for (let i=0;i<p_nb.length-p_index.length;i++) {
+                    p_index = "0" + p_index;
+                }
+                if (p_index.length<=1) {p_index = "0" + p_index;}
+                if (p_nb.length<=1) {p_nb = "0" + p_nb;}
+                $(".index").text(p_index + " / " + p_nb);
 
                 // first restore arrow style
                 left_arrow.css("border-color", "transparent #fff transparent transparent").removeAttr("disabled")
                 right_arrow.css("border-color", "transparent transparent transparent #fff").removeAttr("disabled")
 
                 // then change if needed
-                let d_index = destination.index + 1;
                 if (d_index === 1) {
                     left_arrow.css("border-color", "transparent grey transparent transparent")
                         .attr("disabled", "disabled");
@@ -148,12 +200,26 @@
         right_arrow.on("click", () => {
             fullpage_api.moveSlideRight();
         })
-        // initial styling, this is necessary because "afterSlideLoad" is not triggered when page is first loaded
+
+        // initial styling, this is necessary because "onSlideLeave" is not triggered when web page is first loaded
         if (init_i <= 1) {
             left_arrow.css("border-color", "transparent grey transparent transparent").attr("disabled", "disabled");
         }
         if (init_i === nb_photo) {
             right_arrow.css("border-color", "transparent transparent transparent grey").attr("disabled", "disabled");
+        }
+
+        // click image will open a new tab
+        $(".OT_image").on("click", function (){
+            window.open(this.src, "_blank");
+        })
+
+        // show/hide arrows on mouse over/out page
+        window.onmouseover = () => {
+            $(".arrow").css("opacity", "1");
+        }
+        window.onmouseout = () => {
+            $(".arrow").css("opacity", "0");
         }
     });
 </script>
