@@ -16,7 +16,6 @@ def index():
     This function is used to show the main page of our system with recommend boards and hot news
     :return: index.html, which is our main page
     """
-    my_db.update(Post, Post.Pid == 20, values={"medias": ["photo/-3701751787780283978.jpeg"]})
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
