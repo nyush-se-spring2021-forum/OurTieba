@@ -56,7 +56,7 @@ def get_posts_in_board(Bid):
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     posts = []
     for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
-        post_info = {"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text[:100] + '...',
+        post_info = {"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text,
                      "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
                      "dislike_count": p.dislikeCount, "preview_type": None, "preview_src": None}
         if p.medias:
@@ -111,7 +111,6 @@ def get_comments_in_post(Pid):
         order = Comment.timestamp  # default order is asc()
 
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
-    print(comment_match_result)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
