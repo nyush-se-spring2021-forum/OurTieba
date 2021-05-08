@@ -1,8 +1,11 @@
 import hashlib
 import json
 import re
+import os
+import shutil
+import threading
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, current_app
 from requests_html import HTML
 
 from ..configs import *
@@ -10,7 +13,6 @@ from ..database import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
-
 
 @api.route('/post/add', methods=["POST"])
 @login_required
@@ -225,6 +227,17 @@ def delete_post():
     match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid), first=True)
     if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID or user"}}), 403
+
+    media_list = match_post.medias
+    cd = os.getcwd()
+    for i in media_list:
+        while True:
+            try:
+                os.remove(cd + "/cdn/" + i)
+                break
+            except:
+                continue
+
     match_post.under.postCount -= 1
 
     my_db.delete(Post, Post.Pid == Pid)
@@ -254,6 +267,16 @@ def delete_comment():  # will not alter post lastCommentTime
     match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "invalid ID or user"}}), 403
+
+    media_list = match_comment.medias
+    cd = os.getcwd()
+    for i in media_list:
+        while True:
+            try:
+                os.remove(cd + "/cdn/" + i)
+                break
+            except:
+                continue
 
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post or match_comment not in match_post.comments:
