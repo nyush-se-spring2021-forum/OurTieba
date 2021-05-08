@@ -195,7 +195,7 @@ def add_comment():
             tag = ele.tag
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
-    print(content)
+
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         return jsonify({"error": {"msg": "invalid post ID"}, "status": 0})
