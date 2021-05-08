@@ -276,6 +276,8 @@
         ue.ready(() => {
             // get rid of popup messages
             $(".edui-editor-messageholder.edui-default").css({"visibility": "hidden"});
+
+            // lock editor when user not logged-in
             if (!Uid) {
                 // disable editor
                 ue.setDisabled();
@@ -287,6 +289,9 @@
                 // disable button
                 $(".btn-submit").attr("disabled", "disabled");
             }
+
+            // disable popup window to modify/clear link
+            $(".edui-popup-content").css("display", "none");
         })
 
         $(".btn-submit").on("click", () => {
