@@ -247,6 +247,7 @@ def delete_post():
         my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
     my_db.delete(Comment, Comment.Pid == Pid)
     my_db.delete(PostStatus, PostStatus.Pid == Pid)
+    my_db.delete(History, History.Pid == Pid)
     return redirect(f"/board/{Bid}")
 
 

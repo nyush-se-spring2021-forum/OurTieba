@@ -93,6 +93,13 @@ def get_comments_in_post(Pid):
         else:
             post_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
 
+        match_history = my_db.query(History, and_(History.Uid == Uid, History.Pid == Pid), first=True)
+        if not match_history:
+            new_history = History(Uid, Pid)
+            my_db.add(new_history)
+        else:
+            match_history.LastVisitTime = datetime.datetime.utcnow
+
     order = request.args.get("order")
     page = request.args.get("page", "1")
 
@@ -104,6 +111,7 @@ def get_comments_in_post(Pid):
         order = Comment.timestamp  # default order is asc()
 
     comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
+    print(comment_match_result)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
