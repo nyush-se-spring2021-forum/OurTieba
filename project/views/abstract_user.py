@@ -168,10 +168,16 @@ def get_personal_profile(Uid):
     u = my_db.query(User, User.Uid == Uid, first=True)
     if not u:
         return "Not Found", 404
+
+    post_count = my_db.count(Post, Post.Uid == Uid)
+    subs_count = my_db.count(Subscription, Subscription.Uid == Uid)
+    history_count = my_db.count(History, History.Uid == Uid)
+
     user_info = {
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
-        "banned": u.banned, "banDuration": u.banDuration, "isCurrent": int(Uid == session.get("Uid", -1))
+        "banned": u.banned, "banDuration": str(u.banDuration), "isCurrent": int(Uid == session.get("Uid", -1)),
+        "post_count": post_count, "subs_count": subs_count, "history_count": history_count
     }
     return render_template("profile.html", data=user_info)
 
@@ -197,13 +203,14 @@ def photo_gallery():
     position = None
     # get photos in post
     medias = match_post.medias
+    base_len = 0
     for i, m in enumerate(medias):
         if m.startswith(PHOTO_PATH):
+            base_len += 1
             cur_src = "/" + CDN_ROOT_PATH + m
             photos.append(cur_src)
             if cur_src == src:
-                position = i + 1
-    base_len = len(photos)
+                position = base_len
     # also get photos in comment if "src" specified
     if src:
         comments = my_db.query(Comment, Comment.Pid == Pid)
@@ -211,11 +218,11 @@ def photo_gallery():
             medias = c.medias
             for i, m in enumerate(medias):
                 if m.startswith(PHOTO_PATH):
+                    base_len += 1
                     cur_src = "/" + CDN_ROOT_PATH + m
                     photos.append(cur_src)
                     if cur_src == src:
-                        position = i + base_len + 1
-            base_len = len(photos)
+                        position = base_len
         if position is None:  # which means invalid "src"
             abort(404)
     else:
