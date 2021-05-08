@@ -20,6 +20,19 @@
             font-style: italic;
             text-align: center;
         }
+        .body {
+            padding-top: 10px;
+            max-height: 8vmax;
+            max-width: 60vw;
+            overflow: hidden;
+        }
+        .post-title {
+            display: inline-block;
+            max-width: 55vw;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
     </style>
 
     <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
@@ -41,7 +54,8 @@
             <article class="post">
             <header>
                 <div>
-                    <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none">{{ post['title'] }}</a></h3>
+                    <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none post-title">
+                        {{ post['title'] }}</a></h3>
 
                     <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
 
@@ -123,6 +137,7 @@
         // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["emotion", "simpleupload", "insertimage", "insertvideo", "link", "|", "undo", "redo"]],
+            autoHeightEnabled: false,
             enterTag: "br",  // user "br" instead of "p" to escape line
             retainOnlyLabelPasted: true, // remove all attributes of pasted tag
             pasteplain: true,  // paste as plaintext
@@ -183,7 +198,7 @@
                 },
                 success: data => {
                     if (data.status !== 1) {
-                        alert("Create post failed. Please try again!")
+                        alert(data.error.msg);
                     }
                     location.href = "/board/" + Bid + "?order=newest"
                 }

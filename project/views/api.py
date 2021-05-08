@@ -42,6 +42,9 @@ def add_post():
     if not content:  # unknown bug, the get above does not work
         content = "<p></p>"
 
+    if len(text) > 2000:
+        return jsonify({"error": {"msg": "Word count exceeded. Maximum: 2000"}, "status": 0})
+
     try:
         html = HTML(html=content)
     except Exception as e:
@@ -184,6 +187,9 @@ def add_comment():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     text = request.form.get("text", "")  # can be None because comment may only contain photo
+
+    if len(text) > 1000:
+        return jsonify({"error": {"msg": "Word count exceeded. Maximum: 1000"}, "status": 0})
 
     try:
         html = HTML(html=content)
