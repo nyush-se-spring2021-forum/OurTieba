@@ -60,7 +60,7 @@
                 <img class="preview-img preview" data-Pid="{{ post['Pid'] }}" alt=""
                      src="{{ "/cdn/" + post["preview_type"] + "/" + post["preview_src"] }}">
             {% elif post["preview_type"] == "video" %}
-                <iframe class="preview-video preview" src="{{ "/play?src=" + post["preview_type"]
+                <iframe allowfullscreen class="preview-video preview" src="{{ "/play?src=" + post["preview_type"]
                 + "/" + post["preview_src"] }}"></iframe>
             {% endif %}
         </div>
@@ -99,7 +99,7 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
-        var Uid = {{ session["Uid"] }};
+        var Uid = {{ session["Uid"] or 0}};
         // set preview-img link
         $(".preview-img").on("click", function () {
             let Pid = this.getAttribute("data-Pid");

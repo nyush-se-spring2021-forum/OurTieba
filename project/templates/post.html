@@ -254,7 +254,7 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
-        var Uid = {{ session["Uid"] }};
+        var Uid = {{ session["Uid"] or 0 }};
         var Pid = $("#Pid").val();
         // set OT_image link
         $(".OT_image").on("click", function () {
