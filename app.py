@@ -115,7 +115,7 @@ def sql_test():
                                                                            'class="OT_image" '
                                                                            'src="/cdn/photo/-1976482922365202782.jpeg'
                                                                            '" title="" alt=""/></p>',
-               text="Song in the video below. Enjoy~Here's the cover:", timestamp="2021-05-06 13:06:35.244036",
+               text="Song in the video below. Enjoy~Here's the cover:", timestamp="2021-05-06 13:06:35",
                medias=["video/-7344473432041877746.webm", "photo/-1976482922365202782.jpeg"])
 
     c1 = Comment(Uid=6, Pid=1, content="<p>wtf</p>", timestamp="2021-01-01 02:00:00", dislikeCount=1, text="wtf")
@@ -145,6 +145,10 @@ def sql_test():
     s1 = Subscription(Uid=1, Bid=1, subscribed=1, lastModified="2020-12-30 09:00:00")
     s2 = Subscription(Uid=4, Bid=3, subscribed=1, lastModified="2021-02-03 14:50:00")
 
+    h1 = History(Uid=1, Pid=1, LastVisitTime="2021-04-01 16:00:59")
+    h2 = History(Uid=1, Pid=21, LastVisitTime="2021-03-24 18:00:59")
+    h3 = History(Uid=2, Pid=3, LastVisitTime="2021-02-04 08:45:32")
+
     my_db.add(A)
     for u in [u1, u2, u3, u4, u5, u6]:
         my_db.add(u)
@@ -152,7 +156,7 @@ def sql_test():
     for b in [b1, b2, b3, b4, b5, b6]:
         my_db.add(b)
 
-    for p in [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20]:
+    for p in [p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13, p14, p15, p16, p17, p18, p19, p20, p21]:
         my_db.add(p)
 
     for c in [c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11, c12, c13]:
@@ -171,6 +175,9 @@ def sql_test():
 
     for sub in [s1, s2]:
         my_db.add(sub)
+
+    for history in [h1, h2, h3]:
+        my_db.add(history)
 
     return "success!", 200
 
