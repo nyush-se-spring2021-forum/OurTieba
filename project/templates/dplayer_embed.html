@@ -37,7 +37,7 @@
     var a = {{ data["autoplay"] }};
     var l = {{ data["loop"] }};
 
-    var autopause = true;
+    var autopause = autopause || true;
 
     const dp = new DPlayer({
         container: document.getElementById('dplayer'),
@@ -49,15 +49,17 @@
         loop: l,
         contextmenu:[
             {
-                text: "Disable auto pause",
+                text: autopause ? "Disable auto pause":"Enable auto pause",
                 click: (player) => {
                     let des = document.getElementsByClassName("dplayer-menu-item")[0].getElementsByTagName("a")[0];
                     if (autopause) {
+                        player.notice("Auto Pause OFF", 1000);
                         des.text = "Enable auto pause";
                         window.onblur = ()=>{};
                         window.onfocus = ()=>{};
                         autopause = false;
                     } else  {
+                        player.notice("Auto Pause ON", 1000);
                         des.text = "Disable auto pause";
                         window.onblur = function () {
                             player.pause();
