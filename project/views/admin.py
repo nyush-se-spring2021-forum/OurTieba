@@ -100,6 +100,34 @@ def admin_board_delete():
     affected_row = my_db.delete(Board, Board.Bid == Bid)
     if not affected_row:
         return jsonify({"error": {"msg": "Bid not Found"}, "status": 0})
+    #Then delete all corresponding posts and comments in that Bid
+    match_posts = my_db.query(Post, Post.Bid == Bid)
+    for i in match_posts:
+        match_comments = my_db.query(Comment, Comment.Pid == i.Pid)
+        for j in match_comments:
+            media_list = j.medias
+            cd = os.getcwd()
+            for f in media_list:
+                while True:
+                    try:
+                        os.remove(cd + "/cdn/" + f)
+                        break
+                    except:
+                        continue
+            my_db.delete(Comment, Comment.Cid == j.Cid)
+            my_db.delete(CommentStatus, CommentStatus.Cid == j.Cid)
+        media_list = i.medias
+        cd = os.getcwd()
+        for f in media_list:
+            while True:
+                try:
+                    os.remove(cd + "/cdn/" + f)
+                    break
+                except:
+                    continue
+        my_db.delete(Post, Post.Pid == i.Pid)
+        my_db.delete(PostStatus, PostStatus.Pid == i.Pid)
+        my_db.delete(History, History.Pid == i.Pid)
     return jsonify({'status': 1})
 
 
@@ -117,8 +145,35 @@ def admin_post_delete():
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}, "status": 0})
+
+    media_list = match_post.medias
+    cd = os.getcwd()
+    for i in media_list:
+        while True:
+            try:
+                os.remove(cd + "/cdn/" + i)
+                break
+            except:
+                continue
+
     match_post.under.postCount -= 1
     my_db.delete(Post, Post.Pid == Pid)
+    # Then delete all corresponding data in other relating tables
+    result = my_db.query(Comment, Comment.Pid == Pid)
+    for i in result:
+        my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
+        my_db.delete(Comment, Comment.Pid == Pid)
+        media_list = i.medias
+        cd = os.getcwd()
+        for f in media_list:
+            while True:
+                try:
+                    os.remove(cd + "/cdn/" + f)
+                    break
+                except:
+                    continue
+    my_db.delete(PostStatus, PostStatus.Pid == Pid)
+    my_db.delete(History, History.Pid == Pid)
     return jsonify({'status': 1})
 
 
@@ -136,8 +191,21 @@ def admin_comment_delete():
     match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}, "status": 0})
+
+    media_list = match_comment.medias
+    cd = os.getcwd()
+    for i in media_list:
+        while True:
+            try:
+                os.remove(cd + "/cdn/" + i)
+                break
+            except:
+                continue
+
+
     match_comment.comment_in.commentCount -= 1
     my_db.delete(Comment, Comment.Cid == Cid)
+    my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
     return jsonify({'status': 1})
 
 

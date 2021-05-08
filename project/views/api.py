@@ -245,7 +245,16 @@ def delete_post():
     result = my_db.query(Comment, Comment.Pid == Pid)
     for i in result:
         my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
-    my_db.delete(Comment, Comment.Pid == Pid)
+        my_db.delete(Comment, Comment.Pid == Pid)
+        media_list = i.medias
+        cd = os.getcwd()
+        for f in media_list:
+            while True:
+                try:
+                    os.remove(cd + "/cdn/" + f)
+                    break
+                except:
+                    continue
     my_db.delete(PostStatus, PostStatus.Pid == Pid)
     my_db.delete(History, History.Pid == Pid)
     return redirect(f"/board/{Bid}")
