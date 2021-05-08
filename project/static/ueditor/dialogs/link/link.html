@@ -21,7 +21,7 @@
             <td><label for="href"> <var id="lang_input_url"></var></label></td>
             <td><input class="txt" id="href" type="text" /></td>
         </tr>
-        <tr>
+        <tr style="display: none">
             <td><label for="title"> <var id="lang_input_title"></var></label></td>
             <td><input class="txt" id="title" type="text"/></td>
         </tr>
@@ -71,10 +71,10 @@
                 href  = "https://" + href;
             }
             var obj = {
-                'href' : href,
+                'href' : href,  // fake href
                 'target' : "_blank",  // force target be _blank
                 'title' : $G("title").value.replace(/^\s+|\s+$/g, ''),
-                '_href':href
+                '_href': "/redirect?link=" + href  // true href
             };
 
             //修改链接内容的情况太特殊了，所以先做到这里了
@@ -85,6 +85,10 @@
             }
             if(range.collapsed){
                 obj.textValue = text.value;
+            }
+            // if text is empty, use default one
+            if (!obj.textValue) {
+                obj.textValue = obj.href;
             }
             editor.execCommand('link',utils.clearEmptyAttrs(obj) );
             dialog.close();
@@ -98,13 +102,8 @@
             return false;
         }
     };
-    $G('href').onblur = function(){
-        if(!hrefStartWith(this.value,allowed_schemes)){
-            $G("msg").innerHTML = "<span style='color: red'>"+lang.httpPrompt+"</span>";
-        }else{
-            $G("msg").innerHTML = "";
-        }
-    };
+
+    $G("msg").innerHTML = 'If scheme not specified, will add "https://" in front. ' + lang.httpPrompt;
 
     function hrefStartWith(href,arr){
         href = href.replace(/^\s+|\s+$/g, '');
