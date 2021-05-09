@@ -13,6 +13,7 @@ class Comment(my_db.Base):
     content = Column(String, nullable=False)
     medias = Column(PickleType, default=[])  # parsed from "content" column (see api.add_comment)
     text = Column(String, default="")  # plain text in "content" column
+    floor = Column(Integer, nullable=False)  # floor number given by post's available_floor on creation by time order
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
@@ -23,7 +24,8 @@ class Comment(my_db.Base):
     comment_in = relationship("Post", back_populates="comments")
     status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_deletes=True)
 
-    def __init__(self, Uid, Pid, content, medias=None, text=None, timestamp=None, likeCount=None, dislikeCount=None):
+    def __init__(self, Uid, Pid, content, medias=None, text=None, floor=None, timestamp=None, likeCount=None,
+                 dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
@@ -31,6 +33,7 @@ class Comment(my_db.Base):
         self.content = content
         self.medias = medias
         self.text = text
+        self.floor = floor
         self.timestamp = timestamp
         self.likeCount = likeCount
         self.dislikeCount = dislikeCount

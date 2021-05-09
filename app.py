@@ -71,16 +71,16 @@ def sql_test():
               banned=1, banDuration="2022-01-01 00:00:00")
 
     b1 = Board(name="B1", hot=100, viewCount=15, subscribeCount=1, timestamp="2020-12-30 09:00:00",
-               postCount=3)
+               postCount=3, sticky_on_top=20)
     b2 = Board(name="B2", hot=50, viewCount=5, timestamp="2020-12-31 09:00:00", postCount=1)
     b3 = Board(name="B3", hot=120, viewCount=25, subscribeCount=1, timestamp="2021-02-01 10:40:00",
                postCount=5)
     b4 = Board(name="B4", hot=0, timestamp="2020-08-30 18:00:00", postCount=0)
-    b5 = Board(name="B5", hot=80, viewCount=12, timestamp="2021-01-30 09:30:00", postCount=2)
+    b5 = Board(name="B5", hot=80, viewCount=12, timestamp="2021-01-30 09:30:00", postCount=2, sticky_on_top=10)
     b6 = Board(name="B6", hot=70, viewCount=10, timestamp="2020-10-29 10:05:00", postCount=2)
 
     p1 = Post(Uid=1, Bid=1, title="P1", content="<p>111</p>", viewCount=40, timestamp="2020-12-30 10:00:00",
-              commentCount=12, LCT="2021-03-21 09:00:00", dislikeCount=1, text="111")
+              commentCount=12, LCT="2021-03-21 09:00:00", dislikeCount=1, text="111", available_floor=14)
     p2 = Post(Uid=2, Bid=1, title="P2", content="<p>222</p>", timestamp="2021-01-30 15:00:00", text="222")
     p3 = Post(Uid=3, Bid=1, title="P3", content="<p>333</p>", timestamp="2021-02-03 20:40:00", text="333")
     p4 = Post(Uid=5, Bid=2, title="P4", content="<p>444</p>", timestamp="2021-03-20 10:50:00", text="444")
@@ -92,7 +92,7 @@ def sql_test():
     p9 = Post(Uid=1, Bid=3, title="P9", content="<p>999</p>", timestamp="2021-03-15 19:30:00", text="999")
     p10 = Post(Uid=2, Bid=5, title="P10", content="<p>1010</p>", timestamp="2021-02-04 15:00:00", text="1010")
     p11 = Post(Uid=5, Bid=5, title="P11", content="<p>1111</p>", viewCount=3, timestamp="2021-03-22 23:00:00",
-               commentCount=1, LCT="2021-03-23 13:03:00", text="1111")
+               commentCount=1, LCT="2021-03-23 13:03:00", text="1111", available_floor=3)
     p12 = Post(Uid=2, Bid=6, title="P12", content="<p>1212</p>", timestamp="2020-11-06 08:42:00", text="1212")
     p13 = Post(Uid=2, Bid=6, title="P13", content="<p>1313</p>", timestamp="2021-03-21 12:01:00", text="1313")
     p14 = Post(Uid=2, Bid=1, title="P14", content="<p>1414</p>", timestamp="2021-03-21 12:01:10", text="1414")
@@ -118,19 +118,21 @@ def sql_test():
                text="Song in the video below. Enjoy~Here's the cover:", timestamp="2021-05-06 13:06:35",
                medias=["video/-7344473432041877746.webm", "photo/-1976482922365202782.jpeg"])
 
-    c1 = Comment(Uid=6, Pid=1, content="<p>wtf</p>", timestamp="2021-01-01 02:00:00", dislikeCount=1, text="wtf")
-    c2 = Comment(Uid=1, Pid=1, content="<p>c111</p>", timestamp="2021-01-01 09:00:00", text="c111")
-    c3 = Comment(Uid=2, Pid=1, content="<p>c222</p>", timestamp="2021-01-02 09:00:00", text="c222")
-    c4 = Comment(Uid=3, Pid=1, content="<p>c333</p>", timestamp="2021-01-05 09:00:00", text="c333")
-    c5 = Comment(Uid=4, Pid=1, content="<p>c444</p>", timestamp="2021-01-21 09:00:00", text="c444")
-    c6 = Comment(Uid=5, Pid=1, content="<p>c555</p>", timestamp="2021-02-13 09:00:00", text="c555")
-    c7 = Comment(Uid=2, Pid=1, content="<p>c666</p>", timestamp="2021-03-01 09:00:00", likeCount=1, text="c666")
-    c8 = Comment(Uid=3, Pid=1, content="<p>c777</p>", timestamp="2021-03-05 09:00:00", text="c777")
-    c9 = Comment(Uid=4, Pid=1, content="<p>c888</p>", timestamp="2021-03-08 09:00:00", text="c888")
-    c10 = Comment(Uid=5, Pid=1, content="<p>c999</p>", timestamp="2021-03-11 09:00:00", text="c999")
-    c11 = Comment(Uid=1, Pid=1, content="<p>c1010</p>", timestamp="2021-03-20 09:00:00", text="c1010")
-    c12 = Comment(Uid=2, Pid=1, content="<p>c1111</p>", timestamp="2021-03-21 09:00:00", text="c1111")
-    c13 = Comment(Uid=5, Pid=11, content="<p>c1212</p>", timestamp="2021-03-23 13:03:00", text="c1212")
+    c1 = Comment(Uid=6, Pid=1, content="<p>wtf</p>", timestamp="2021-01-01 02:00:00", dislikeCount=1,
+                 text="wtf", floor=2)
+    c2 = Comment(Uid=1, Pid=1, content="<p>c111</p>", timestamp="2021-01-01 09:00:00", text="c111", floor=3)
+    c3 = Comment(Uid=2, Pid=1, content="<p>c222</p>", timestamp="2021-01-02 09:00:00", text="c222", floor=4)
+    c4 = Comment(Uid=3, Pid=1, content="<p>c333</p>", timestamp="2021-01-05 09:00:00", text="c333", floor=5)
+    c5 = Comment(Uid=4, Pid=1, content="<p>c444</p>", timestamp="2021-01-21 09:00:00", text="c444", floor=6)
+    c6 = Comment(Uid=5, Pid=1, content="<p>c555</p>", timestamp="2021-02-13 09:00:00", text="c555", floor=7)
+    c7 = Comment(Uid=2, Pid=1, content="<p>c666</p>", timestamp="2021-03-01 09:00:00", likeCount=1,
+                 text="c666", floor=8)
+    c8 = Comment(Uid=3, Pid=1, content="<p>c777</p>", timestamp="2021-03-05 09:00:00", text="c777", floor=9)
+    c9 = Comment(Uid=4, Pid=1, content="<p>c888</p>", timestamp="2021-03-08 09:00:00", text="c888", floor=10)
+    c10 = Comment(Uid=5, Pid=1, content="<p>c999</p>", timestamp="2021-03-11 09:00:00", text="c999", floor=11)
+    c11 = Comment(Uid=1, Pid=1, content="<p>c1010</p>", timestamp="2021-03-20 09:00:00", text="c1010", floor=12)
+    c12 = Comment(Uid=2, Pid=1, content="<p>c1111</p>", timestamp="2021-03-21 09:00:00", text="c1111", floor=13)
+    c13 = Comment(Uid=5, Pid=11, content="<p>c1212</p>", timestamp="2021-03-23 13:03:00", text="c1212", floor=2)
 
     r1 = Report(Uid=1, target="comment", targetId=1, reason="yin zhan", timestamp="2021-01-01 09:05:00")
     r2 = Report(Uid=2, target="comment", targetId=1, reason="yin zhan!", timestamp="2021-01-02 09:05:00")
