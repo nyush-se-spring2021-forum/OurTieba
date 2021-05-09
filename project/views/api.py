@@ -668,7 +668,7 @@ def fetch_data():
         for s in match_user.subscriptions:
             if s.subscribed == 1:
                 subs_info.append({"Bid": s.Bid, "bname": (b := s.of_board).name, "LM": s.lastModified,
-                                  "cover": "cover/OurTieba.png"})  # should be b.cover
+                                  "cover": b.cover})
         # sort by LM desc
         subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
         base_info.update({"info": subs_info, "count": len(subs_info)})
