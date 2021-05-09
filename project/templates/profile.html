@@ -396,10 +396,25 @@
             font-size: 4rem;
             font-family: "Courier New", monospace;
         }
+        .close-loading {
+            background-color: red;
+            border-radius: 100%;
+            width: 5vmax;
+            height: 5vmax;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
     </style>
     <!-- popup (show when click on status box) -->
     <div class="pop-up">
-        <div class="loading">Loading...<br>Please wait...</div>
+        <div class="loading">Loading...<br>Please wait...<div class="close-loading" onclick="hidePopup()">&times;</div> </div>
         <!-- for posts -->
         <div class="post-list-wrapper list-wrapper">
             <div class="head-wrapper">
@@ -555,10 +570,12 @@
         }
 
         function showData(type) {  // 0 = post, 1 = history, 2 = subs
-            $(".list-wrapper").eq(type).css("display", "block");  // show corresponding list-wrapper
+            cur_type = type;
+            let l_w = $(".list-wrapper");
+            l_w.css("display", "none");  // hide all list-wrappers
+            l_w.eq(type).css("display", "block");  // show corresponding list-wrapper
             $(".des-text").text(des_dict[type]);  // add description (it doesn't matter for all or only one)
             fillData(type);
-            cur_type = type;
         }
         function fillData(type) {
             let cur_page_size = page_size_dict[type];
