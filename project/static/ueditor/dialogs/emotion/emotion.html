@@ -154,7 +154,7 @@
     // add unicode characters entered by user
     $("#add-emoji").on("click", () => {
         let u_i = $("#user-in");
-        $("#fetch").html("&" + u_i.val());  // render on a hidden block
+        $("#fetch").html("&" + UE.utils.unhtml(u_i.val()));  // render on a hidden block
         u_i.val("");  // clear input
         editor.execCommand("inserthtml", document.getElementById("fetch").innerHTML);  // then insert into editor
         dialog.popup.hide();
