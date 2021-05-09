@@ -48,7 +48,7 @@
                 <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
             </div>
             <div class="float-start">
-                <a class="text-decoration-none"
+                <a class="text-decoration-none" target="_blank"
                    href="{{ url_for('abstract_user.get_personal_profile', Uid=data.post_info['Uid']) }}">
                     <img alt="avatar" src="{{ '/cdn/'+ data.post_info["avatar"] }}" width="32" height="32"
                          class="rounded-circle">
@@ -143,7 +143,7 @@
             <div class="card-body">
                 <div class="card-title">
                     <div class="float-start">
-                        <a class="text-body text-decoration-none"
+                        <a class="text-body text-decoration-none" target="_blank"
                            href="{{ url_for('abstract_user.get_personal_profile', Uid=comment['Uid']) }}">
                             <img src="{{ '/cdn/'+ comment["user_avatar"] }}" width="32" height="32"
                                  alt="avatar" class="rounded-circle">
