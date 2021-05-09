@@ -43,6 +43,7 @@
         <span class="emoji-page">Emo 3</span>
         <span class="emoji-page">Emo 4</span>
         <span class="emoji-page">Emo 5</span>
+        <span class="emoji-page">Other</span>
     </div>
     <div class="emoji-body tabbody">
         <div class="emoji-box"><p class="emoji-content">&#x1f601;</p></div>
@@ -129,6 +130,13 @@
         <div class="emoji-box"><p class="emoji-content">&#x1f64e;</p></div>
         <div class="emoji-box"><p class="emoji-content">&#x1f64f;</p></div>
     </div>
+    <div class="emoji-body tabbody" style="display: none; flex-direction: column">
+        <label for="user-in"></label><div style="height: 30%; margin-bottom: 10px">unicode: &<input id="user-in">
+        <button id="add-emoji">add</button></div>
+        <div style="width: 100%; overflow: hidden">Valid inputs look like "#9818"(decimal), "#x1f680"(hex)
+            or "larr;"(name)</div>
+        <div id="fetch" style="display: none"></div>
+    </div>
 </div>
 
 <script>
@@ -142,6 +150,14 @@
         $(".emoji-page").removeClass("focus");  // remove "focus" class for every class
         $(this).addClass("focus");
         $(".emoji-body").css("display", "none").eq($(this).index()).css("display", "flex");
+    })
+    // add unicode characters entered by user
+    $("#add-emoji").on("click", () => {
+        let u_i = $("#user-in");
+        $("#fetch").html("&" + u_i.val());  // render on a hidden block
+        u_i.val("");  // clear input
+        editor.execCommand("inserthtml", document.getElementById("fetch").innerHTML);  // then insert into editor
+        dialog.popup.hide();
     })
 </script>
 </body>
