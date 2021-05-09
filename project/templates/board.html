@@ -40,9 +40,9 @@
     <br>
     <div style="text-align: right">
         Sort by:
-        <a href="javascript:setParam('order', 'latest_comment')">latest comment</a>
-        <a href="javascript:setParam('order', 'newest')">newest</a>
-        <a href="javascript:setParam('order', 'like_count')">likes</a>
+        <a class="text-decoration-none" href="javascript:setParam('order', 'latest_comment')">latest comment</a>
+        <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
+        <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
     </div>
     <hr>
     {% if data['posts'] | length <= 0  %}
