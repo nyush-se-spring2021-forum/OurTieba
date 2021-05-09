@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from datetime import datetime
+import datetime
 import functools
 
 from flask import session, redirect
@@ -42,14 +42,14 @@ def auto_scope(_session):
         print(e)
 
 
-def convert_time(ts: datetime):
-    if ts.strftime("%Y") != datetime.utcnow().strftime("%Y"):
+def convert_time(ts: datetime.datetime):
+    if ts.strftime("%Y") != datetime.datetime.utcnow().strftime("%Y"):
         return ts.strftime("%Y-%m-%d")
-    if (day := ts.strftime("%m-%d")) != datetime.utcnow().strftime("%m-%d"):
+    if (day := ts.strftime("%m-%d")) != datetime.datetime.utcnow().strftime("%m-%d"):
         return day
     return ts.strftime("%H:%M")
 
 
 if __name__ == '__main__':
-    new = datetime(2021, 5, 9, 15, 0, 0)
+    new = datetime.datetime(2021, 5, 9, 15, 0, 0)
     print(convert_time(new))
