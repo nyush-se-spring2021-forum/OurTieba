@@ -177,7 +177,7 @@ def get_personal_profile(Uid):
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
         "banned": u.banned, "banDuration": str(u.banDuration), "isCurrent": int(Uid == session.get("Uid", -1)),
-        "post_count": post_count, "subs_count": subs_count, "history_count": history_count
+        "post_count": post_count, "subs_count": subs_count, "history_count": history_count, "Uid": Uid
     }
     return render_template("profile.html", data=user_info)
 
