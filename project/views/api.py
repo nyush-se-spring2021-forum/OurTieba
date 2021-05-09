@@ -623,34 +623,53 @@ def set_password():
     return jsonify({"status": 1})
 
 
-@api.route("/view")
-def get_info():
-    Cid = request.args.get("Cid", "").split(",")  # should separate by comma, e.g. Cid=1,2,3
-    Pid = request.args.get("Pid", "").split(",")
-    Bid = request.args.get("Bid", "").split(",")
-    base_info = {"time": datetime.datetime.utcnow(), "status": 1, "data": {"comments": [], "posts": [], "boards": []}}
-    for c in Cid:
-        target = my_db.query(Comment, Comment.Cid == c, first=True)
-        if not target:
-            continue
-        base_info["data"]["comments"].append({"Cid": target.Cid, "Pid": target.Pid, "Uid": target.Uid,
-                                              "content": target.content, "timestamp": target.timestamp,
-                                              "like_count": target.likeCount, "dislike_count": target.dislikeCount})
-    for p in Pid:
-        target = my_db.query(Post, Post.Pid == p, first=True)
-        if not target:
-            continue
-        base_info["data"]["posts"].append({"Pid": target.Pid, "Bid": target.Bid, "Uid": target.Uid,
-                                           "title": target.title, "content": target.content,
-                                           "timestamp": target.timestamp, "comment_count": target.commentCount,
-                                           "like_count": target.likeCount, "dislike_count": target.dislikeCount,
-                                           "view_count": target.viewCount,
-                                           "latest_comment_time": target.latestCommentTime})
-    for b in Bid:
-        target = my_db.query(Board, Board.Bid == b, first=True)
-        if not target:
-            continue
-        base_info["data"]["boards"].append({"Bid": target.Bid, "name": target.name, "hot": target.hot,
-                                            "timestamp": target.timestamp, "post_count": target.postCount,
-                                            "view_count": target.viewCount, "subscribe_count": target.subscribeCount})
+@api.route("/fetch")
+def fetch_data():
+    cur_Uid = session.get("Uid", 0)
+    # Optional: Can block user's request when cur_Uid != session["Uid"] (the user is viewing other's profile)
+
+    Uid = request.args.get("Uid")
+    type_data = request.args.get("type")
+
+    if not Uid or not type_data or not type_data.isnumeric() or not (0 <= (type_data := int(type_data)) <= 2):
+        return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
+
+    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    if not match_user:
+        return jsonify({"error": {"msg": "No user found!"}, "status": 0})
+
+    base_info = {"status": 1}
+
+    if type_data == 0:
+        post_info = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
+                      "timestamp": p.timestamp} for p in match_user.posts]
+        # sort by timestamp desc
+        post_info.sort(key=lambda p: p["timestamp"], reverse=True)
+        # convert times into shorter format
+        for p in post_info:
+            p["timestamp"] = convert_time(p["timestamp"])
+        base_info.update({"info": post_info, "count": len(post_info)})
+    elif type_data == 1:
+        history_info = []
+        for h in match_user.view:
+            history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
+            p = h.related_post
+            history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid)})  # "me" = whether post by me
+            history_info.append(history)
+        # sort by LVT desc
+        history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
+        # convert times into shorter format
+        for h in history_info:
+            h["LVT"] = convert_time(h["LVT"])
+        base_info.update({"info": history_info, "count": len(history_info)})
+    else:
+        subs_info = []
+        for s in match_user.subscriptions:
+            if s.subscribed == 1:
+                subs_info.append({"Bid": s.Bid, "bname": (b := s.of_board).name, "LM": s.lastModified,
+                                  "cover": "cover/OurTieba.png"})  # should be b.cover
+        # sort by LM desc
+        subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
+        base_info.update({"info": subs_info, "count": len(subs_info)})
     return jsonify(base_info)

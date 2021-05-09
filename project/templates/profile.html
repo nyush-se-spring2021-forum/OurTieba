@@ -12,11 +12,59 @@
             position: relative;
             bottom: -20px;
         }
+        /* status box */
+        .status-wrapper {
+            height: 15vmin;
+            width: 100%;
+        }
+        .status-box {
+            width: 32%;
+            height: 15vmin;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease-out;
+        }
+        .status-box:hover {
+            background-color: #eeeeee;
+        }
+        .post-box {
+            float: left;
+            margin-left: 2%;
+            border-right: 1px solid #7b7b7b;
+        }
+        .history-box {
+            float: right;
+            margin-right: 2%;
+            border-left: 1px solid #7b7b7b;
+        }
+        .subscribed-box {
+            float: right;
+            border-right: 1px solid #7b7b7b;
+            border-left: 1px solid #7b7b7b;
+        }
+        .status-des {
+            color: #171A21;
+            font-family: Geneva, sans-serif;
+            font-size: 4.5vmin;
+            font-weight: bold;
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .status-num {
+            color: #171A21;
+            font-size: 4vmin;
+        }
     </style>
     <div class="display-6">{{ data['nickname'] }}</div>
     <hr>
     {% if data['banned'] == 1 %}
-        <div class="alert-danger">User banned until: {{ moment(data['banDuration']).fromNow() }}</div>
+        {% if data['isCurrent'] %}
+            <div class="alert-danger">You are banned until: {{ data['banDuration'] }}</div>
+        {% else %}
+            <div class="alert-danger">User currently banned.</div>
+        {% endif %}
     {% endif %}
     <div class="avatar-wrapper">
         {% if data['isCurrent'] %}
@@ -29,6 +77,24 @@
                  height="100" class="rounded-circle" alt="">
         {% endif %}
         <div class="btn btn-primary" id="view-origin">View Original</div>
+    </div>
+    <hr>
+    <div class="status-wrapper">
+        <div class="post-box status-box">
+            <p class="status-des">
+                {% if data["isCurrent"] %}My Posts{% else %}User Posts{% endif %}
+            </p>
+            <p class="status-num">{{ data["post_count"] }}</p>
+        </div>
+        <div class="history-box status-box">
+            <p class="status-des">Browse History</p>
+            <p class="status-num">{{ data["history_count"] }}</p>
+        </div>
+        <div class="subscribed-box status-box">
+            <p class="status-des">Subscriptions</p>
+            <p class="status-num">{{ data["subs_count"] }}</p>
+        </div>
+
     </div>
     <hr>
     <div class="h3">
@@ -88,8 +154,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="address" class="col-form-label">Address</label>
-                            <input type="text" class="form-control" name="address" placeholder="Address"
-                                   value="{{ '' if data['address'] is none else data['address'] }}">
+                            <label>
+                                <input type="text" class="form-control" name="address" placeholder="Address"
+                                       value="{{ '' if data['address'] is none else data['address'] }}">
+                            </label>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -101,10 +169,309 @@
             </div>
         </div>
     </div>
+    <!-- popup (show when click on status box) -->
+    <style>
+        .pop-up {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
 
+            position: fixed;
+            top: 0;
+            left: 0;
+
+        }
+        /* all wrapper */
+        .list-wrapper {
+            display: none;
+            height: 42vmax;
+            z-index: 10;
+
+            position: relative;
+            left: calc(50% - 25px - 0px);  /* calc(50% - w1 - l1) */
+            top: calc(50% + 40px - 0px);  /* calc(50% + header height - t1) */
+            transform: translate(-50%, -50%);
+        }
+        .subs-list-wrapper {
+            width: 35vmax;
+        }
+        .post-list-wrapper {
+            width: 40vmax;
+        }
+        .history-list-wrapper {
+            width: 40vmax;
+        }
+        /* head */
+        .head-wrapper {
+            display: flex;
+            width: 100%;
+            height: calc(25px + 10px);  /* h1 + x2 (x2 is the top margin you want for list-wrapper) */
+        }
+        .list-des {
+            width: calc(100% - 25px - 10px - 0px);  /* calc(100% - w1 - x1 - l1) */
+            margin-left: 10px; /* x1 */
+        }
+        .des-text {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: 25px;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            min-width: 50px;
+            max-width: 90%;
+            padding-bottom: 5px;
+
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .hide {
+            height: 25px;  /* h1 */
+            width: 25px;  /* w1 */
+            outline: none;
+            cursor: pointer;
+            color: black;
+            background-color: #8e8e8e;
+            border: 1px dashed black;
+            border-radius: 100%;
+            transition: all 0.3s ease-out;
+            font-size: 16px;
+            text-align: center;
+            margin: 0;
+
+            position: relative;
+            top: 0;  /* t1 */
+            left: 0;  /* l1 */
+        }
+        .hide:hover {
+            border: 1px solid black;
+            color: white;
+            background-color: #5b5b5b;
+            transform: rotate(90deg);
+        }
+        /* body (list) */
+        .content-list {  /* height and width are decided by each one's wrapper */
+            position: relative;
+            left: calc(25px + 0px + 10px);  /* 25px = w1, 0px = l1, x1 = 10px = left margin you want */
+            top: 0;
+
+            border: 1px solid #2f2e2e;
+            border-radius: 10px;
+            background-color: rgb(245, 245, 245);
+            width: calc(100% - 25px - 10px - 0px);  /* calc(100% - h1 - x1 - l1) */
+            height: calc(100% - 25px - 10px - 0px);  /* calc(100% - h1 - x2 - t1) */
+
+            display: flex;
+            justify-content: center;
+            align-content: flex-start;
+            flex-wrap: wrap;
+        }
+        .content {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #b8b7b7;
+            width: 95%;
+            height: 11.5%;  /* (100% - 8%) / 8 */
+        }
+        /* content: post */
+        .post {
+            flex-wrap: wrap;
+        }
+        .post-title {  /* shared by post and history */
+            width: 100%;
+            height: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .board-name {
+            height: 40%;
+            width: 40%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .timestamp {  /* shared by post and history */
+            height: 40%;
+            width: 30%;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        /* content: history */
+        .h-bname {
+            width: 35%;
+        }
+        .h-poster {
+            width: 35%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .history {
+            flex-wrap: wrap;
+        }
+        /* content: subs */
+        .subs {
+            height: 18.4%;  /* (100% - 8%) / 5 */
+            flex-direction: column;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .s-cover {
+            /* content width = 95% * (100% - 35px) * 35vmax, hight = 11.5% * (100% - 35px) * 42vmax */
+            height: 80%;
+            width: 18.68%;
+            border-radius: 10px;
+            margin-right: 8%;
+        }
+        .s-bname {
+            height: 100%;
+            width: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        .s-unsub {
+            height: 100%;
+            width: 25%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+        /* foot */
+        .foot-wrapper {
+            border-bottom: none;
+            height: 8%;
+            justify-content: space-around;
+        }
+        .arrow {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            cursor: pointer;
+            text-align: center;
+            font-size: 20px;
+        }
+        .index {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            font-size: 20px;
+        }
+        /* loading */
+        .loading {
+            display: none;
+            width: 100%;
+            height: 100%;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            font-size: 4rem;
+            font-family: "Courier New", monospace;
+        }
+    </style>
+    <div class="pop-up">
+        <div class="loading">Loading...<br>Please wait...</div>
+        <!-- for posts -->
+        <div class="post-list-wrapper list-wrapper">
+            <div class="head-wrapper">
+                <div class="hide">&#10005</div>
+                <div class="list-des"><p class="des-text"></p></div>
+            </div>
+            <div class="post-list content-list">
+                {% for _ in range(8) %}
+                <div class="post content">
+                    <div class="p-title post-title"></div>
+                    <div class="p-bname board-name"></div>
+                    <div class="p-time timestamp"></div>
+                </div>
+                {% endfor %}
+                <div class="content foot-wrapper">
+                    <div class="prev-arrow arrow">&#9668Prev</div>
+                    <div class="index">-/-</div>
+                    <div class="next-arrow arrow">Next&#9658</div>
+                </div>
+            </div>
+        </div>
+        <!-- for history -->
+        <div class="history-list-wrapper list-wrapper">
+            <div class="head-wrapper">
+                <div class="hide">&#10005</div>
+                <div class="list-des"><p class="des-text"></p></div>
+            </div>
+            <div class="history-list content-list">
+                {% for _ in range(8) %}
+                <div class="history content">
+                    <div class="h-title post-title"></div>
+                    <div class="h-bname board-name"></div>
+                    <div class="h-poster"></div>
+                    <div class="h-time timestamp"></div>
+                </div>
+                {% endfor %}
+                <div class="content foot-wrapper">
+                    <div class="prev-arrow arrow">&#9668Prev</div>
+                    <div class="index">-/-</div>
+                    <div class="next-arrow arrow">Next&#9658</div>
+                </div>
+            </div>
+        </div>
+        <!-- for subs -->
+        <div class="subs-list-wrapper list-wrapper">
+            <div class="head-wrapper">
+                <div class="hide">&#10005</div>
+                <div class="list-des"><p class="des-text"></p></div>
+            </div>
+            <div class="subs-list content-list">
+                {% for _ in range(5) %}
+                <div class="subs content">
+                    <img class="s-cover" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
+                    lEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="">
+                    <div class="s-bname"></div>
+                    <div class="s-unsub"></div>
+                </div>
+                {% endfor %}
+                <div class="content foot-wrapper">
+                    <div class="prev-arrow arrow">&#9668Prev</div>
+                    <div class="index">-/-</div>
+                    <div class="next-arrow arrow">Next&#9658</div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
 
     <script>
-        $("#avatar-upload").click(function () {
+        $("#avatar-upload").on("click", function () {
             $("#uploadImg").trigger('click');
         });
 
@@ -136,8 +503,134 @@
             })
         }
 
+        // view original
         $("#view-origin").on("click", () => {
             window.open($("#avatar-upload").attr("src"), "_blank");
         })
+
+        // view info
+        var cur_page = 1;
+        var cur_max_page;
+        var cur_type;
+
+        $(".status-box").on("click", function () {
+            fetchData($(this).index());
+        })
+
+        $(".hide").on("click", () => {
+            hidePopup();
+        })
+
+        $(".prev-arrow").on("click", () => {
+            cur_page = Math.max(cur_page-1, 1);
+            fillData(cur_type);
+        })
+        $(".next-arrow").on("click", () => {
+            cur_page = Math.min(cur_page+1, cur_max_page);
+            fillData(cur_type);
+        })
+
+        var des_dict = {
+            0: "{{ ("My" if data["isCurrent"] else "User") + " Posts"}}",
+            1: "Browse History",
+            2: "{{ ("My" if data["isCurrent"] else "") + " Subscriptions"}}"
+        }
+        var data_dict = {  // request data only on click on status box
+            0: null,  // post data
+            1: null,  // history data
+            2: null  // subs data
+        }
+        var cls_dict = {
+            0: ".post",
+            1: ".history",
+            2: ".subs"
+        }
+        var page_size_dict = {
+            0: 8,
+            1: 8,
+            2: 5,
+        }
+        function showPopup() {
+            $(".pop-up").css("display", "block");
+        }
+
+        function showData(type) {  // 0 = post, 1 = history, 2 = subs
+            $(".list-wrapper").eq(type).css("display", "block");  // show corresponding list-wrapper
+            $(".des-text").text(des_dict[type]);  // add description (it doesn't matter for all or only one)
+            fillData(type);
+            cur_type = type;
+        }
+        function fillData(type) {
+            let cur_page_size = page_size_dict[type];
+            cur_max_page = Math.max(Math.ceil(data_dict[type]["count"]/cur_page_size), 1);
+            let text = cur_page+"/"+cur_max_page;
+            $(".index").eq(type).text(text);  // add page info for corresponding list
+            // fill data into list for current page
+            let cur_index;
+            let info = data_dict[type]["info"];
+            for (let i=0;i<cur_page_size;i++) {
+                cur_index = (cur_page-1)*cur_page_size + i;  // current index of data_dict
+                let has_content = cur_index < info.length;  // whether there is no more content
+                let cur_node = $(cls_dict[type]).eq(i);  // current content node in the loop
+                let cur_info = (has_content) ? info[cur_index] : {};  // current content object in data_dict
+                let get_ = function (name) {  /* only define once */
+                    return (has_content) ? cur_info[name] : "";
+                }
+                let bname = get_("bname");
+                if (type === 0) {
+                    let p_title = get_("title");
+                    let p_time = get_("timestamp");
+                    $(".p-title", cur_node).text(p_title);
+                    $(".p-bname", cur_node).text(bname);
+                    $(".p-time", cur_node).text(p_time);
+                } else if (type === 1) {
+                    let h_title = get_("title");
+                    let is_me = get_("me");
+                    let h_poster = is_me ? "me" : get_("nickname");
+                    let h_time = get_("LVT");
+                    $(".h-title", cur_node).text(h_title);
+                    $(".h-bname", cur_node).text(bname);
+                    $(".h-poster", cur_node).text(h_poster).css("font-style", (is_me) ? "italic" : "normal");
+                    $(".h-time", cur_node).text(h_time);
+                } else {
+                    let s_cover = (has_content) ? "/cdn/" + get_("cover") : "data:image/gif;base64,iVBORw0KGgo" +
+                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+                    $(".s-cover", cur_node).attr("src", s_cover);
+                    $(".s-bname", cur_node).text(bname);
+                    $(".s-unsub", cur_node).text((has_content) ? "Unsubsribe" : "");
+                }
+            }
+        }
+        function fetchData(type) {
+            // show popup first
+            showPopup();
+            // if cached, do not fetch new data
+            if (data_dict[type]) {return showData(type);}
+            // else, go fetch and cache data
+            // while data not coming, display loading message (can be simulated by sleeping at server in route "/fetch")
+            $(".loading").css("display", "flex");
+            $.ajax({
+                method: "GET",
+                url: "/api/fetch?Uid={{ data["Uid"] }}&type=" + type,
+                success: data => {  // when data retrieved, display them
+                    $(".loading").css("display", "none");  // hide the loading page
+                    if (data.status) {
+                        data_dict[type] = data;
+                        showData(type);
+                    } else {
+                        alert("Something went wrong. Try again later.")
+                    }
+                }
+            });
+            // clear cache every 10 minutes
+            setInterval(() => {
+                data_dict[type] = null;
+            }, 10*60*1000);
+        }
+        function hidePopup() {
+            cur_page = 1;  // reset page to 1
+            $(".pop-up").css("display", "none");  // hide popup
+            $(".list-wrapper").css("display", "none");  // hide all list-wrappers
+        }
     </script>
 {% endblock %}
