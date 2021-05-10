@@ -24,7 +24,7 @@ class Comment(my_db.Base):
     comment_in = relationship("Post", back_populates="comments")
     status_by = relationship("CommentStatus", back_populates="on_comment", cascade='all, delete', passive_deletes=True)
 
-    def __init__(self, Uid, Pid, content, floor, medias=None, text=None , timestamp=None, likeCount=None,
+    def __init__(self, Uid, Pid, content, floor, medias=None, text=None, timestamp=None, likeCount=None,
                  dislikeCount=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")

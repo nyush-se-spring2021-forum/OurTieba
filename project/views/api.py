@@ -213,7 +213,7 @@ def add_comment():
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
-    new_comment = Comment(Uid, Pid, content, medias, text, floor)
+    new_comment = Comment(Uid, Pid, content, floor, medias, text)
     my_db.add(new_comment)
     return jsonify({"status": 1})
 
