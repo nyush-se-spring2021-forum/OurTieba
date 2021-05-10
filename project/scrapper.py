@@ -38,8 +38,8 @@ class OTSpider:
         self.cache.pop(name)
 
     def get_hot_news(self, **kwargs):
-        country = kwargs.get('country', 'us')
-        category = kwargs.get('category', 'general')
+        country = kwargs.get('country', 'us') or "us"  # (no "country" in kwargs) or (country=None)
+        category = kwargs.get('category', 'general') or "general"
         # if news is not cached, or cache has expired, update cache
         if not (news := self.cache["news"].get(key := (country, category))) or \
                 news["expires"] < datetime.datetime.utcnow():
