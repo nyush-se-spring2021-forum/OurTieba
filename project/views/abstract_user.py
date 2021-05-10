@@ -16,7 +16,10 @@ def index():
     This function is used to show the main page of our system with recommend boards and hot news
     :return: index.html, which is our main page
     """
-    hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
+    pref = my_db.query(User.preference, User.Uid == Uid, first=True)[0] if (Uid := session.get("Uid")) else {}
+    category, country = pref.get("category"), pref.get("country")
+    hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY, category=category,
+                                          country=country)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
@@ -82,7 +85,8 @@ def get_comments_in_post(Pid):
     p.viewCount += 1  # when page is accessed, increment view count
     post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content,
                  "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
-                 "dislike_count": p.dislikeCount, "owner": p.owner.nickname, "avatar": p.owner.avatar}
+                 "dislike_count": p.dislikeCount, "owner": (o := p.owner).nickname, "avatar": o.avatar}
+    board_info = {"cover": (b := p.under).cover, "bname": b.name}
     if not session.get("Uid"):
         post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
     else:
@@ -119,7 +123,7 @@ def get_comments_in_post(Pid):
     for c in comment_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
         base_info = {"Cid": c.Cid, "Uid": c.Uid, "content": c.content, "publish_time": c.timestamp,
                      "like_count": c.likeCount, "dislike_count": c.dislikeCount, "publish_user": c.comment_by.nickname,
-                     "user_avatar": c.comment_by.avatar}
+                     "user_avatar": c.comment_by.avatar, "floor": c.floor}
         if not session.get("Uid"):
             base_info.update({"liked_by_user": 0, "disliked_by_user": 0})
         else:
@@ -132,7 +136,8 @@ def get_comments_in_post(Pid):
                 base_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
         Comments.append(base_info)
 
-    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "post_info": post_info}
+    data = {"num_match": num_match, "num_page": num_page, "page": page, "comments": Comments, "post_info": post_info,
+            "board_info": board_info}  # board here means the board that the post is under
     return render_template("post.html", data=data)
 
 
