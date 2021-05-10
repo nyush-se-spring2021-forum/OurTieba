@@ -25,7 +25,9 @@
                         <a href="{{ news['link'] }}" target="_blank" class="stretched-link">Continue reading</a>
                     </div>
                     <div class="col-auto d-none d-lg-block">
-                        <img src="{{ news['img_src'] }}" alt="" height="100%" width="200"
+                        <img src="{{ news['img_src'] or "data:image/gif;base64,iVBORw0KGgo" +
+                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="}}"
+                             alt="" height="100%" width="200"
                              style="object-fit: cover; object-position: center">
 
                     </div>
