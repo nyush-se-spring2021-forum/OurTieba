@@ -15,7 +15,7 @@ class OTSpider:
         self.session = HTMLSession()
         self.headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, "
                                       "like Gecko) Chrome/89.0.4389.90 Safari/537.36 Edg/89.0.774.57"}
-        self.cache = dict()  # note that this is stateless, which means it is cleared on every restart
+        self.cache = {"news": dict()}  # note that this is stateless, which means it is cleared on every restart
 
     def get(self, *arg, **kwargs):
         return self.session.get(*arg, **kwargs)
@@ -38,16 +38,19 @@ class OTSpider:
         self.cache.pop(name)
 
     def get_hot_news(self, **kwargs):
+        country = kwargs.get('country', 'us')
+        category = kwargs.get('category', 'general')
         # if news is not cached, or cache has expired, update cache
-        if not self.cache.get("news") or self.cache["news"]["expires"] < datetime.datetime.utcnow():
-            url = "https://newsapi.org/v2/top-headlines?country=us&category=general&" \
+        if not (news := self.cache["news"].get(key := (country, category))) or \
+                news["expires"] < datetime.datetime.utcnow():
+            url = f"https://newsapi.org/v2/top-headlines?country={country}&category={category}&" \
                   "apiKey=9d51c192354848748d129b08faea32ea"
             res = self.session.get(url, headers=self.headers)
             data = res.json()
             num = kwargs["num"]
-            self.cache["news"] = {"articles": data["articles"][:num],
+            self.cache["news"][key] = {"articles": data["articles"][:num],
                                   "expires": datetime.datetime.utcnow() + datetime.timedelta(seconds=kwargs["freq"])}
-        return self.cache["news"]["articles"]
+        return self.cache["news"][key]["articles"]
 
     def weibo_hot_search(self, **kwargs):  # cache not applied because change is rapid
         # Juncheng's cookie
