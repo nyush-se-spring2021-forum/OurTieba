@@ -32,6 +32,9 @@ def add_post():
     if not Bid or not Bid.isnumeric() or not title:
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
+    if len(title) > 200:
+        return jsonify({"error": {"msg": "Title word count exceeded. Maximum: 200"}, "status": 0})
+
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
@@ -43,7 +46,7 @@ def add_post():
         content = "<p></p>"
 
     if len(text) > 2000:
-        return jsonify({"error": {"msg": "Word count exceeded. Maximum: 2000"}, "status": 0})
+        return jsonify({"error": {"msg": "Content word count exceeded. Maximum: 2000"}, "status": 0})
 
     try:
         html = HTML(html=content)
