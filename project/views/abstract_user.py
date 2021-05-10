@@ -40,7 +40,7 @@ def get_posts_in_board(Bid):
         return "Not Found!", 404
     b.viewCount += 1  # when page is accessed, increment view count
     board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount,
-                  "time": b.timestamp, "view_count": b.viewCount}
+                  "time": b.timestamp, "view_count": b.viewCount, "cover": b.cover, "description": b.description}
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
