@@ -10,7 +10,8 @@ class Board(my_db.Base):
     __tablename__ = "board"
 
     Bid = Column(Integer, primary_key=True)
-    name = Column(String)
+    name = Column(String, nullable=False)
+    description = Column(String, nullable=False)
     hot = Column(Integer, default=0)
     cover = Column(String, default="cover/OurTieba.png")
     sticky_on_top = Column(Integer, default=0)  # the Pid of post sticky on top
@@ -22,11 +23,12 @@ class Board(my_db.Base):
     posts = relationship("Post", back_populates="under")
     subscribers = relationship("Subscription", back_populates="of_board")
 
-    def __init__(self, name, hot=None, cover=None, sticky_on_top=None, postCount=None, viewCount=None,
+    def __init__(self, name, description, hot=None, cover=None, sticky_on_top=None, postCount=None, viewCount=None,
                  subscribeCount=None, timestamp=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.name = name
+        self.description = description
         self.hot = hot
         self.cover = cover
         self.sticky_on_top = sticky_on_top

@@ -68,16 +68,17 @@ def sql_test():
     u4 = User(uname="U4", password="444", nickname="user4", timestamp="2020-12-28 20:00:00")
     u5 = User(uname="U5", password="555", nickname="user5", timestamp="2020-12-29 13:00:00")
     u6 = User(uname="U6", password="666", nickname="user6", timestamp="2020-12-30 17:00:00",
-              banned=1, banDuration="2022-01-01 00:00:00")
+              banned=1, banDuration="2022-01-01 00:00:00", preference={"category": "technology", "country": "cn"})
 
     b1 = Board(name="B1", hot=100, viewCount=15, subscribeCount=1, timestamp="2020-12-30 09:00:00",
-               postCount=3, sticky_on_top=20)
-    b2 = Board(name="B2", hot=50, viewCount=5, timestamp="2020-12-31 09:00:00", postCount=1)
+               postCount=3, sticky_on_top=20, description="D1")
+    b2 = Board(name="B2", hot=50, viewCount=5, timestamp="2020-12-31 09:00:00", postCount=1, description="D2")
     b3 = Board(name="B3", hot=120, viewCount=25, subscribeCount=1, timestamp="2021-02-01 10:40:00",
-               postCount=5)
-    b4 = Board(name="B4", hot=0, timestamp="2020-08-30 18:00:00", postCount=0)
-    b5 = Board(name="B5", hot=80, viewCount=12, timestamp="2021-01-30 09:30:00", postCount=2, sticky_on_top=10)
-    b6 = Board(name="B6", hot=70, viewCount=10, timestamp="2020-10-29 10:05:00", postCount=2)
+               postCount=5, description="D3")
+    b4 = Board(name="B4", hot=0, timestamp="2020-08-30 18:00:00", postCount=0, description="D4")
+    b5 = Board(name="B5", hot=80, viewCount=12, timestamp="2021-01-30 09:30:00", postCount=2,
+               sticky_on_top=10, description="D5")
+    b6 = Board(name="B6", hot=70, viewCount=10, timestamp="2020-10-29 10:05:00", postCount=2, description="D6")
 
     p1 = Post(Uid=1, Bid=1, title="P1", content="<p>111</p>", viewCount=40, timestamp="2020-12-30 10:00:00",
               commentCount=12, LCT="2021-03-21 09:00:00", dislikeCount=1, text="111", available_floor=14)
