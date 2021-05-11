@@ -1,7 +1,8 @@
 import datetime
 import hashlib
+import time
 
-from sqlalchemy import Column, Integer, String, DateTime, PickleType
+from sqlalchemy import Column, Integer, String, DateTime, DECIMAL
 from sqlalchemy.orm import relationship
 
 from ..configs.macros import AVATAR_PATH
@@ -18,7 +19,7 @@ class User(my_db.Base):
     nickname = Column(String)
     avatar = Column(String, default=AVATAR_PATH+"default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
-    preference = Column(PickleType, default={})
+    lastCheck = Column(DECIMAL, default=time.time)  # time the user last check message
     # personal info
     gender = Column(String)
     phoneNumber = Column(String)
@@ -37,7 +38,7 @@ class User(my_db.Base):
     subscriptions = relationship("Subscription", back_populates="by_user")
     view = relationship('History', back_populates="by_user")
 
-    def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, preference=None, gender=None,
+    def __init__(self, password, uname, nickname=None, avatar=None, timestamp=None, lastCheck=None, gender=None,
                  phone_number=None, email=None, address=None, dateOfBirth=None, banned=None, banDuration=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
@@ -50,7 +51,7 @@ class User(my_db.Base):
         self.nickname = nickname if nickname else uname
         self.avatar = avatar
         self.timestamp = timestamp
-        self.preference = preference
+        self.lastCheck = lastCheck
         self.gender = gender
         self.phoneNumber = phone_number
         self.email = email

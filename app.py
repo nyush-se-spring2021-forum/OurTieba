@@ -68,7 +68,7 @@ def sql_test():
     u4 = User(uname="U4", password="444", nickname="user4", timestamp="2020-12-28 20:00:00")
     u5 = User(uname="U5", password="555", nickname="user5", timestamp="2020-12-29 13:00:00")
     u6 = User(uname="U6", password="666", nickname="user6", timestamp="2020-12-30 17:00:00",
-              banned=1, banDuration="2022-01-01 00:00:00", preference={"category": "technology", "country": "cn"})
+              banned=1, banDuration="2022-01-01 00:00:00")
 
     b1 = Board(name="B1", hot=100, viewCount=15, subscribeCount=1, timestamp="2020-12-30 09:00:00",
                postCount=3, sticky_on_top=20, description="D1")

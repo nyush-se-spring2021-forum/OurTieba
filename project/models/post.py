@@ -16,7 +16,9 @@ class Post(my_db.Base):
     text = Column(String, default="")  # plain text in "content" column
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)
     # next available index for a floor in the post, increment on comment creation, DO NOT decrement on comment deletion
-    available_floor = Column(Integer, default=2)
+    available_floor = Column(Integer, default=2)  # available_floor - 1 is the number of comments ever posted in a post
+    status = Column(Integer, default=0)  # 0=normal, 1=deleted(by user), 2=banned(by admin)
+    sticky_on_top = Column(PickleType, default=[])  # the list of Cid of comment sticky on top
     commentCount = Column(Integer, default=0)
     likeCount = Column(Integer, default=0)
     dislikeCount = Column(Integer, default=0)
@@ -32,7 +34,7 @@ class Post(my_db.Base):
     status_by = relationship("PostStatus", back_populates="on_post", cascade='all, delete', passive_deletes=True)
     view = relationship("History", back_populates="related_post")
 
-    def __init__(self, Uid, Bid, title, content=None, medias=None, text=None, timestamp=None, LCT=None,
+    def __init__(self, Uid, Bid, title, content=None, medias=None, text=None, timestamp=None, LCT=None, status=None,
                  viewCount=None, commentCount=None, likeCount=None, dislikeCount=None, available_floor=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
@@ -46,6 +48,7 @@ class Post(my_db.Base):
         self.text = text
         self.timestamp = timestamp
         self.available_floor = available_floor
+        self.status = status
         self.latestCommentTime = LCT
         self.viewCount = viewCount
         self.commentCount = commentCount
