@@ -39,11 +39,12 @@ def get_posts_in_board(Bid):
     if not b:
         return "Not Found!", 404
     b.viewCount += 1  # when page is accessed, increment view count
-    subs = my_db.query(Subscription, and_(User.Uid == (Uid := session.get("Uid")), Board.Bid == Bid), first=True)
+    subs = my_db.query(Subscription, and_(Subscription.Uid == (Uid := session.get("Uid")),
+                                          Subscription.Bid == Bid), first=True)
 
-    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "sub_count": b.subscribeCount,
+    board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "subs_count": b.subscribeCount,
                   "time": b.timestamp, "view_count": b.viewCount, "cover": b.cover, "description": b.description,
-                  "sub_by_user": subs.subscribed if subs else 0}
+                  "subs_by_user": subs.subscribed if subs else 0}
 
     order = request.args.get("order", "latest_comment")
     page = request.args.get("page", "1")
