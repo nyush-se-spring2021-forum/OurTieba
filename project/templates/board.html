@@ -34,9 +34,119 @@
             white-space: nowrap;
             text-overflow: ellipsis;
         }
-    </style>
+        .word-count {
+            text-align: right;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+        .board-header {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .board-info {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+        }
+        .cover-wrap {  /* center the cover */
+            width: 110px;
+            height: 110px;
+            background-color: white;
+            border: 1px solid #DADCDF;
+        }
+        .board-cover {
+            width: 100px;
+            height: 100px;
 
-    <p style="font-size:50px">{{ data['board_info']['name'] }}</p>
+            position: relative;
+            top: 4px;  /* beware of border length */
+            left: 4px;
+        }
+        .board-des {
+            width: 70%;
+            margin-top: 30px;
+            font-family: "Noto Sans", Arial, sans-serif;
+            font-size: 1rem;
+            line-height: 1.4rem;
+            word-wrap: break-word;
+            text-align: justify;
+        }
+        .after-cover {
+            height: 110px;
+            margin-left: 1vw;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .board-name {
+            font-size: 50px;
+            display: flex;
+            justify-content: flex-end;
+            flex-direction: column;
+            text-align: left;
+            line-height: 50px;  /* set as font-size to make text touch bottom */
+        }
+        .subs-wrap {
+            height: 50px;
+            display: flex;
+            align-items: flex-end;
+            margin-bottom: 2px;
+        }
+        .subs-btn {
+            height: 30px;
+            width: 80px;
+            border-radius: 5px;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+        }
+        .unsub-btn {
+            border: 2px solid black;
+            background-color: white;
+            color: black;
+        }
+        .sub-btn {
+            border: 2px solid transparent;
+            background-color: red;
+            color: white;
+        }
+        .text-label {
+            margin-left: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #aaa;
+            font-size: 90%;
+        }
+        .text-num {
+            margin-left: 10px;
+            color: #ff7f3e;
+            font-size: 90%;
+        }
+    </style>
+    <div class="board-header">
+        <div class="board-info">
+            <div class="cover-wrap"><img class="board-cover" src="{{ "/cdn/"+data["board_info"]["cover"] }}"
+                                         alt=""></div>
+            <div class="after-cover">
+                <div class="board-name">{{ data['board_info']['name'] }}</div>
+                <div class="subs-wrap">
+                    {% if data["board_info"]["subs_by_user"] %}
+                        <div class="subs-btn unsub-btn">Joined</div>
+                    {% else %}
+                        <div class="subs-btn sub-btn">Join</div>
+                    {% endif %}
+                    <div class="text-label">Subscribers:</div>
+                    <div class="text-num">{{ data["board_info"]["subs_count"] }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="board-des">Desription: {{ data["board_info"]["description"] }}</div>
+    </div>
     <br>
     <br>
     <div style="text-align: right">
@@ -106,6 +216,7 @@
             <div class="col-sm-10">
                 <input class="form-control" name="title" id="title" placeholder="Title" required>
             </div>
+            <div class="word-count">0/150</div>
         </div>
         <br>
         <div class="form-group row">
@@ -170,6 +281,13 @@
 
             // disable popup window to modify/clear link
             $(".edui-popup-content").css("display", "none");
+        })
+
+        var w_c = $(".word-count");
+        $("#title").on("keyup", function () {
+            let count = $(this).val().length;
+            let is_exceed = count > 150;
+            w_c.text((is_exceed?"Title length exceeded! ":"")+count+"/150").css("color", is_exceed?"#d00303":"#aaa");
         })
 
         $(".btn-submit").on("click", () => {
