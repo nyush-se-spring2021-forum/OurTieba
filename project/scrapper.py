@@ -143,8 +143,8 @@ class AsyncOTSpider:
 
 class scrapperFactory:
 
-    @classmethod
-    def produce(cls, sync=True):
+    @staticmethod
+    def produce(sync=True):
         return OTSpider() if sync else AsyncOTSpider()
 
 

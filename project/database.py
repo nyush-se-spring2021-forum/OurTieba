@@ -78,8 +78,8 @@ class myDb:
 
 
 class dbFactory:
-    @classmethod
-    def produce(cls):
+    @staticmethod
+    def produce():
         return myDb()
 
 
