@@ -77,29 +77,37 @@ def like():
     Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
-    action = request.form.get("like")
-    if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or action not in ["0", "1"]:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    if target not in ("comment", "post") or not target_id or not target_id.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}}), 403
+        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
     match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+
     if not match_status:
-        match_target.likeCount += int(action)
-    elif (action == "1" and match_status.liked == 1) or (action == "0" and match_status.liked == 0):
-        pass  # duplicate request, do not perform anything
+        cur_status = 1
+        new_status = status(Uid, int(target_id), cur_status, 0)
+        my_db.add(new_status)
+        match_target.likeCount += 1
     else:
-        match_target.likeCount += 1 if action == "1" else -1
-        match_target.dislikeCount -= match_status.disliked
-    new_status = status(Uid, int(target_id), int(action), 0)
-    my_db.merge(new_status)
-    return jsonify({"success": 1}), 200
+        liked = match_status.liked
+        disliked = match_status.disliked
+        cur_status = 0 if liked else 1
+        new_status = status(Uid, int(target_id), cur_status, 0, datetime.datetime.utcnow())
+        my_db.merge(new_status)
+        match_target.likeCount += -1 if liked else 1
+        match_target.dislikeCount -= 1 if disliked else 0
+
+    cur_target = my_db.query(query_from, filter_cond, first=True)
+    cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
+    return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
 
 @api.route('/dislike', methods=["POST"])
@@ -113,29 +121,37 @@ def dislike():
     Uid = session["Uid"]
     target = request.form.get("target")
     target_id = request.form.get("id")
-    action = request.form.get("like")
-    if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or action not in ["0", "1"]:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+
+    if target not in ("comment", "post") or not target_id or not target_id.isnumeric():
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}}), 403
+        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
     match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+
     if not match_status:
-        match_target.dislikeCount += int(action)
-    elif (action == "1" and match_status.disliked == 1) or (action == "0" and match_status.disliked == 0):
-        pass  # duplicate request, do not perform anything
+        cur_status = 1
+        new_status = status(Uid, int(target_id), 0, 1)
+        my_db.add(new_status)
+        match_target.dislikeCount += 1
     else:
-        match_target.dislikeCount += 1 if action == "1" else -1
-        match_target.likeCount -= match_status.liked
-    new_status = status(Uid, int(target_id), 0, int(action))
-    my_db.merge(new_status)
-    return jsonify({"success": 1}), 200
+        liked = match_status.liked
+        disliked = match_status.disliked
+        cur_status = 0 if disliked else 1
+        new_status = status(Uid, int(target_id), 0, cur_status, datetime.datetime.utcnow())
+        my_db.merge(new_status)
+        match_target.dislikeCount += -1 if disliked else 1
+        match_target.likeCount -= 1 if liked else 0
+
+    cur_target = my_db.query(query_from, filter_cond, first=True)
+    cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
+    return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
 
 @api.route('/report/add', methods=["POST"])
@@ -591,18 +607,18 @@ def subscribe():
     Uid = session["Uid"]
 
     Bid = request.form.get("Bid")
-    action = request.form.get("subscribe")  # "0"=unsub, "1"=sub
-    if not Bid or not Bid.isnumeric() or action not in ["0", "1"]:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+    action = request.form.get("action")  # "0"=unsub, "1"=sub
+    if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "invalid board ID"}}), 403
+        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
-    new_sub = Subscription(Uid, Bid, int(action))
+    new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
-    return jsonify({"status": 1})
+    return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
 
 
 @api.route("/auth/set_password")

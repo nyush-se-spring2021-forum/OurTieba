@@ -23,6 +23,10 @@
         .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
             cursor: zoom-in;
         }
+        /* Bootstrap overwrite */
+        .btn {
+            margin-right: 5px;
+        }
         /* Other styles */
         .empty-notice {
             margin: 5% auto;
@@ -110,24 +114,13 @@
             <br>
 
             <div class="btn-group">
-                <form action="{{ url_for('api.like') }}" method="post">
-                    <input type="hidden" name="target" value="post">
-                    <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
-                    <input type="hidden" name="like" value="{{ 0 if data.post_info['liked_by_user'] else 1 }}">
-                    <button class="btn btn-sm
-                    btn{% if data.post_info['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
-                            type="submit">
-                        <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['like_count'] }}</button>
-                </form>
-                <form action="{{ url_for('api.dislike') }}" method="post">
-                    <input type="hidden" name="target" value="post">
-                    <input type="hidden" name="id" value={{ data.post_info['Pid'] }}>
-                    <input type="hidden" name="like" value="{{ 0 if data.post_info['disliked_by_user'] else 1 }}">
-                    <button class="btn btn-sm
-                            btn{% if data.post_info['disliked_by_user'] %}{% else %}-outline{% endif %}-dark"
-                            type="submit">
-                        <i class="bi bi-hand-thumbs-up"></i>{{ data.post_info['dislike_count'] }}</button>
-                </form>
+                <button id="plb-{{ data.post_info['Pid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if data.post_info['liked_by_user'] %}active{% endif %}">
+                    <i class="bi bi-hand-thumbs-up"></i>
+                    <span id="pl-{{ data.post_info['Pid'] }}"> {{ data.post_info['like_count'] }}</span></button>
+
+                <button id="pdb-{{ data.post_info['Pid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if data.post_info['disliked_by_user'] %}active{% endif %}">
+                    <i class="bi bi-hand-thumbs-down"></i>
+                    <span id="pd-{{ data.post_info['Pid'] }}"> {{ data.post_info['dislike_count'] }}</span></button>
 
             </div>
             {# Report post button #}
@@ -205,31 +198,18 @@
                 </div>
                 <div class="blockquote-footer float-end">{{ moment(comment['publish_time']).fromNow() }}</div>
                 <div class="card-body">
-                    {# Add like and dislike logic #}
-                    {# TODO: change this code to ajax #}
+
                     <div class="btn-group">
-                        <form action="{{ url_for('api.like') }}" method="post">
-                            <input type="hidden" name="target" value="comment">
-                            <input type="hidden" name="id" value={{ comment['Cid'] }}>
-                            <input type="hidden" name="like" value="{{ 0 if comment['liked_by_user'] else 1 }}">
-                            <button class="btn btn-sm" style="color: red"
-                                    type="submit">
-                                <i class="bi
-                                bi-hand-thumbs-up{% if comment['liked_by_user'] %}-fill{% endif %}"></i>
-                                {{ comment['like_count'] }}
-                            </button>
-                        </form>
-                        <form action="{{ url_for('api.dislike') }}" method="post">
-                            <input type="hidden" name="target" value="comment">
-                            <input type="hidden" name="id" value={{ comment['Cid'] }}>
-                            <input type="hidden" name="like" value="{{ 0 if comment['disliked_by_user'] else 1 }}">
-                            <button class="btn btn-sm
-                            btn{% if comment['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit">
-                                <i class="bi
-                                bi-hand-thumbs-up{% if comment['disliked_by_user'] %}-fill{% endif %}"></i>
-                                {{ comment['dislike_count'] }}
-                            </button>
-                        </form>
+
+                        <button id="clb-{{ comment['Cid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if comment['liked_by_user'] %}active{% endif %}">
+                            <i class="bi bi-hand-thumbs-up"></i>
+                            <span id="cl-{{ comment['Cid'] }}"> {{ comment['like_count'] }}</span>
+                        </button>
+
+                        <button id="cdb-{{ comment['Cid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if comment['disliked_by_user'] %}active{% endif %}">
+                            <i class="bi bi-hand-thumbs-down"></i>
+                            <span id="cd-{{ comment['Cid'] }}"> {{ comment['dislike_count'] }}</span>
+                        </button>
 
                     </div>
 
@@ -317,13 +297,19 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
+        var Uid = {{ session["Uid"] or 0 }};
+        var Pid = {{ data["post_info"]["Pid"] }};
+        var like_btn = $(".like-btn");
+        var dislike_btn = $(".dislike-btn");
+
+        // must add css after DOM render, upper place won't work
+        like_btn.css("border-radius","5px");
+        dislike_btn.css("border-radius","5px");
+
         // bind back to board events
         $(".to-board-item").on("click", () => {
             location.href = "/board/{{ data["post_info"]["Bid"] }}";
         })
-
-        var Uid = {{ session["Uid"] or 0 }};
-        var Pid = $("#Pid").val();
         // set OT_image link
         $(".OT_image").on("click", function () {
             // let cur_index = $(".OT_image").index(this);
@@ -362,6 +348,45 @@
 
             // disable popup window to modify/clear link
             $(".edui-popup-content").css("display", "none");
+        })
+
+        function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=like
+            let url = which ? "/api/like" : "/api/dislike";
+            $.ajax({
+                method: "POST",
+                url: url,
+                dataType: "json",
+                data: {target: target, id: id},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        let l_b = $("#"+target.substr(0, 1)+"lb-"+id);
+                        let d_b = $("#"+target.substr(0, 1)+"db-"+id);
+                        let f = (which) ? d_b : l_b;
+                        let u = (which) ? l_b : d_b;
+                        f.removeClass("active");
+                        if (data["cur_status"]) {
+                            u.addClass("active");
+                        } else {
+                            u.removeClass("active");
+                        }
+                        $("#"+target.substr(0, 1)+"l-"+id).text(" "+data["like_count"]);
+                        $("#"+target.substr(0, 1)+"d-"+id).text(" "+data["dislike_count"]);
+                    }
+                }
+            })
+        }
+
+        // like/dislike post/comment
+        like_btn.on("click", function () {
+            let me = this.id;
+            sendLike(1, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+        })
+
+        dislike_btn.on("click", function () {
+            let me = this.id;
+            sendLike(0, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
         })
 
         $(".btn-submit").on("click", () => {
@@ -445,6 +470,6 @@
 {% block scripts %}
     {{ super() }}
     <script>
-        {# TODO: ajax function#}
+
     </script>
 {% endblock %}

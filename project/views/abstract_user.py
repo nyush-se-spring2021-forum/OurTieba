@@ -16,10 +16,7 @@ def index():
     This function is used to show the main page of our system with recommend boards and hot news
     :return: index.html, which is our main page
     """
-    pref = my_db.query(User.preference, User.Uid == Uid, first=True)[0] if (Uid := session.get("Uid")) else {}
-    category, country = pref.get("category"), pref.get("country")
-    hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY, category=category,
-                                          country=country)
+    hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
@@ -63,13 +60,24 @@ def get_posts_in_board(Bid):
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     posts = []
     for p in posts_match_result[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]:
-        post_info = {"Pid": p.Pid, "Uid": p.Uid, "title": p.title, "summary": p.text,
+        post_info = {"Pid": (Pid := p.Pid), "Uid": p.Uid, "title": p.title, "summary": p.text,
                      "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
-                     "dislike_count": p.dislikeCount, "preview_type": None, "preview_src": None}
+                     "dislike_count": p.dislikeCount, "max_floor": p.available_floor,
+                     "preview_type": None, "preview_src": None}
         if p.medias:
             preview_media = p.medias[0].split("/")
             post_info.update({"preview_type": preview_media[0], "preview_src": preview_media[1]})
         posts.append(post_info)
+
+        if not session.get("Uid"):
+            post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
+        else:
+            Uid = session["Uid"]
+            match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
+            if not match_status:
+                post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
+            else:
+                post_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
 
     data = {"num_match": num_match, "num_page": num_page, "page": page, "posts": posts, "board_info": board_info}
 
@@ -83,7 +91,7 @@ def get_comments_in_post(Pid):
     :param Pid: the id of a Post
     :return: post.html, a post with corresponding Pid
     """
-    p = my_db.query(Post, Post.Pid == Pid, first=True)
+    p:Post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not p:
         return "Not Found", 404
     p.viewCount += 1  # when page is accessed, increment view count

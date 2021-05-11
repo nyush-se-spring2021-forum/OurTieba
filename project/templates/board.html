@@ -11,6 +11,10 @@
         .preview-img:hover {
             cursor: zoom-in;
         }
+        /* Bootstrap overwrite */
+        .btn {
+            margin-right: 5px;
+        }
         /* Other styles */
         .empty-notice {
             margin: 5% auto;
@@ -80,6 +84,7 @@
             justify-content: space-between;
         }
         .board-name {
+            margin-top: 5px;
             font-size: 50px;
             display: flex;
             justify-content: flex-end;
@@ -97,6 +102,7 @@
             height: 30px;
             width: 80px;
             border-radius: 5px;
+            margin-left: 2px;  /* compensate for the border */
 
             display: flex;
             flex-direction: column;
@@ -143,7 +149,9 @@
                 <div class="subs-wrap">
                     {% if data["board_info"]["subs_by_user"] %}
                         <div class="subs-btn unsub-btn">Joined</div>
+                        <div class="subs-btn sub-btn" style="display: none">Join</div>
                     {% else %}
+                        <div class="subs-btn unsub-btn" style="display: none">Joined</div>
                         <div class="subs-btn sub-btn">Join</div>
                     {% endif %}
                     <div class="text-label">Subscribers:</div>
@@ -177,23 +185,14 @@
                     <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
 
                     <div class="btn-group">
-                        <form action="{{ url_for('api.like') }}" method="post">
-                            <input type="hidden" name="target" value="post">
-                            <input type="hidden" name="id" value={{ post['Cid'] }}>
-                            <input type="hidden" name="like" value="{{ 0 if post['liked_by_user'] else 1 }}">
-                            <button class="btn btn-sm btn{% if post['liked_by_user'] %}{% else %}-outline{% endif %}-danger"
-                                    type="submit">
-                                <i class="bi bi-hand-thumbs-up"></i>{{ post['like_count'] }}</button>
-                        </form>
-                        <form action="{{ url_for('api.dislike') }}" method="post">
-                            <input type="hidden" name="target" value="post">
-                            <input type="hidden" name="id" value={{ post['Cid'] }}>
-                            <input type="hidden" name="like" value="{{ 0 if post['disliked_by_user'] else 1 }}">
-                            <button class="btn btn-sm
-                            btn{% if post['disliked_by_user'] %}{% else %}-outline{% endif %}-dark" type="submit">
-                                <i class="bi bi-hand-thumbs-up"></i>{{ post['dislike_count'] }}</button>
-                        </form>
+                        <button id="plb-{{ post['Pid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if post['liked_by_user'] %}active{% endif %}">
+                            <i class="bi bi-hand-thumbs-up"></i><span id="pl-{{ post['Pid'] }}"> {{ post['like_count'] }}</span></button>
 
+                        <button id="pdb-{{ post['Pid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if post['disliked_by_user'] %}active{% endif %}">
+                            <i class="bi bi-hand-thumbs-down"></i><span id="pd-{{ post['Pid'] }}"> {{ post['dislike_count'] }}</span></button>
+
+                        <button class="btn btn-sm btn-outline-info disabled" style="margin-left: 10px;border-radius: 0">
+                            <i class="bi bi-chat-left-text"></i>&nbsp;&nbsp;{{ post["max_floor"] - 1}}</button>
                     </div>
 
                 </div>
@@ -242,16 +241,44 @@
         </div>
     </div>
     <br>
+
+    {# Pagination #}
+    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
+        <ul class="pagination justify-content-center">
+            <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
+                <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
+                   tabindex="-1">Previous</a>
+            </li>
+
+            {% for i in range(1, 1 + data['num_page']) %}
+                <li class="page-item{% if i == data['page'] %} active {% endif %}">
+                    <a class="page-link" href="javascript:setParam('page',{{ i }})">{{ i }}</a>
+                </li>
+            {% endfor %}
+
+            <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
+                <a class="page-link" href="javascript:setParam('page',{{ data['page'] + 1 }})">Next</a>
+            </li>
+        </ul>
+    </nav>
+
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.config.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
         var Uid = {{ session["Uid"] or 0}};
-        // set preview-img link
-        $(".preview-img").on("click", function () {
-            let Pid = this.getAttribute("data-Pid");
-            window.open("/photos?Pid="+Pid);  // show images within the post content
-        })
+        var title_input = $("#title");
+        var w_c = $(".word-count");
+        var sub_btn = $(".sub-btn");
+        var unsub_btn = $(".unsub-btn");
+        var redirect_href = "/login?redirect=" + location.href;
+        var like_btn = $(".like-btn");
+        var dislike_btn = $(".dislike-btn");
+
+        // must add css after DOM render, upper place won't work
+        like_btn.css("border-radius","5px");
+        dislike_btn.css("border-radius","5px");
+
         // prepare ueditor
         var ue = UE.getEditor('editor', {
             toolbars: [["emotion", "simpleupload", "insertimage", "insertvideo", "link", "|", "undo", "redo"]],
@@ -271,7 +298,7 @@
             // lock editor when user not logged-in
             if (!Uid) {
                 // disable title
-                $("#title").attr("disabled", "disabled").attr("placeholder", "You must log in to create a post!");
+                title_input.attr("disabled", "disabled").attr("placeholder", "You must log in to create a post!");
 
                 // disable editor
                 ue.setDisabled();
@@ -289,26 +316,104 @@
             $(".edui-popup-content").css("display", "none");
         })
 
-        var w_c = $(".word-count");
-        $("#title").on("keyup", function () {
+        // set preview-img link
+        $(".preview-img").on("click", function () {
+            let Pid = this.getAttribute("data-Pid");
+            window.open("/photos?Pid="+Pid);  // show images within the post content
+        })
+
+        // monitor title word count
+        title_input.on("keyup", function () {
             let count = $(this).val().length;
             let is_exceed = count > 150;
             w_c.text((is_exceed?"Title length exceeded! ":"")+count+"/150").css("color", is_exceed?"#d00303":"#aaa");
         })
 
-        // subs-btn styling
-        $(".unsub-btn").on("mouseenter", function () {
+        function sendSub(action) {  // action: sub/unsub, 1=sub, 0=unsub
+            let hide_btn = action ? sub_btn: unsub_btn;
+            let show_btn = action ? unsub_btn: sub_btn;
+            $.ajax({
+                method: "POST",
+                url: "/api/subscribe",
+                dataType: "json",
+                data: {Bid: {{ data['board_info']["Bid"] }}, action: action},
+                success: (data) => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        hide_btn.css("display", "none");
+                        show_btn.css("display", "inline");
+                        alert(action ? "You are the No."+data.subs_count+" subscriber of this board!"
+                            :"Unsubscribe successful!");
+                        $(".text-num").text(data.subs_count);
+                    }
+                }
+            })
+        }
+
+        // unsubscribe button events
+        unsub_btn.on("mouseenter", function () {
             $(this).text("Leave");
         }).on("mouseleave", function () {
             $(this).text("Joined");
+        }).on("click", function () {
+            if (!Uid) {
+                location.href = redirect_href;
+            }
+            sendSub(0);
         })
 
-        $(".sub-btn").on("mouseenter", function () {
+        // subscribe button events
+        sub_btn.on("mouseenter", function () {
             $(this).text("Now!");
         }).on("mouseleave", function () {
             $(this).text("Join");
+        }).on("click", function () {
+            if (!Uid) {
+                location.href = redirect_href;
+            }
+            sendSub(1);
         })
 
+        function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=dislike
+            let url = which ? "/api/like" : "/api/dislike";
+            $.ajax({
+                method: "POST",
+                url: url,
+                dataType: "json",
+                data: {target: target, id: id},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        let l_b = $("#"+target.substr(0, 1)+"lb-"+id);
+                        let d_b = $("#"+target.substr(0, 1)+"db-"+id);
+                        let f = (which) ? d_b : l_b;
+                        let u = (which) ? l_b : d_b;
+                        f.removeClass("active");
+                        if (data["cur_status"]) {
+                            u.addClass("active");
+                        } else {
+                            u.removeClass("active");
+                        }
+                        $("#"+target.substr(0, 1)+"l-"+id).text(" "+data["like_count"]);
+                        $("#"+target.substr(0, 1)+"d-"+id).text(" "+data["dislike_count"]);
+                    }
+                }
+            })
+        }
+        // like/dislike post
+        like_btn.on("click", function () {
+            let me = this.id;  // plb-xxx
+            sendLike(1, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+        })
+
+        dislike_btn.on("click", function () {
+            let me = this.id;
+            sendLike(0, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+        })
+
+        // submit post
         $(".btn-submit").on("click", () => {
             // check login status
             if (!Uid) {
@@ -317,7 +422,7 @@
                 return
             }
             // check title not null
-            var title = $("#title").val();
+            var title = title_input.val();
             if (!title) {
                 alert("You must enter a title!");
                 return
@@ -345,36 +450,15 @@
         })
 
         function previewPost() {
-            var opener = window.open("", "_blank");
+            let opener = window.open("", "_blank");
             opener.document.write("<title>Preview Post</title>");  // window title
             opener.document.write("<style>body {font-size: 18px;}img {max-width: 384px;" +
                 "max-height: 384px;}iframe {max-width: 30vw;max-height: 30vh;}</style>")  // same as in iframe.css
-            opener.document.write('<p style="font-size: 2rem">' + $("#title").val() + '</p>')  // title
+            opener.document.write('<p style="font-size: 2rem">' + title_input.val() + '</p>')  // title
             opener.document.write('<div style="height: 0; width: 100%; border-top: 2px dashed black">' +
                 '</div>')  // a separate line
             opener.document.writeln(ue.getContent());  // content
         }
     </script>
-
-    {# Pagination #}
-    <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
-        <ul class="pagination justify-content-center">
-            <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
-                <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
-                   tabindex="-1">Previous</a>
-            </li>
-
-            {% for i in range(1, 1 + data['num_page']) %}
-                <li class="page-item{% if i == data['page'] %} active {% endif %}">
-                    <a class="page-link" href="javascript:setParam('page',{{ i }})">{{ i }}</a>
-                </li>
-            {% endfor %}
-
-            <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
-                <a class="page-link" href="javascript:setParam('page',{{ data['page'] + 1 }})">Next</a>
-            </li>
-        </ul>
-    </nav>
-
 
 {% endblock %}
