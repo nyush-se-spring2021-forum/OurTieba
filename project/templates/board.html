@@ -109,10 +109,16 @@
             background-color: white;
             color: black;
         }
+        .unsub-btn:hover {
+            background-color: whitesmoke;
+        }
         .sub-btn {
             border: 2px solid transparent;
-            background-color: red;
+            background-color: #ea0027;
             color: white;
+        }
+        .sub-btn:hover {
+            background-color: red;
         }
         .text-label {
             margin-left: 20px;
@@ -288,6 +294,19 @@
             let count = $(this).val().length;
             let is_exceed = count > 150;
             w_c.text((is_exceed?"Title length exceeded! ":"")+count+"/150").css("color", is_exceed?"#d00303":"#aaa");
+        })
+
+        // subs-btn styling
+        $(".unsub-btn").on("mouseenter", function () {
+            $(this).text("Leave");
+        }).on("mouseleave", function () {
+            $(this).text("Joined");
+        })
+
+        $(".sub-btn").on("mouseenter", function () {
+            $(this).text("Now!");
+        }).on("mouseleave", function () {
+            $(this).text("Join");
         })
 
         $(".btn-submit").on("click", () => {
