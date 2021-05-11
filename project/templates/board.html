@@ -31,6 +31,16 @@
             overflow: hidden;
             text-align: justify;
         }
+        .post-wrap {
+            display: flex;
+            justify-content: space-between;
+            background-color: #ffffff;
+            padding: 15px 10px;
+            border: 1px solid #d1d2d4;
+        }
+        .post-wrap:hover {
+            background-color: #edeff2;
+        }
         .post-title {
             display: inline-block;
             max-width: 55vw;
@@ -175,7 +185,7 @@
     {% endif %}
 
     {% for post in data['posts'] %}
-        <div style="display: flex; justify-content: space-between">
+        <div class="post-wrap">
             <article class="post">
             <header>
                 <div>
@@ -207,9 +217,7 @@
                 + "/" + post["preview_src"] }}"></iframe>
             {% endif %}
         </div>
-        {% if not loop.last %}
-            <hr>
-        {% endif %}
+
     {% endfor %}
 
     <hr>

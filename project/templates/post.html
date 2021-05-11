@@ -5,12 +5,12 @@
 {% block page_content %}
     {# Should be the same as iframe.css (.card-body = body) #}
     <style>
-        .card-body {
+        .card-body,.comment-body {
             font-size: 18px;
         }
 
         {# Normally, the selectors ".card-body img" and ".OT_image" are the same. #}
-        .card-body img {  {# in case users insert <img> by themselves #}
+        .card-body img,.comment-body img {  {# in case users insert <img> by themselves #}
             max-width: 384px;
             max-height: 384px;
         }
@@ -26,6 +26,11 @@
         /* Bootstrap overwrite */
         .btn {
             margin-right: 5px;
+        }
+        .my-float-end {  /* replace float-end */
+            display: flex;
+            justify-content: flex-end;
+            padding-right: -10px;
         }
         /* Other styles */
         .empty-notice {
@@ -78,8 +83,19 @@
         .main-floor {
             margin-right: 10px;
         }
-        .sub-floor {  /* TODO: Html in line 269 */
+        .comment-body {
+            text-align: justify;
+            margin-top: 10px;
+            margin-right: 20px;
         }
+        .sub-floor {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            margin-right: 10px;
+        }
+
     </style>
     <div class="card to-board">
         <div class="back-to to-board-item">&lt;Back to {{ data["board_info"]["bname"] }}</div>
@@ -114,11 +130,11 @@
             <br>
 
             <div class="btn-group">
-                <button id="plb-{{ data.post_info['Pid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if data.post_info['liked_by_user'] %}active{% endif %}">
+                <button id="plb-{{ data.post_info['Pid'] }}" class="btn like-btn btn-outline-danger {% if data.post_info['liked_by_user'] %}active{% endif %}">
                     <i class="bi bi-hand-thumbs-up"></i>
                     <span id="pl-{{ data.post_info['Pid'] }}"> {{ data.post_info['like_count'] }}</span></button>
 
-                <button id="pdb-{{ data.post_info['Pid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if data.post_info['disliked_by_user'] %}active{% endif %}">
+                <button id="pdb-{{ data.post_info['Pid'] }}" class="btn dislike-btn btn-outline-dark {% if data.post_info['disliked_by_user'] %}active{% endif %}">
                     <i class="bi bi-hand-thumbs-down"></i>
                     <span id="pd-{{ data.post_info['Pid'] }}"> {{ data.post_info['dislike_count'] }}</span></button>
 
@@ -215,7 +231,7 @@
 
                     {% if session['Uid'] and session['Uid'] == comment['Uid'] %}
                         {# Delete comment trigger #}
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#deleteCommentModal{{ loop.index }}">
                             Delete
                         </button>
@@ -245,22 +261,23 @@
                         </div>
                     {% endif %}
                     <br>
-                    <div class="float-end">
-                        <div class="sub-floor floor">#{{ comment["floor"] }}</div>  <!-- TODO: CSS in line 77 -->
-                        {# report button #}
-                        <a class="text-decoration-none text-body"
-                           href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
-                            <div class="btn btn-outline-info">Report</div>
-                        </a>
-                        {# reply button #}
-                        <a class="text-decoration-none text-body" href="#ue-anchor"
-                           onclick="insertReply('{{ comment['Uid'] }}',
-                                   '{{ comment['publish_user'] }}');">
-                            <div class="btn btn-outline-info">Reply</div>
-                        </a>
-                    </div>
+                    <div class="comment-body">{{ comment['content']|safe }}</div>
                 </div>
-                <div class="card-body">{{ comment['content']|safe }}</div>
+                <div class="my-float-end">
+                    <div class="sub-floor floor">#{{ comment["floor"] }}</div>
+                    {# report button #}
+                    <a class="text-decoration-none text-body"
+                       href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
+                        <div class="btn btn-sm btn-outline-info">Report</div>
+                    </a>
+                    {# reply button #}
+                    <a class="text-decoration-none text-body" href="#ue-anchor"
+                       onclick="insertReply('{{ comment['Uid'] }}',
+                               '{{ comment['publish_user'] }}');">
+                        <div class="btn btn-sm btn-outline-info">Reply</div>
+                    </a>
+                </div>
+
             </div>
         </div>
         {% if not loop.last %}
