@@ -32,8 +32,8 @@ def add_post():
     if not Bid or not Bid.isnumeric() or not title:
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
-    if len(title) > 200:
-        return jsonify({"error": {"msg": "Title word count exceeded. Maximum: 200"}, "status": 0})
+    if len(title) > 150:
+        return jsonify({"error": {"msg": "Title word count exceeded. Maximum: 150"}, "status": 0})
 
     match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
