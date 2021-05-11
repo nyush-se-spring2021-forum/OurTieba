@@ -32,8 +32,56 @@
             font-style: italic;
             text-align: center;
         }
+        .to-board {
+            display: flex;
+            flex-direction: row;  /* overwrite what is in bootstrap */
+            height: 40px;
+            margin-bottom: 5px;
+        }
+        .to-board-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .cover {
+            width: 30px;
+            height: 30px;
+            border: 1px solid transparent;
+            border-radius: 5px;
+        }
+        .cover:hover {
+            border: 1px solid #c9b4b4;
+        }
+        .back-to {
+            color: #2d64b3;
+        }
+        .back-to:hover {
+            text-decoration: underline;
+        }
+        .bname {
+            font-size: 20px;
+            color: #0d6efd;
+        }
+        .bname:hover {
+            color: #0a58ca;
+        }
+        .floor {
+            color: #999;
+            font-size: 1rem;
+        }
+        .main-floor {
+            margin-right: 10px;
+        }
+        .sub-floor {  /* TODO: Html in line 269 */
+        }
     </style>
-
+    <div class="card to-board">
+        <div class="back-to to-board-item">&lt;Back to {{ data["board_info"]["bname"] }}</div>
+{#        <div class="to-board-item"><img class="cover" src="{{ "/cdn/" + data["board_info"]["cover"] }}" alt=""></div>#}
+{#        <div class="bname to-board-item">{{ data["board_info"]["bname"] }}</div>#}
+    </div>
     <div class="card">
         <div class="card-body">
             <div class="display-1" style="text-align: justify">{{ data['post_info']['title'] }}</div>
@@ -84,6 +132,7 @@
             </div>
             {# Report post button #}
             <div class="float-end">
+                <span class="main-floor floor">#1</span>
                 <a class="text-decoration-none text-body"
                    href="{{ url_for('user.report', target='post', id=data.post_info['Pid']) }}">
                     <div class="btn btn-outline-info">Report</div>
@@ -217,6 +266,7 @@
                     {% endif %}
                     <br>
                     <div class="float-end">
+                        <div class="sub-floor floor">#{{ comment["floor"] }}</div>  <!-- TODO: CSS in line 77 -->
                         {# report button #}
                         <a class="text-decoration-none text-body"
                            href="{{ url_for('user.report', target='comment', id=comment.Cid) }}">
@@ -267,6 +317,11 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
     <script>
+        // bind back to board events
+        $(".to-board-item").on("click", () => {
+            location.href = "/board/{{ data["post_info"]["Bid"] }}";
+        })
+
         var Uid = {{ session["Uid"] or 0 }};
         var Pid = $("#Pid").val();
         // set OT_image link
