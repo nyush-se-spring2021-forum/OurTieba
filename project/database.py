@@ -77,7 +77,13 @@ class myDb:
         self._engine = _new_engine
 
 
-my_db = myDb()
+class dbFactory:
+    @classmethod
+    def produce(cls):
+        return myDb()
+
+
+my_db = dbFactory.produce()
 
 
 def init_db():

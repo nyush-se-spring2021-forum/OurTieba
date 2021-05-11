@@ -49,7 +49,8 @@ class OTSpider:
             data = res.json()
             num = kwargs["num"]
             self.cache["news"][key] = {"articles": data["articles"][:num],
-                                  "expires": datetime.datetime.utcnow() + datetime.timedelta(seconds=kwargs["freq"])}
+                                       "expires": datetime.datetime.utcnow() + datetime.timedelta(
+                                           seconds=kwargs["freq"])}
         return self.cache["news"][key]["articles"]
 
     def weibo_hot_search(self, **kwargs):  # cache not applied because change is rapid
@@ -104,9 +105,6 @@ class OTSpider:
         self.session.close()
 
 
-OT_spider = OTSpider()
-
-
 class AsyncOTSpider:
     __instance = None
 
@@ -143,7 +141,14 @@ class AsyncOTSpider:
         return results
 
 
-# async_spider = AsyncOTSpider()
+class scrapperFactory:
+
+    @classmethod
+    def produce(cls, sync=True):
+        return OTSpider() if sync else AsyncOTSpider()
+
+
+OT_spider = scrapperFactory.produce()
 
 if __name__ == '__main__':
     # news = OT_spider.get_hot_news(num=3, freq=60)
