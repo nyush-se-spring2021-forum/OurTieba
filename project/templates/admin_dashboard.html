@@ -19,13 +19,14 @@
                 <div class="card-body">
                     <div class="form-group">
                         <form>
-                            <h3>Delete Board</h3>
+                            <h3>Manage Board</h3>
                             <div class="mb-3">
                                 <label class="form-label" for="Bid">Board ID</label>
                                 <input class="form-control" type="text" name="Bid" id="Bid">
                             </div>
                         </form>
-                        <button class="btn btn-primary" onclick="submitDeleteBoard();">Confirm</button>
+                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 0);">Delete</button>
+                        <button class="btn btn-primary" onclick="manageTarget(1, 0);">Restore</button>
                     </div>
                 </div>
             </div>
@@ -35,13 +36,14 @@
                 <div class="card-body">
                     <div class="form-group">
                         <form>
-                            <h3>Delete Post</h3>
+                            <h3>Manage Post</h3>
                             <div class="mb-3">
                                 <label class="form-label" for="Pid">Post ID</label>
                                 <input class="form-control" type="text" name="Pid" id="Pid">
                             </div>
                         </form>
-                        <button class="btn btn-primary" onclick="submitDeletePost();">Confirm</button>
+                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 1);">Delete</button>
+                        <button class="btn btn-primary" onclick="manageTarget(1, 1);">Restore</button>
                     </div>
                 </div>
             </div>
@@ -51,13 +53,14 @@
                 <div class="card-body">
                     <div class="form-group">
                         <form>
-                            <h3>Delete Comment</h3>
+                            <h3>Manage Comment</h3>
                             <div class="mb-3">
                                 <label class="form-label" for="Cid">Comment ID</label>
                                 <input class="form-control" type="text" name="Cid" id="Cid">
                             </div>
                         </form>
-                        <button class="btn btn-primary" onclick="submitDeleteComment();">Confirm</button>
+                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 2);">Delete</button>
+                        <button class="btn btn-primary" onclick="manageTarget(1, 2);">Restore</button>
                     </div>
                 </div>
             </div>
@@ -67,7 +70,7 @@
                 <div class="card-body">
                     <div class="form-group">
                         <form>
-                            <h3>Ban/Unban user</h3>
+                            <h3>Manage User</h3>
                             <div class="mb-3">
                                 <label class="form-label" for="Uid">User ID</label>
                                 <input class="form-control" type="text" name="Uid" id="Uid">
@@ -75,8 +78,18 @@
                                 <input type="text" class="form-control" name="days" id="days">
                             </div>
                         </form>
-                        <button class="btn btn-primary" onclick="banUser();">Ban</button>
-                        <button class="btn btn-primary" onclick="unbanUser();">Unban</button>
+                        <button class="btn btn-primary btn-danger" onclick="manageUser(0);">Ban</button>
+                        <button class="btn btn-primary" onclick="manageUser(1);">Unban</button>
+                    </div>
+                </div>
+            </div>
+
+            {# Create board #}
+            <div class="card">
+                <div class="card-body">
+                    <h3>Craeate Board</h3>
+                    <div style="height: 78%;display: flex; align-items: center; flex-direction: column; justify-content: center">
+                    <button class="btn btn-primary btn-success" onclick="window.open('/admin/create');">Click to Navigate</button>
                     </div>
                 </div>
             </div>
@@ -127,54 +140,28 @@
 
     </div>
     <script>
-        function submitDeleteBoard() {
-            let Bid = $('#Bid').val().trim();
-            $.ajax({
-                method: 'post',
-                url: '/admin/board/delete',
-                dataType: 'json',
-                data: {Bid: Bid},
-                success: data => {
-                    if (!data.status) {
-                        alert(data.error.msg);
-                    } else {
-                        alert('Delete successful!');
-                    }
-                    location.reload();
-                }
-            });
+        var target_dict = {
+            0: "board",
+            1: "post",
+            2: "comment",
         }
-
-        function submitDeletePost() {
-            let Pid = $('#Pid').val().trim();
-            $.ajax({
-                method: 'post',
-                url: '/admin/post/delete',
-                dataType: 'json',
-                data: {Pid: Pid},
-                success: data => {
-                    if (!data.status) {
-                        alert(data.error.msg);
-                    } else {
-                        alert('Delete successful!');
-                    }
-                    location.reload();
-                }
-            });
+        var cls_dict = {
+            0: "Bid",
+            1: "Pid",
+            2: "Cid",
         }
-
-        function submitDeleteComment() {
-            let Cid = $('#Cid').val().trim();
+        function manageTarget(action, target) {  // action: 0=delete, 1=restore; target: 0=board, 1=post, 2=comment
+            let id = $('#'+cls_dict[target]).val().trim();
             $.ajax({
                 method: 'post',
-                url: '/admin/comment/delete',
+                url: "/admin/"+target_dict[target]+"/"+((action)?"restore":"delete"),
                 dataType: 'json',
-                data: {Cid: Cid},
+                data: {Bid: id, Pid: id, Cid: id},
                 success: data => {
                     if (!data.status) {
                         alert(data.error.msg);
                     } else {
-                        alert('Delete successful!');
+                        alert(((action)?'Restore ':'Delete ')+target_dict[target]+id+' successful!');
                     }
                     location.reload();
                 }
@@ -185,7 +172,7 @@
             let Rid = ele.getAttribute("data-rid");
             $.ajax({
                 method: 'post',
-                url: '/admin/report/resolve',
+                url: "/admin/report/resolve",
                 dataType: 'json',
                 data: {Rid: Rid},
                 success: data => {
@@ -199,42 +186,19 @@
             });
         }
 
-        function banUser() {
+        function manageUser(action) {  // action: 0=ban, 1=unban
             let Uid = $('#Uid').val().trim();
             let days = $('#days').val().trim();
             $.ajax({
                 method: 'post',
-                url: '/admin/user/ban',
+                url: "/admin/user/"+((action)?"unban":"ban"),
                 dataType: 'json',
-                data: {
-                    Uid: Uid,
-                    days: days
-                },
+                data: {Uid: Uid, days: days},
                 success: data => {
                     if (!data.status) {
                         alert(data.error.msg);
                     } else {
-                        alert('Ban successful!');
-                    }
-                    location.reload();
-                }
-            });
-        }
-
-        function unbanUser() {
-            let Uid = $('#Uid').val().trim();
-            $.ajax({
-                method: 'post',
-                url: '/admin/user/unban',
-                dataType: 'json',
-                data: {
-                    Uid: Uid
-                },
-                success: data => {
-                    if (!data.status) {
-                        alert(data.error.msg);
-                    } else {
-                        alert('Unban successful!');
+                        alert(((action)?'Unban':'Ban')+' user'+Uid+' successful!');
                     }
                     location.reload();
                 }
