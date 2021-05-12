@@ -633,7 +633,7 @@ def fetch_data():
     Uid = request.args.get("Uid")
     type_data = request.args.get("type")
 
-    if not Uid or not type_data or not type_data.isnumeric() or not (0 <= (type_data := int(type_data)) <= 2):
+    if not Uid or not type_data or not type_data.isnumeric() or not (0 <= (type_data := int(type_data)) <= 3):
         return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
 
     match_user = my_db.query(User, User.Uid == Uid, first=True)
@@ -644,20 +644,20 @@ def fetch_data():
 
     if type_data == 0:
         post_info = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
-                      "timestamp": p.timestamp} for p in match_user.posts]
+                      "timestamp": p.timestamp, "status": p.status} for p in match_user.posts]
         # sort by timestamp desc
         post_info.sort(key=lambda p: p["timestamp"], reverse=True)
         # convert times into shorter format
         for p in post_info:
             p["timestamp"] = convert_time(p["timestamp"])
         base_info.update({"info": post_info, "count": len(post_info)})
-    elif type_data == 1:
+    elif type_data == 3:
         history_info = []
         for h in match_user.view:
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
             history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid)})  # "me" = whether post by me
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid), "status": p.status})  # "me" = whether post by me
             history_info.append(history)
         # sort by LVT desc
         history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
@@ -665,13 +665,28 @@ def fetch_data():
         for h in history_info:
             h["LVT"] = convert_time(h["LVT"])
         base_info.update({"info": history_info, "count": len(history_info)})
-    else:
+    elif type_data == 2:
         subs_info = []
         for s in match_user.subscriptions:
             if s.subscribed == 1:
-                subs_info.append({"Bid": s.Bid, "bname": (b := s.of_board).name, "LM": s.lastModified,
-                                  "cover": b.cover})
+                if (b := s.of_board).status == 0:
+                    subs_info.append({"Bid": s.Bid, "bname": b.name, "LM": s.lastModified,
+                                      "cover": b.cover, "status": 0})
         # sort by LM desc
         subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
         base_info.update({"info": subs_info, "count": len(subs_info)})
+    else:
+        comment_info = []
+        for c in match_user.comments:
+            comment = {"Cid": c.Cid, "text": c.text, "timestamp": c.timestamp, "status": c.status}
+            p = c.comment_in
+            comment.update({"Pid": p.Pid, "title": p.title})
+            comment_info.append(comment)
+        # sort by timestamp desc
+        comment_info.sort(key=lambda ci: ci["timestamp"], reverse=True)
+        # convert times into shorter format
+        for c in comment_info:
+            c["timestamp"] = convert_time(c["timestamp"])
+        base_info.update({"info": comment_info, "count": len(comment_info)})
+
     return jsonify(base_info)
