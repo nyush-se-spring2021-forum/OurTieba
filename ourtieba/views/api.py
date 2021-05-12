@@ -528,7 +528,7 @@ def handle_upload():
         result = {"status": 1}
 
     elif action == "config" and method == "GET":  # ueditor action. Config the ueditor, user may not be logged-in
-        with open("project/static/ueditor/config.json", "r") as f:
+        with open("ourtieba/static/ueditor/config.json", "r") as f:
             content = f.read()
         result = json.loads(content)
 

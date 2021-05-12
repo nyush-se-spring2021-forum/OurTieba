@@ -1,4 +1,4 @@
-from project import *
+from ourtieba import *
 
 app = create_app()
 

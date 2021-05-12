@@ -6,7 +6,7 @@ from .database import *  # must import this line here, otherwise cannot get sqla
 class Logger:
     def __init__(self):
         self.engine = my_db.get_engine().name
-        logging.basicConfig(filename="project/logs/test.log",
+        logging.basicConfig(filename="ourtieba/logs/test.log",
                             level=logging.DEBUG,
                             format='%(asctime)s [%(thread)d:%(threadName)s] [%(filename)s:%(module)s:%(funcName)s] '
                                    '[%(levelname)s]: %(message)s',
