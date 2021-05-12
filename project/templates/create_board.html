@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block title %} Admin Dashboard {% endblock %}
+{% block header %}
+{% endblock %}
+{% block content %}
+    <style>
+        .form-body {
+            position: absolute;
+            left: 10%;
+            width: 80%;
+            height: 500px;
+            background-color: white;
+            display: flex;
+            font-size: 1.8rem;
+        }
+        .form-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 30%;
+            height: 100%;
+        }
+        .cover-text {
+            margin-bottom: 30px;
+        }
+        #cover-upload {  /* https://www.gxlcms.com/css-261197.html */
+            display: block;
+            width: 100px;
+            height: 100px;
+            text-indent: -9999px;
+            overflow: hidden;
+            border: 2px solid #ccc;
+            color: #ccc;
+            position: relative;
+        }
+        #cover-upload::before{
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: 80px;
+            margin-left: -40px;
+            margin-top: -5px;
+            border-top: 8px solid;
+        }
+        #cover-upload::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            height: 80px;
+            margin-left: -5px;
+            margin-top: -40px;
+            border-left: 8px solid;
+        }
+        #cover-upload:hover {
+            border: 2px solid #0a53be;
+            color: #0a53be;
+            cursor: pointer;
+        }
+        .form-right {
+            display: flex;
+            flex-direction: column;
+            width: 70%;
+            height: 100%;
+        }
+        .board-wrap {
+            width: 100%;
+            display: flex;
+        }
+        .board-name-text {
+            margin-right: 10px;
+        }
+        .board-name-wrap {
+            height: 30%;
+            align-items: center;
+        }
+        .board-des-wrap {
+            height: 70%;
+            flex-direction: column;
+        }
+        #board-name {
+            line-height: 1.5rem;
+            font-size: 1.5rem;
+        }
+        #board-des {
+            height: 80%;
+            font-size: 1.5rem;
+            width: 90%;
+            margin-left: 30px;
+            margin-top: 10px;
+            resize: none;
+        }
+    </style>
+    <div class="container">
+        <br>
+{#        <img class="rounded-bottom" src="{{ "/cdn/" + data["admin_info"]["avatar"] }}" alt="">#}
+{#        <div class="display-3">{{ data["admin_info"]["nickname"] }}</div>#}
+        <div class="display-4">Create Board</div>
+
+        <button class="float-end btn btn-primary">
+            <a class="text-decoration-none text-body" href="{{ url_for('admin.admin_logout') }}">Log out</a>
+        </button>
+        <br>
+        <hr>
+    </div>
+    <div class="form-body">
+        <div class="form-left">
+            <div class="cover-text">Cover: </div>
+            <input id="cover-upload" accept="image/*" type="file">
+        </div>
+        <div class="form-right">
+            <div class="board-name-wrap board-wrap">
+                <div class="board-name-text">Name: </div>
+                <input id="board-name">
+            </div>
+            <div class="board-des-wrap board-wrap">
+                <div class="board-des-text">Description: </div>
+                <textarea id="board-des">
+            </div>
+        </div>
+    </div>
+{% endblock %}
