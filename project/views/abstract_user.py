@@ -32,11 +32,10 @@ def get_posts_in_board(Bid):
     :param Bid: the id of a Board
     :return: board.html, a board with corresponding Bid
     """
-    b = my_db.query(Board, Board.Bid == Bid, first=True)
+    b = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
     if not b:
-        return "Not Found!", 404
-    if b.status != 0:
-        return "This board doesn't exist"
+        abort(404)
+
     b.viewCount += 1  # when page is accessed, increment view count
     subs = my_db.query(Subscription, and_(Subscription.Uid == (Uid := session.get("Uid")),
                                           Subscription.Bid == Bid), first=True)
@@ -93,11 +92,10 @@ def get_comments_in_post(Pid):
     :param Pid: the id of a Post
     :return: post.html, a post with corresponding Pid
     """
-    p:Post = my_db.query(Post, Post.Pid == Pid, first=True)
+    p = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not p:
-        return "Not Found", 404
-    if p.status != 0:
-        return "This post doesn't exist"
+        abort(404)
+
     p.viewCount += 1  # when page is accessed, increment view count
     post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content,
                  "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,

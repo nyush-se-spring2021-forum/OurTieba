@@ -202,14 +202,14 @@ def add_comment():
     match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
         if match_user.banDuration > datetime.datetime.utcnow():
-            return jsonify({"error": {"msg": "user banned"}, "status": 0})
+            return jsonify({"error": {"msg": "User banned."}, "status": 0})
 
     Pid = request.form.get("Pid")
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    text = request.form.get("text", "")  # can be None because comment may only contain photo
+    text = request.form.get("text", "")  # can be None because comment may only contain photos and/or videos
 
     if len(text) > 1000:
         return jsonify({"error": {"msg": "Word count exceeded. Maximum: 1000"}, "status": 0})
@@ -227,9 +227,9 @@ def add_comment():
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
 
-    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
+    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not match_post:
-        return jsonify({"error": {"msg": "invalid post ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     floor = match_post.available_floor
     match_post.available_floor += 1
