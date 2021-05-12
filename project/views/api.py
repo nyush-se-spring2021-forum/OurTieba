@@ -252,26 +252,21 @@ def delete_post():
     Uid = session['Uid']
 
     Pid = request.form.get("Pid")
-    Bid = request.form.get("Bid")
-    if not Pid or not Pid.isnumeric() or not Bid or not Bid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+    if not Pid or not Pid.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid), first=True)
-    if not match_post or match_post.under.Bid != int(Bid):
-        return jsonify({"error": {"msg": "invalid post ID or board ID or user"}}), 403
-    if match_post.status != 0:
-        return jsonify({"error": {"msg": "Post not exists"}}), 403
+    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
+    if not match_post:
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount -= 1
     my_db.update(Post, Post.Pid == Pid, values={"status": 1})
+
     # Then delete all corresponding data in other relating tables
-    result = my_db.query(Comment, Comment.Pid == Pid)
-    for i in result:
-        # my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
-        my_db.update(Comment, Comment.Pid == i.Pid, values={"status": 1})
-    # my_db.delete(PostStatus, PostStatus.Pid == Pid)
-    # my_db.delete(History, History.Pid == Pid)
-    return redirect(f"/board/{Bid}")
+    for c in match_post.comments:
+        my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 1})
+
+    return jsonify({"status": 1})
 
 
 @api.route('/comment/delete', methods=["POST"])
@@ -285,24 +280,57 @@ def delete_comment():  # will not alter post lastCommentTime
     Uid = session['Uid']
 
     Cid = request.form.get("Cid")
-    Pid = request.form.get("Pid")
-    if not Cid or not Cid.isnumeric() or not Pid or not Pid.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}}), 403
-    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid), first=True)
+    if not Cid or not Cid.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
     if not match_comment:
-        return jsonify({"error": {"msg": "invalid ID or user"}}), 403
+        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
-    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
-    if not match_post or match_comment not in match_post.comments:
-        return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
-    if match_comment.status != 0:
-        return jsonify({"error": {"msg": "Comment not exists"}}), 403
-
-    match_post.commentCount -= 1
+    match_comment.comment_in.commentCount -= 1
     my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
-    # Then delete all corresponding data in other relating tables
-    # my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
-    return redirect(f"/post/{Pid}?order=desc")
+
+    return jsonify({"status": 1})
+
+
+@api.route('/post/restore', methods=["POST"])
+@login_required
+def restore_post():
+    Uid = session['Uid']
+
+    Pid = request.form.get("Pid")
+    if not Pid or not Pid.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+
+    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
+    if not match_post:
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
+
+    match_post.under.postCount += 1
+    my_db.update(Post, Post.Pid == Pid, values={"status": 0})
+
+    # Then restore all corresponding data in other relating tables
+    for c in match_post.comments:
+        my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
+
+    return jsonify({"status": 1})
+
+
+@api.route('/comment/restore', methods=["POST"])
+@login_required
+def restore_comment():
+    Uid = session['Uid']
+
+    Cid = request.form.get("Cid")
+    if not Cid or not Cid.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
+    if not match_comment:
+        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
+
+    match_comment.comment_in.commentCount += 1
+    my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
+
+    return jsonify({"status": 1})
 
 
 @api.route('/personal_info/add', methods=["POST"])
@@ -657,7 +685,8 @@ def fetch_data():
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
             history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid), "status": p.status})  # "me" = whether post by me
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
+                            "status": p.status})  # "me" = whether post by me
             history_info.append(history)
         # sort by LVT desc
         history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
