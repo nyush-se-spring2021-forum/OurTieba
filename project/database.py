@@ -39,6 +39,14 @@ class myDb:
                 return _db_session.query(target).filter(condition).order_by(order).first()
             return _db_session.query(target).filter(condition).order_by(order).all() or []  # if None return []
 
+    def query_join(self, target, join, condition=True, order=True, first=False, count=False):
+        with auto_scope(self._session) as _db_session:
+            if first:
+                return _db_session.query(target).join(join).filter(condition).order_by(order).first()
+            if count:
+                return _db_session.query(func.count(target)).join(join).filter(condition).order_by(order).scalar()
+            return _db_session.query(target).join(join).filter(condition).order_by(order).all() or []
+
     def add(self, new):
         with auto_scope(self._session) as _db_session:
             return _db_session.add(new)

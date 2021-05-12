@@ -188,17 +188,20 @@ def get_personal_profile(Uid):
     """
     u = my_db.query(User, User.Uid == Uid, first=True)
     if not u:
-        return "Not Found", 404
+        abort(404)
 
     post_count = my_db.count(Post, and_(Post.Uid == Uid, Post.status == 0))
-    subs_count = my_db.count(Subscription, and_(Subscription.Uid == Uid, Subscription.subscribed == 1))
+    comment_count = my_db.count(Comment, and_(Comment.Uid == Uid, Comment.status == 0))
+    subs_count = my_db.query_join(Subscription.Uid, Board, and_(Subscription.Uid == Uid, Subscription.subscribed == 1,
+                                                                Board.status == 0), count=True)
     history_count = my_db.count(History, History.Uid == Uid)
 
     user_info = {
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
         "phoneNumber": u.phoneNumber, "email": u.email, "address": u.address, "dateOfBirth": u.dateOfBirth,
         "banned": u.banned, "banDuration": str(u.banDuration), "isCurrent": int(Uid == session.get("Uid", -1)),
-        "post_count": post_count, "subs_count": subs_count, "history_count": history_count, "Uid": Uid
+        "post_count": post_count, "subs_count": subs_count, "history_count": history_count, "Uid": Uid,
+        "comment_count": comment_count
     }
     return render_template("profile.html", data=user_info)
 
