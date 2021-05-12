@@ -191,7 +191,7 @@ def get_personal_profile(Uid):
         return "Not Found", 404
 
     post_count = my_db.count(Post, and_(Post.Uid == Uid, Post.status == 0))
-    subs_count = my_db.count(Subscription, Subscription.Uid == Uid)
+    subs_count = my_db.count(Subscription, and_(Subscription.Uid == Uid, Subscription.subscribed == 1))
     history_count = my_db.count(History, History.Uid == Uid)
 
     user_info = {

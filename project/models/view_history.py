@@ -21,7 +21,7 @@ class History(my_db.Base):
             lastVisitTime = datetime.datetime.strptime(lastVisitTime, "%Y-%m-%d %H:%M:%S")
         self.Uid = Uid
         self.Pid = Pid
-        self.LastVisitTime = lastVisitTime
+        self.lastVisitTime = lastVisitTime
 
     def __repr__(self):
         return f"<ViewHistory ({self.Uid, self.Pid})>"
