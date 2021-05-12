@@ -1,6 +1,7 @@
 import hashlib
 import json
 import re
+import time
 
 from flask import Blueprint, jsonify, request
 from requests_html import HTML
@@ -459,6 +460,7 @@ def login_auth():
     session["Uid"] = match_user.Uid
     user_info = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     session["user_info"] = user_info
+    session["last_check"] = match_user.lastCheck
     # session.permanent = True
     return jsonify({"status": 1, "Uid": match_user.Uid})
 
@@ -719,3 +721,17 @@ def fetch_data():
         base_info.update({"info": comment_info, "count": len(comment_info)})
 
     return jsonify(base_info)
+
+
+@api.route("/get_log")
+def get_log():
+    Uid = session.get("Uid")
+    last_check = session.get("last_check")
+    if not Uid or not last_check:
+        return jsonify({"code": -1})
+    cur_ts = time.time()
+    new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
+                                               Notification.timestamp.between(last_check, cur_ts)))
+    if not new_count:
+        return jsonify({"code": 204})  # empty response
+    return jsonify({"code": 200, "new_count": new_count})

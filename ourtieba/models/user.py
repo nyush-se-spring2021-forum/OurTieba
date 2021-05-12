@@ -19,7 +19,7 @@ class User(my_db.Base):
     nickname = Column(String)
     avatar = Column(String, default=AVATAR_PATH+"default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
-    lastCheck = Column(DECIMAL, default=time.time)  # time the user last check message
+    lastCheck = Column(Integer, default=time.time)  # time the user last check message
     # personal info
     gender = Column(String)
     phoneNumber = Column(String)

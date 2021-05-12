@@ -46,7 +46,7 @@
                             <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
                                 <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
                             </ul>
-
+                            <button class="new_message" onclick="window.open('/notifications');"></button>
                             <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
                                   action="{{ url_for('abstract_user.search_board') }}" method="get">
                                 <input type="search" name='kw' class="form-control form-control-dark"
@@ -108,6 +108,7 @@
                         integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
                         crossorigin="anonymous"></script>
                 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/get_log.js') }}"></script>
                 <script>
                     $(function () {
                         $('[data-toggle="tooltip"]').tooltip()

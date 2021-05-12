@@ -1,3 +1,5 @@
+import time
+
 from ourtieba import *
 
 app = create_app()
@@ -152,6 +154,9 @@ def sql_test():
     h2 = History(Uid=1, Pid=21, lastVisitTime="2021-03-24 18:00:59")
     h3 = History(Uid=2, Pid=3, lastVisitTime="2021-02-04 08:45:32")
 
+    n1 = Notification(starter="user", Sid=2, receiver="user", Rid=1, target="post", Tid=1, action="like")
+    n2 = Notification(starter="user", Sid=3, receiver="user", Rid=1, target="post", Tid=1, action="dislike")
+
     my_db.add(A)
     for u in [u1, u2, u3, u4, u5, u6]:
         my_db.add(u)
@@ -181,6 +186,9 @@ def sql_test():
 
     for history in [h1, h2, h3]:
         my_db.add(history)
+
+    for n in (n1, n2):
+        my_db.add(n)
 
     return "success!", 200
 
