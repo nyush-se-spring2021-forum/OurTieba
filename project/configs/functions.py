@@ -47,7 +47,7 @@ def convert_time(ts: datetime.datetime):
         return ts.strftime("%Y-%m-%d")
     if (day := ts.strftime("%m-%d")) != datetime.datetime.utcnow().strftime("%m-%d"):
         return day
-    return ts.strftime("%H:%M")
+    return "Today " + ts.strftime("%H:%M")
 
 
 if __name__ == '__main__':
