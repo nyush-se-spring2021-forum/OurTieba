@@ -19,7 +19,7 @@ def index():
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
-    boards = my_db.query(Board, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
+    boards = my_db.query(Board, and_(Board.status == 0), order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
     data = {"boards": recommend_boards, "news": hot_news}
     return render_template("index.html", data=data)
@@ -35,6 +35,8 @@ def get_posts_in_board(Bid):
     b = my_db.query(Board, Board.Bid == Bid, first=True)
     if not b:
         return "Not Found!", 404
+    if b.status != 0:
+        return "This board doesn't exist"
     b.viewCount += 1  # when page is accessed, increment view count
     subs = my_db.query(Subscription, and_(Subscription.Uid == (Uid := session.get("Uid")),
                                           Subscription.Bid == Bid), first=True)
@@ -54,7 +56,7 @@ def get_posts_in_board(Bid):
     else:
         order = Post.commentCount.desc()
 
-    posts_match_result = my_db.query(Post, Post.Bid == Bid, order)
+    posts_match_result = my_db.query(Post, and_(Post.Bid == Bid, Post.status == 0), order)
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -94,6 +96,8 @@ def get_comments_in_post(Pid):
     p:Post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not p:
         return "Not Found", 404
+    if p.status != 0:
+        return "This post doesn't exist"
     p.viewCount += 1  # when page is accessed, increment view count
     post_info = {"Pid": p.Pid, "Bid": p.Bid, "Uid": p.Uid, "title": p.title, "content": p.content,
                  "publish_time": p.timestamp, "comment_count": p.commentCount, "like_count": p.likeCount,
@@ -126,7 +130,7 @@ def get_comments_in_post(Pid):
     else:  # if order is None or invalid parameters
         order = Comment.timestamp  # default order is asc()
 
-    comment_match_result = my_db.query(Comment, Comment.Pid == Pid, order)
+    comment_match_result = my_db.query(Comment, and_(Comment.Pid == Pid, Comment.status == 0), order)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -165,7 +169,7 @@ def search_board():
     order = request.args.get("order", "popular")
     page = request.args.get("page", "1")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
-    match_result = my_db.query(Board, Board.name.like("%" + keyword + "%"), order)
+    match_result = my_db.query(Board, and_(Board.name.like("%" + keyword + "%"), Board.status == 0), order)
     num_match = len(match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -186,7 +190,7 @@ def get_personal_profile(Uid):
     if not u:
         return "Not Found", 404
 
-    post_count = my_db.count(Post, Post.Uid == Uid)
+    post_count = my_db.count(Post, and_(Post.Uid == Uid, Post.status == 0))
     subs_count = my_db.count(Subscription, Subscription.Uid == Uid)
     history_count = my_db.count(History, History.Uid == Uid)
 

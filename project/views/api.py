@@ -256,35 +256,15 @@ def delete_post():
     if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID or user"}}), 403
 
-    media_list = match_post.medias
-    cd = os.getcwd()
-    for i in media_list:
-        while True:
-            try:
-                os.remove(cd + "/cdn/" + i)
-                break
-            except:
-                continue
-
     match_post.under.postCount -= 1
-
-    my_db.delete(Post, Post.Pid == Pid)
+    my_db.update(Post, Post.Pid == Pid, values={"status": 1})
     # Then delete all corresponding data in other relating tables
     result = my_db.query(Comment, Comment.Pid == Pid)
     for i in result:
-        my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
-        my_db.delete(Comment, Comment.Pid == Pid)
-        media_list = i.medias
-        cd = os.getcwd()
-        for f in media_list:
-            while True:
-                try:
-                    os.remove(cd + "/cdn/" + f)
-                    break
-                except:
-                    continue
-    my_db.delete(PostStatus, PostStatus.Pid == Pid)
-    my_db.delete(History, History.Pid == Pid)
+        # my_db.delete(CommentStatus, CommentStatus.Cid == i.Cid)
+        my_db.update(Comment, Comment.Pid == i.Pid, values={"status": 1})
+    # my_db.delete(PostStatus, PostStatus.Pid == Pid)
+    # my_db.delete(History, History.Pid == Pid)
     return redirect(f"/board/{Bid}")
 
 
@@ -306,24 +286,14 @@ def delete_comment():  # will not alter post lastCommentTime
     if not match_comment:
         return jsonify({"error": {"msg": "invalid ID or user"}}), 403
 
-    media_list = match_comment.medias
-    cd = os.getcwd()
-    for i in media_list:
-        while True:
-            try:
-                os.remove(cd + "/cdn/" + i)
-                break
-            except:
-                continue
-
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post or match_comment not in match_post.comments:
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
     match_post.commentCount -= 1
 
-    my_db.delete(Comment, Comment.Cid == Cid)
+    my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
     # Then delete all corresponding data in other relating tables
-    my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
+    # my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
     return redirect(f"/post/{Pid}?order=desc")
 
 

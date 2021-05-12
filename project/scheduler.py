@@ -36,7 +36,7 @@ def update_hot():
         #Then update the record dic
         new_list = [i.postCount, i.viewCount]
         record[Bid] = new_list
-        i.hot = new_hot
+        my_db.update(Board, Board.Bid == Bid, values={"hot": new_hot})
 
     print("average hot:", my_db.query(func.avg(Board.hot).label("average")).scalar())
     my_db.commit()
