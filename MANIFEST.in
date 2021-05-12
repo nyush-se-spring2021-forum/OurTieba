@@ -1,0 +1,5 @@
+include test.db
+graft ourtieba/static
+graft ourtieba/configs
+graft ourtieba/templates
+global-exclude *.pyc
