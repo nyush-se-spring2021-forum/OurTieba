@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 COPY . .
 
-CMD ["gunicorn", "app:app", "-c", "./guni_config.py"]
+CMD ["gunicorn", "wsgi:app", "-c", "./guni_config.py"]
