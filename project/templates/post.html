@@ -172,8 +172,8 @@
                                 <form action="{{ url_for('api.delete_post') }}" method="post">
                                     <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
                                     <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
-                                    <button class="btn btn-primary" type="submit">Delete</button>
                                 </form>
+                                <button class="btn btn-primary p-del-btn" data-pid="{{ data.post_info['Pid'] }}">Delete</button>
                             </div>
                         </div>
                     </div>
@@ -253,8 +253,8 @@
                                         <form action="{{ url_for('api.delete_comment') }}" method="post">
                                             <input type="hidden" name="Cid" value="{{ comment['Cid'] }}">
                                             <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
-                                            <button class="btn btn-primary" type="submit">Delete</button>
                                         </form>
+                                        <button class="btn btn-primary c-del-btn" data-cid="{{ comment['Cid'] }}">Delete</button>
                                     </div>
                                 </div>
                             </div>
@@ -487,6 +487,38 @@
 {% block scripts %}
     {{ super() }}
     <script>
+        $(".p-del-btn").on("click", function () {
+            let Pid = $(this).data("pid");
+            $.ajax({
+                method: "POST",
+                url: "/api/post/delete",
+                dataType: "json",
+                data: {Pid: Pid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        location.href = "/board/" + "{{ data.post_info['Bid'] }}";
+                    }
+                }
+            })
+        })
 
+        $(".c-del-btn").on("click", function () {
+            let Cid = $(this).data("cid");
+            $.ajax({
+                method: "POST",
+                url: "/api/comment/delete",
+                dataType: "json",
+                data: {Cid: Cid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        location.href = "/post/" + "{{ data.post_info['Pid'] }}" + "?order=desc";
+                    }
+                }
+            })
+        })
     </script>
 {% endblock %}
