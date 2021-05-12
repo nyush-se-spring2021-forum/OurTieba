@@ -579,16 +579,18 @@ def subscribe():
     Bid = request.form.get("Bid")
     action = request.form.get("action")  # "0"=unsub, "1"=sub
     if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
 
-    match_board = my_db.query(Board, Board.Bid == Bid, first=True)
+    match_board = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Board not found!"}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
-    return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
+    # already checked status upwards
+    cur_subs = my_db.query(Board, Board.Bid == Bid, first=True).subscribeCount
+    return jsonify({"subs_count": cur_subs, "status": 1})
 
 
 @api.route("/auth/set_password")
@@ -634,7 +636,7 @@ def fetch_data():
 
     if type_data == 0:
         post_info = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
-                      "timestamp": p.timestamp} for p in match_user.posts]
+                      "timestamp": p.timestamp, "status": p.status} for p in match_user.posts]
         # sort by timestamp desc
         post_info.sort(key=lambda p: p["timestamp"], reverse=True)
         # convert times into shorter format
@@ -646,8 +648,9 @@ def fetch_data():
         for h in match_user.view:
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
+            # "me" = whether posted by me
             history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid)})  # "me" = whether post by me
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid), "status": p.status})
             history_info.append(history)
         # sort by LVT desc
         history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
@@ -660,7 +663,7 @@ def fetch_data():
         for s in match_user.subscriptions:
             if s.subscribed == 1:
                 subs_info.append({"Bid": s.Bid, "bname": (b := s.of_board).name, "LM": s.lastModified,
-                                  "cover": b.cover})
+                                  "cover": b.cover, "status": b.status})
         # sort by LM desc
         subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
         base_info.update({"info": subs_info, "count": len(subs_info)})
