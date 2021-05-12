@@ -14,11 +14,18 @@
         }
         /* status box */
         .status-wrapper {
+            display: flex;
+            justify-content: space-around;
             height: 15vmin;
             width: 100%;
         }
+        .sep-line {
+            width: 0;
+            height: 100%;
+            border-left: 1px solid #7b7b7b;
+        }
         .status-box {
-            width: 32%;
+            width: 25%;
             height: 15vmin;
             text-align: center;
             cursor: pointer;
@@ -27,34 +34,18 @@
         .status-box:hover {
             background-color: #eeeeee;
         }
-        .post-box {
-            float: left;
-            margin-left: 2%;
-            border-right: 1px solid #7b7b7b;
-        }
-        .history-box {
-            float: right;
-            margin-right: 2%;
-            border-left: 1px solid #7b7b7b;
-        }
-        .subscribed-box {
-            float: right;
-            border-right: 1px solid #7b7b7b;
-            border-left: 1px solid #7b7b7b;
-        }
         .status-des {
             color: #171A21;
             font-family: Geneva, sans-serif;
-            font-size: 4.5vmin;
+            font-size: 4vmin;
             font-weight: bold;
-            display: block;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
         .status-num {
             color: #171A21;
-            font-size: 4vmin;
+            font-size: 3.5vmin;
         }
     </style>
     <div class="display-6">{{ data['nickname'] }}</div>
@@ -80,21 +71,29 @@
     </div>
     <hr>
     <div class="status-wrapper">
-        <div class="post-box status-box">
-            <p class="status-des">
-                {% if data["isCurrent"] %}My Posts{% else %}User Posts{% endif %}
+        <div class="status-box">
+            <p class="status-des">  <!-- index 0 -->
+                {% if data["isCurrent"] %}My Posts{% else %}Posts{% endif %}
             </p>
             <p class="status-num">{{ data["post_count"] }}</p>
         </div>
-        <div class="history-box status-box">
-            <p class="status-des">Browse History</p>
-            <p class="status-num">{{ data["history_count"] }}</p>
+        <div class="sep-line"></div>
+        <div class="status-box">  <!-- index 2 -->
+            <p class="status-des">
+                {% if data["isCurrent"] %}My Comments{% else %}Comments{% endif %}
+            </p>
+            <p class="status-num">{{ data["comment_count"] }}</p>
         </div>
-        <div class="subscribed-box status-box">
+        <div class="sep-line"></div>
+        <div class="status-box">  <!-- index 4 -->
             <p class="status-des">Subscriptions</p>
             <p class="status-num">{{ data["subs_count"] }}</p>
         </div>
-
+        <div class="sep-line"></div>
+        <div class="status-box">  <!-- index 6 -->
+            <p class="status-des">Browse History</p>
+            <p class="status-num">{{ data["history_count"] }}</p>
+        </div>
     </div>
     <hr>
     <div class="h3">
@@ -192,11 +191,14 @@
             top: calc(50% + 40px - 0px);  /* calc(50% + header height - t1) */
             transform: translate(-50%, -50%);
         }
-        .subs-list-wrapper {
-            width: 35vmax;
-        }
         .post-list-wrapper {
             width: 40vmax;
+        }
+        .comment-list-wrapper {
+            width: 45vmax;
+        }
+        .subs-list-wrapper {
+            width: 35vmax;
         }
         .history-list-wrapper {
             width: 40vmax;
@@ -277,92 +279,143 @@
             width: 95%;
             height: 11.5%;  /* (100% - 8%) / 8 */
         }
-        /* content: post */
-        .post {
-            flex-wrap: wrap;
-        }
-        .post-title {  /* shared by post and history */
-            width: 100%;
-            height: 60%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+        /* common class for content */
+        .center-nowrap {
+            text-align: center;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+        }
+        .post-title {
+            max-width: 80%;
+            font-size: 20px;
+            font-family: IBMPlexSans, Arial, sans-serif;
+            font-weight: bold;
+        }
+        .post-title:hover {
+            text-decoration: underline;
         }
         .board-name {
-            height: 40%;
-            width: 40%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            font-family: BentonSans, sans-serif;
         }
-        .timestamp {  /* shared by post and history */
-            height: 40%;
-            width: 30%;
-            text-align: right;
-            display: flex;
+        .timestamp {
+            font-family: BentonSans, sans-serif;
+            cursor: default;
+            color: #999898;
+        }
+        /* content: post */
+        .post {
             flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            justify-content: space-around;
+        }
+        .p-top {
+            height: 55%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+        }
+        .p-bottom {
+            height: 35%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .p-del {
+            color: blueviolet;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        /* content: comment */
+        .comment {
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .c-top {
+            height: 55%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2px;
+        }
+        .c-bottom {
+            height: 35%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+        .c-text {
+            max-width: 80%;
+            font-size: 20px;
+            font-family: IBMPlexSans, Arial, sans-serif;
+            font-weight: bold;
+        }
+        .c-text:hover {
+            text-decoration: underline;
+        }
+        .c-ptitle {
+            font-family: BentonSans, sans-serif;
         }
         /* content: history */
-        .h-bname {
-            width: 35%;
-        }
-        .h-poster {
-            width: 35%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-        }
         .history {
-            flex-wrap: wrap;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .h-top {
+            height: 55%;
+            display: flex;
+            margin-top: 2px;
+        }
+        .h-bottom {
+            height: 35%;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2px;
+        }
+        .h-bname {
+            max-width: 40%;
+        }
+        .h-time {
+            max-width: 25%;
         }
         /* content: subs */
         .subs {
             height: 18.4%;  /* (100% - 8%) / 5 */
-            flex-direction: column;
-            justify-content: center;
-            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+        .s-left {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-basis: 70%;
+        }
+        .s-right {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-basis: 20%;
         }
         .s-cover {
-            /* content width = 95% * (100% - 35px) * 35vmax, hight = 11.5% * (100% - 35px) * 42vmax */
-            height: 80%;
-            width: 18.68%;
+            /* content width = 95% * (100% - 35px) * 35vmax, height = 11.5% * (100% - 35px) * 42vmax */
+            height: 70%;
+            width: 23.4%;
             border-radius: 10px;
-            margin-right: 8%;
+            background-color: white;
         }
         .s-bname {
-            height: 100%;
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
+            width: 68%;
+            font-size: 20px;
+            text-align: justify;
             white-space: nowrap;
+            overflow: hidden;
             text-overflow: ellipsis;
         }
         .s-unsub {
-            height: 100%;
-            width: 25%;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            color: red;
+            text-decoration: underline;
+            cursor: pointer;
         }
         /* foot */
         .foot-wrapper {
@@ -411,6 +464,14 @@
             left: 50%;
             transform: translateX(-50%);
         }
+        /* general class for content */
+        .href {
+            cursor: pointer;
+        }
+        /* status class */
+        .deleted {  /* status = 1 or 2 */
+            color: darkgrey;
+        }
     </style>
     <!-- popup (show when click on status box) -->
     <div class="pop-up">
@@ -424,9 +485,16 @@
             <div class="post-list content-list">
                 {% for _ in range(8) %}
                 <div class="post content">
-                    <div class="p-title post-title"></div>
-                    <div class="p-bname board-name"></div>
-                    <div class="p-time timestamp"></div>
+                    <div class="p-top">
+                        <div class="p-title post-title center-nowrap href"></div>
+                        {% if session["Uid"] == data["Uid"] %}
+                        <div class="p-del"></div>
+                        {% endif %}
+                    </div>
+                    <div class="p-bottom">
+                        <div class="p-bname board-name center-nowrap href"></div>
+                        <div class="p-time timestamp center-nowrap"></div>
+                    </div>
                 </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
@@ -436,19 +504,25 @@
                 </div>
             </div>
         </div>
-        <!-- for history -->
-        <div class="history-list-wrapper list-wrapper">
+        <!-- for comment -->
+        <div class="comment-list-wrapper list-wrapper">
             <div class="head-wrapper">
                 <div class="hide">&#10005</div>
                 <div class="list-des"><p class="des-text"></p></div>
             </div>
-            <div class="history-list content-list">
+            <div class="comment-list content-list">
                 {% for _ in range(8) %}
-                <div class="history content">
-                    <div class="h-title post-title"></div>
-                    <div class="h-bname board-name"></div>
-                    <div class="h-poster"></div>
-                    <div class="h-time timestamp"></div>
+                <div class="comment content">
+                    <div class="c-top">
+                        <div class="c-text center-nowrap href"></div>  {# post-title #}
+                        {% if session["Uid"] == data["Uid"] %}
+                        <div class="c-del"></div>
+                        {% endif %}
+                    </div>
+                    <div class="c-bottom">
+                        <div class="c-ptitle center-nowrap href"></div> {# board-name #}
+                        <div class="c-time timestamp center-nowrap"></div>
+                    </div>
                 </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
@@ -467,10 +541,43 @@
             <div class="subs-list content-list">
                 {% for _ in range(5) %}
                 <div class="subs content">
-                    <img class="s-cover" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
+                    <div class="s-left">
+                        <img class="s-cover" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
                     lEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="">
-                    <div class="s-bname"></div>
-                    <div class="s-unsub"></div>
+                        <div class="s-bname href"></div>
+                    </div>
+                    <div class="s-right">
+                        {% if session["Uid"] == data["Uid"] %}
+                        <div class="s-unsub center-nowrap" data-a="0"></div>
+                        {% endif %}
+                    </div>
+
+                </div>
+                {% endfor %}
+                <div class="content foot-wrapper">
+                    <div class="prev-arrow arrow">&#9668Prev</div>
+                    <div class="index">-/-</div>
+                    <div class="next-arrow arrow">Next&#9658</div>
+                </div>
+            </div>
+        </div>
+        <!-- for history -->
+        <div class="history-list-wrapper list-wrapper">
+            <div class="head-wrapper">
+                <div class="hide">&#10005</div>
+                <div class="list-des"><p class="des-text"></p></div>
+            </div>
+            <div class="history-list content-list">
+                {% for _ in range(8) %}
+                <div class="history content">
+                    <div class="h-top">
+                        <div class="h-title post-title center-nowrap href"></div>
+                    </div>
+                    <div class="h-bottom">
+                        <div class="h-bname board-name center-nowrap href"></div>
+                        <div class="h-poster href"></div>
+                        <div class="h-time timestamp center-nowrap"></div>
+                    </div>
                 </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
@@ -529,7 +636,7 @@
         var cur_type;
 
         $(".status-box").on("click", function () {
-            fetchData($(this).index());
+            fetchData($(this).index()/2);  // because of the sep line
         })
 
         $(".hide").on("click", () => {
@@ -547,23 +654,27 @@
 
         var des_dict = {
             0: "{{ ("My" if data["isCurrent"] else "User") + " Posts"}}",
-            1: "Browse History",
-            2: "{{ ("My" if data["isCurrent"] else "") + " Subscriptions"}}"
+            3: "Browse History",
+            2: "{{ ("My" if data["isCurrent"] else "") + " Subscriptions"}}",
+            1: "{{ ("My" if data["isCurrent"] else "User") + " Comments"}}",
         }
         var data_dict = {  // request data only on click on status box
             0: null,  // post data
-            1: null,  // history data
-            2: null  // subs data
+            3: null,  // history data
+            2: null,  // subs data
+            1: null, // comment data
         }
         var cls_dict = {
             0: ".post",
-            1: ".history",
-            2: ".subs"
+            3: ".history",
+            2: ".subs",
+            1: ".comment",
         }
         var page_size_dict = {
             0: 8,
             1: 8,
             2: 5,
+            3: 8,
         }
         function showPopup() {
             $(".pop-up").css("display", "block");
@@ -593,31 +704,105 @@
                 let get_ = function (name) {  /* only define once */
                     return (has_content) ? cur_info[name] : "";
                 }
-                let bname = get_("bname");
+                // check status, if deleted assign cur_node to .deleted class else remove
+                let status = get_("status").toString();
+                let deleted = status === "1" || status === "2";
+                if (deleted) {
+                    cur_node.addClass("deleted");
+                } else {
+                    cur_node.removeClass("deleted");
+                }
+                let status_text;
+                let status_color;
+                if (type === 0 || type === 1) {
+                    switch (status) {case "0": status_text="delete"; status_color="blueviolet"; break; case "1":
+                        status_text="restore"; status_color="pink"; break; case "2": status_text="banned";
+                        status_color="grey";}
+                }
+                let bname = get_("bname");  // all content object have key "bname"
+                let bid = get_("Bid");  // all content object have key "bid"
                 if (type === 0) {
                     let p_title = get_("title");
                     let p_time = get_("timestamp");
-                    $(".p-title", cur_node).text(p_title);
-                    $(".p-bname", cur_node).text(bname);
+                    let pid = get_("Pid");
+                    $(".p-title", cur_node).text(p_title).attr("data-href", "/post/"+pid)
+                        .css("cursor", (deleted)?"default":"pointer");
+                    $(".p-bname", cur_node).text(bname).attr("data-href", "/board/"+bid)
+                        .css("cursor", (deleted)?"default":"pointer");
                     $(".p-time", cur_node).text(p_time);
-                } else if (type === 1) {
+                    $(".p-del", cur_node).text(status_text).css("color", status_color)
+                        .css("text-decoration", (status_text==="banned")?"none":"underline")
+                        .css("cursor", (status_text==="banned")?"default":"pointer")
+                        .attr("data-pid", pid);
+                } else if (type === 3) {
                     let h_title = get_("title");
                     let is_me = get_("me");
                     let h_poster = is_me ? "me" : get_("nickname");
                     let h_time = get_("LVT");
-                    $(".h-title", cur_node).text(h_title);
-                    $(".h-bname", cur_node).text(bname);
-                    $(".h-poster", cur_node).text(h_poster).css("font-style", (is_me) ? "italic" : "normal");
+                    let pid = get_("Pid");
+                    let uid = get_("Uid");
+                    $(".h-title", cur_node).text(h_title).attr("data-href", "/post/"+pid)
+                        .css("cursor", (deleted)?"default":"pointer");
+                    $(".h-bname", cur_node).text(bname).attr("data-href", "/board/"+bid)
+                        .css("cursor", (deleted)?"default":"pointer");
+                    $(".h-poster", cur_node).text(h_poster).css("font-style", (is_me) ? "italic" : "normal")
+                        .attr("data-href", "/profile/"+uid);
                     $(".h-time", cur_node).text(h_time);
-                } else {
+                } else if (type === 2){
                     let s_cover = (has_content) ? "/cdn/" + get_("cover") : "data:image/gif;base64,iVBORw0KGgo" +
-                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
+                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgY" +
+                        "GBgAAAABQABh6FO1AAAAABJRU5ErkJggg==";
                     $(".s-cover", cur_node).attr("src", s_cover);
-                    $(".s-bname", cur_node).text(bname);
-                    $(".s-unsub", cur_node).text((has_content) ? "Unsubsribe" : "");
+                    $(".s-bname", cur_node).text(bname).attr("data-href", "/board/"+bid);
+                    {% if session["Uid"] == data["Uid"] %}
+                    $(".s-unsub", cur_node).text((has_content) ? "Unsubsribe" : "").attr("data-bid", bid);
+                    {% endif %}
+                } else {
+                    let c_text = get_("text");
+                    let p_title = get_("title");
+                    let c_time = get_("timestamp");
+                    let pid = get_("Pid");
+                    let cid = get_("Cid");
+                    $(".c-text", cur_node).text(c_text).attr("data-href", "/post/"+pid)
+                        .css("cursor", (deleted)?"default":"pointer");
+                    $(".c-ptitle", cur_node).text(p_title).attr("data-href", "/post/"+pid)
+                        .css("cursor", (deleted)?"default":"pointer");
+                    $(".c-time", cur_node).text(c_time);
+                    $(".c-del", cur_node).text(status_text).css("color", status_color)
+                        .css("text-decoration", (status_text==="banned")?"none":"underline")
+                        .css("cursor", (status_text==="banned")?"default":"pointer")
+                        .attr("data-cid", cid);
                 }
             }
         }
+        // click to jump
+        $(".href").on("click", function (){
+            location.href = $(this).data("href");
+        })
+
+        // send unsub/sub
+        $(".s-unsub").on("click", function () {
+            let me = $(this);
+            let Bid = me.attr("data-bid");
+            let action = me.attr("data-a");
+            $.ajax({
+                method: "POST",
+                url: "/api/subscribe",
+                dataType: "json",
+                data: {Bid: Bid, action: action},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        $(".status-num").eq(2).text(data.subs_count);
+                        me.text((action==="0")?"Subscribe":"Unsubscribe").attr("data-a", (action==="0")?"1":"0")
+                            .css("color", (action==="0")?"pink":"red");
+                        data_dict[2] = null;  // must clear cache, otherwise discrepancy
+                    }
+                }
+            })
+        })
+
         function fetchData(type) {
             // show popup first
             showPopup();
@@ -649,5 +834,60 @@
             $(".pop-up").css("display", "none");  // hide popup
             $(".list-wrapper").css("display", "none");  // hide all list-wrappers
         }
+
+        // delete/restore post
+        $(".p-del").on("click", function () {
+            let button_text = $(this).text();
+            if (!(button_text === "delete" || button_text === "restore")){return}
+            let Pid = $(this).data("pid");
+            let action = (button_text === "delete") ? 1 : 0;
+            $.ajax({
+                method: "POST",
+                url: "/api/post/" + button_text,
+                dataType: "json",
+                data: {Pid: Pid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        $(this).text((action)?"restore":"delete").css("color", (action)?"pink":"blueviolet")
+                            .css("text-decoration", "underline").css("cursor", "pointer");
+                        let post = $(this).parent().parent(".post");
+                        if (action) {
+                            post.addClass("deleted");
+                        } else {
+                            post.removeClass("deleted");
+                        }
+                    }
+                }
+            })
+        })
+        // delete/restore post
+        $(".c-del").on("click", function () {
+            let button_text = $(this).text();
+            if (!(button_text === "delete" || button_text === "restore")){return}
+            let Cid = $(this).data("cid");
+            let action = (button_text === "delete") ? 1 : 0;
+            $.ajax({
+                method: "POST",
+                url: "/api/comment/" + button_text,
+                dataType: "json",
+                data: {Cid: Cid},
+                success: data => {
+                    if (!data.status) {
+                        alert(data.error.msg);
+                    } else {
+                        $(this).text((action)?"restore":"delete").css("color", (action)?"pink":"blueviolet")
+                            .css("text-decoration", "underline").css("cursor", "pointer");
+                        let cmt = $(this).parent().parent(".comment");
+                        if (action) {
+                            cmt.addClass("deleted");
+                        } else {
+                            cmt.removeClass("deleted");
+                        }
+                    }
+                }
+            })
+        })
     </script>
 {% endblock %}
