@@ -97,10 +97,13 @@ def admin_board_delete():
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
-    my_db.update(Board, Board.Bid == Bid, values={"status": 2})
     affected_row = my_db.query(Board, Board.Bid == Bid)
     if not affected_row:
         return jsonify({"error": {"msg": "Bid not Found"}, "status": 0})
+    if affected_row.status != 0:
+        return jsonify({"error": {"msg": "Board not exists"}, "status": 0})
+
+    my_db.update(Board, Board.Bid == Bid, values={"status": 2})
     #Then delete all corresponding posts and comments in that Bid
     match_posts = my_db.query(Post, Post.Bid == Bid)
     for i in match_posts:
@@ -128,6 +131,8 @@ def admin_post_delete():
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Pid not Found"}, "status": 0})
+    if match_post.status != 0:
+        return jsonify({"error": {"msg": "Post not exists"}, "status": 0})
 
     match_post.under.postCount -= 1
     my_db.update(Post, Post.Pid == Pid, values={"status": 2})
@@ -155,6 +160,8 @@ def admin_comment_delete():
     match_comment = my_db.query(Comment, Comment.Cid == Cid, first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Cid not Found"}, "status": 0})
+    if match_comment.status != 0:
+        return jsonify({"error": {"msg": "Comment not exists"}, "status": 0})
 
     match_comment.comment_in.commentCount -= 1
     my_db.update(Comment, Comment.Cid == Cid, values={"status": 2})

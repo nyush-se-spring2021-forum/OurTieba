@@ -86,6 +86,8 @@ def like():
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
+    if match_target.status != 0:
+        return jsonify({"error": {"msg": "Object not exists"}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
@@ -130,6 +132,8 @@ def dislike():
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
+    if match_target.status != 0:
+        return jsonify({"error": {"msg": "Object not exists"}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
@@ -255,6 +259,8 @@ def delete_post():
     match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid), first=True)
     if not match_post or match_post.under.Bid != int(Bid):
         return jsonify({"error": {"msg": "invalid post ID or board ID or user"}}), 403
+    if match_post.status != 0:
+        return jsonify({"error": {"msg": "Post not exists"}}), 403
 
     match_post.under.postCount -= 1
     my_db.update(Post, Post.Pid == Pid, values={"status": 1})
@@ -289,8 +295,10 @@ def delete_comment():  # will not alter post lastCommentTime
     match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post or match_comment not in match_post.comments:
         return jsonify({"error": {"msg": "invalid comment ID or post ID"}}), 403
-    match_post.commentCount -= 1
+    if match_comment.status != 0:
+        return jsonify({"error": {"msg": "Comment not exists"}}), 403
 
+    match_post.commentCount -= 1
     my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
     # Then delete all corresponding data in other relating tables
     # my_db.delete(CommentStatus, CommentStatus.Cid == Cid)
@@ -579,18 +587,18 @@ def subscribe():
     Bid = request.form.get("Bid")
     action = request.form.get("action")  # "0"=unsub, "1"=sub
     if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
-        return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
+        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
-    match_board = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
+    match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "Board not found!"}, "status": 0})
+        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
+    if match_board.status != 0:
+        return jsonify({"error": {"msg": "Board not exists"}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
-    # already checked status upwards
-    cur_subs = my_db.query(Board, Board.Bid == Bid, first=True).subscribeCount
-    return jsonify({"subs_count": cur_subs, "status": 1})
+    return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
 
 
 @api.route("/auth/set_password")
@@ -636,7 +644,7 @@ def fetch_data():
 
     if type_data == 0:
         post_info = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
-                      "timestamp": p.timestamp, "status": p.status} for p in match_user.posts]
+                      "timestamp": p.timestamp} for p in match_user.posts]
         # sort by timestamp desc
         post_info.sort(key=lambda p: p["timestamp"], reverse=True)
         # convert times into shorter format
@@ -648,9 +656,8 @@ def fetch_data():
         for h in match_user.view:
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
-            # "me" = whether posted by me
             history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid), "status": p.status})
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid)})  # "me" = whether post by me
             history_info.append(history)
         # sort by LVT desc
         history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
@@ -663,7 +670,7 @@ def fetch_data():
         for s in match_user.subscriptions:
             if s.subscribed == 1:
                 subs_info.append({"Bid": s.Bid, "bname": (b := s.of_board).name, "LM": s.lastModified,
-                                  "cover": b.cover, "status": b.status})
+                                  "cover": b.cover})
         # sort by LM desc
         subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
         base_info.update({"info": subs_info, "count": len(subs_info)})
