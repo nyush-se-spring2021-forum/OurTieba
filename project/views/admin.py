@@ -272,3 +272,14 @@ def admin_report_resolve():
     if not affected_row:
         return jsonify({"error": {"msg": "Report not found."}, "status": 0})
     return jsonify({'status': 1})
+
+
+@admin_blue.route("/create")
+@admin_login_required
+def create_board_interface():
+    Aid = session["Aid"]
+
+    match_admin = my_db.query(Admin, Admin.Aid == Aid, first=True)
+    admin_info = {"Aid": Aid, "nickname": match_admin.nickname, "avatar": match_admin.avatar}
+    data = {"admin_info": admin_info}
+    return render_template("create_board.html", data=data)
