@@ -23,6 +23,20 @@
         .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
             cursor: zoom-in;
         }
+        .OT_reply {
+            padding: 0 5px;
+            color: black;
+            text-decoration: none;
+            border: 1px solid black;
+            border-radius: 20px;
+            background-color: #c1fce3;
+            cursor: pointer;  /* IMPORTANT: only difference is here, because in the editor you cannot click the href */
+            font-size: 16px;
+        }
+        .OT_reply:hover {
+            color: #444444;
+            background-color: #98fcd1;
+        }
         /* Bootstrap overwrite */
         .btn {
             margin-right: 5px;
@@ -272,8 +286,8 @@
                     </a>
                     {# reply button #}
                     <a class="text-decoration-none text-body" href="#ue-anchor"
-                       onclick="insertReply('{{ comment['Uid'] }}',
-                               '{{ comment['publish_user'] }}');">
+                       onclick="insertReply('{{ comment['Uid'] }}', '{{ comment['publish_user'] }}',
+                               '{{ comment["floor"] }}', '{{ comment["Cid"] }}');">
                         <div class="btn btn-sm btn-outline-info">Reply</div>
                     </a>
                 </div>
@@ -439,16 +453,12 @@
             })
         })
 
-        function insertReply(uid, uname) {
+        function insertReply(uid, uname, floor, cid) {
             if (!Uid) {return}  // do not insert any content if not logged in
             ue.ready(() => {
-                if (ue.hasContents()) {  // append if there is text
-                    ue.setContent('<a href="/profile/' + uid + '" target="_self" ' +
-                        '_href="/profile/' + uid + '">@' + uname + '</a>' + ':&nbsp;', true)
-                } else {  // else set as new text
-                    ue.setContent('<p><a href="/profile/' + uid + '" target="_self" ' +
-                        '_href="/profile/' + uid + '">@' + uname + '</a>' + ':&nbsp;</p>')
-                }
+                // set as new text
+                ue.setContent('<p><a class="OT_reply" data-cid="'+ cid + '"' +' data-uid="'+uid+'"'+'href="/profile/' +
+                    uid + '" target="_blank">@' + uname + ' (#' + floor + '):</a>&nbsp;</p>')
                 ue.focus(true);  // focus cursor at the end of text
             })
         }
@@ -456,8 +466,8 @@
         function previewComment() {
             var opener = window.open("", "_blank");
             opener.document.write("<title>Preview Comment</title>");  // window title
-            opener.document.write("<style>body {font-size: 18px;}img {max-width: 384px;" +
-                "max-height: 384px;}iframe {max-width: 30vw;max-height: 30vh;}</style>")  // same as in iframe.css
+            opener.document.write('<link rel="stylesheet" ' +
+                'href="{{ url_for('static', filename='ueditor/themes/iframe.css') }}">')  // style same as in iframe.css
             opener.document.write(ue.getContent());  // content
         }
     </script>

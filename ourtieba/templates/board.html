@@ -461,8 +461,8 @@
         function previewPost() {
             let opener = window.open("", "_blank");
             opener.document.write("<title>Preview Post</title>");  // window title
-            opener.document.write("<style>body {font-size: 18px;}img {max-width: 384px;" +
-                "max-height: 384px;}iframe {max-width: 30vw;max-height: 30vh;}</style>")  // same as in iframe.css
+            opener.document.write('<link rel="stylesheet" ' +
+                'href="{{ url_for('static', filename='ueditor/themes/iframe.css') }}">')  // style same as in iframe.css
             opener.document.write('<p style="font-size: 2rem">' + title_input.val() + '</p>')  // title
             opener.document.write('<div style="height: 0; width: 100%; border-top: 2px dashed black">' +
                 '</div>')  // a separate line
