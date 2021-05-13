@@ -205,19 +205,23 @@ def add_comment():
         if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "User banned."}, "status": 0})
 
+    # verify post data in correct format
     Pid = request.form.get("Pid")
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
+    # verify post exists
     match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
+    # verify text not too long
     text = request.form.get("text", "")  # can be None because comment may only contain photos and/or videos
     if len(text) > 1000:
         return jsonify({"error": {"msg": "Word count exceeded. Maximum: 1000"}, "status": 0})
 
+    # make content HTML for parsing
     try:
         html = HTML(html=content)
     except Exception as e:
@@ -239,6 +243,7 @@ def add_comment():
         if len(text) <= ele_text_length and not medias:  # content is empty if not text nor media
             return jsonify({"error": {"msg": "Empty reply!"}, "status": 0})
 
+        # retrieve receiver ID and target ID from data attributes (added by ourself) in HTML tag
         Rid = reply_ele.attrs["data-uid"]
         Tid = reply_ele.attrs["data-cid"]
         # send notification to comment owner
@@ -249,11 +254,14 @@ def add_comment():
     ntf_to_poster = Notification("user", Uid, "user", match_post.owner.Uid, "post", Pid, "comment")
     my_db.add(ntf_to_poster)
 
+    # record current available floor
     floor = match_post.available_floor
+    # update post statistics
     match_post.available_floor += 1
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
+    # add comment into database
     new_comment = Comment(Uid, Pid, content, floor, medias, text)
     my_db.add(new_comment)
     return jsonify({"status": 1})
