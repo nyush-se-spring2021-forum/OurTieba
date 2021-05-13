@@ -3,10 +3,29 @@
 {% block title %} OurTieba {% endblock %}
 
 {% block page_content %}
-
+    <style>
+    .index-cover-wrap{
+        height: 80px;
+        width: 80px;
+        background-color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-right: 25px;
+        border: 1px solid #DADCDF;
+    }
+    .index-bname-wrap {
+        display: flex;
+        align-items: center;
+    }
+    .index-cover {
+        width: 70px;
+        height: 70px;
+    }
+    </style>
     <div class="page-header">
         <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
-            <div class="col-md-6 px-0">
+            <div class="col-md-9 px-0">
                 <h1 class="display-4 fst-italic">{{ data['news'][0]['title'] }}</h1>
                 <p class="lead my-3">{{ data['news'][0]['abstract'] }}</p>
                 <p class="lead mb-0"><a href="{{ data['news'][0]['link'] }}" target="_blank"
@@ -44,7 +63,12 @@
         <article class="post">
             <header>
                 <div>
-                    <a href="/board/{{ board['Bid'] }}" class="text-decoration-none display-6">{{ board['name'] }}</a>
+                    <div class="index-bname-wrap">
+                        <div class="index-cover-wrap">
+                        <img class="index-cover" src="{{ "/cdn/" + board["cover"] }}" alt="">
+                        </div>
+                        <a href="/board/{{ board['Bid'] }}" class="text-decoration-none display-6">{{ board['name'] }}</a>
+                    </div>
                     <div class="accordion-body">Hot: {{ board['hot'] }}</div>
                     <div class="accordion-body">Post count: {{ board['post_count'] }}</div>
 

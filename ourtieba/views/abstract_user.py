@@ -20,7 +20,8 @@ def index():
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
     boards = my_db.query(Board, and_(Board.status == 0), order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
-    recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
+    recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "cover": b.cover}
+                        for b in boards]
     data = {"boards": recommend_boards, "news": hot_news}
     return render_template("index.html", data=data)
 
