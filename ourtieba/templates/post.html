@@ -440,8 +440,8 @@
                 dataType: "json",
                 data: {
                     Pid: Pid,
-                    content: ue.getContent(),
-                    text: ue.getContentTxt()
+                    content: ue.getContent().trim(),
+                    text: ue.getContentTxt().trim()
                 },
                 success: data => {
                     if (data.status !== 1) {

@@ -431,7 +431,7 @@
                 return
             }
             // check title not null
-            var title = title_input.val();
+            var title = title_input.val().trim();
             if (!title) {
                 alert("You must enter a title!");
                 return
@@ -445,8 +445,8 @@
                 data: {
                     Bid: Bid,
                     title: title,
-                    content: ue.getContent(),
-                    text: ue.getContentTxt()
+                    content: ue.getContent().trim(),
+                    text: ue.getContentTxt().trim()
                 },
                 success: data => {
                     if (data.status !== 1) {
