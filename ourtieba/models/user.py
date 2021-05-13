@@ -66,7 +66,7 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def is_banned(cls, Uid):  # will try to unban user before return result
-        user = cls.get_(Uid)
+        user = cls._get(Uid)
         if user.banDuration <= datetime.datetime.utcnow():
             user.banned = 0
         return user.banned

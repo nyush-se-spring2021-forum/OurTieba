@@ -45,7 +45,7 @@ class Board(BaseORM, my_db.Base):
 
     @classmethod
     def action_on_post(cls, Bid, action):  # 0=add, 1=delete/ban
-        board = cls.get_(Bid, status=0)
+        board = cls._get(Bid, status=0)
         if not board:
             return 0  # board not exists, unsuccessful
         board.postCount += 1 if action == 0 else -1
