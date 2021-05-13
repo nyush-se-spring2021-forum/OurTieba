@@ -246,13 +246,15 @@ def add_comment():
         # retrieve receiver ID and target ID from data attributes (added by ourself) in HTML tag
         Rid = reply_ele.attrs["data-uid"]
         Tid = reply_ele.attrs["data-cid"]
-        # send notification to comment owner
-        ntf_to_commenter = Notification("user", Uid, "user", Rid, "comment", Tid, "reply")
-        my_db.add(ntf_to_commenter)
+        # if sender != receiver, send notification to comment owner
+        if Uid != Rid:
+            ntf_to_commenter = Notification("user", Uid, "user", Rid, "comment", Tid, "reply")
+            my_db.add(ntf_to_commenter)
 
-    # send notification to post owner
-    ntf_to_poster = Notification("user", Uid, "user", match_post.owner.Uid, "post", Pid, "comment")
-    my_db.add(ntf_to_poster)
+    # if sender != receiver, send notification to post owner
+    if Uid != (Rid := match_post.owner.Uid):
+        ntf_to_poster = Notification("user", Uid, "user", Rid, "post", Pid, "comment")
+        my_db.add(ntf_to_poster)
 
     # record current available floor
     floor = match_post.available_floor
