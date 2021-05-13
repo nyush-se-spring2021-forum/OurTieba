@@ -3,10 +3,11 @@ import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class History(my_db.Base):
+class History(BaseORM, my_db.Base):
     __tablename__ = "history"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)

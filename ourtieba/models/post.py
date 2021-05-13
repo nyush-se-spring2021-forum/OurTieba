@@ -3,10 +3,11 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class Post(my_db.Base):
+class Post(BaseORM, my_db.Base):
     __tablename__ = "post"
 
     Pid = Column(Integer, primary_key=True)

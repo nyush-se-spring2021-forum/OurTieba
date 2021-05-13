@@ -3,10 +3,11 @@ import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class Subscription(my_db.Base):
+class Subscription(BaseORM, my_db.Base):
     __tablename__ = "subscription"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)

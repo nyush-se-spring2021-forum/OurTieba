@@ -2,15 +2,16 @@ import datetime
 import hashlib
 import time
 
-from sqlalchemy import Column, Integer, String, DateTime, DECIMAL
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
 from ..configs.macros import AVATAR_PATH
 from ._tables import user_report_table
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class User(my_db.Base):
+class User(BaseORM, my_db.Base):
     __tablename__ = 'user'
 
     Uid = Column(Integer, primary_key=True)
@@ -62,3 +63,10 @@ class User(my_db.Base):
 
     def __repr__(self):
         return '<User %r>' % self.Uid
+
+    @classmethod
+    def is_banned(cls, Uid):  # will try to unban user before return result
+        user = cls.get_(Uid)
+        if user.banDuration <= datetime.datetime.utcnow():
+            user.banned = 0
+        return user.banned

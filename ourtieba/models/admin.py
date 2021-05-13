@@ -3,10 +3,11 @@ import hashlib
 
 from sqlalchemy import Column, Integer, String, DateTime
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class Admin(my_db.Base):
+class Admin(BaseORM, my_db.Base):
     __tablename__ = 'admin'
 
     Aid = Column(Integer, primary_key=True)

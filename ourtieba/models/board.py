@@ -3,10 +3,11 @@ import datetime
 from sqlalchemy import Column, Integer, String, DateTime, PickleType
 from sqlalchemy.orm import relationship
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class Board(my_db.Base):
+class Board(BaseORM, my_db.Base):
     __tablename__ = "board"
 
     Bid = Column(Integer, primary_key=True)
@@ -41,3 +42,11 @@ class Board(my_db.Base):
 
     def __repr__(self):
         return "<Board %r>" % self.Bid
+
+    @classmethod
+    def action_on_post(cls, Bid, action):  # 0=add, 1=delete/ban
+        board = cls.get_(Bid, status=0)
+        if not board:
+            return 0  # board not exists, unsuccessful
+        board.postCount += 1 if action == 0 else -1
+        return 1

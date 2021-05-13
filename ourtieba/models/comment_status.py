@@ -3,11 +3,12 @@ import datetime
 from sqlalchemy import Column, Integer, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
 # insert/update on "like" or "dislike" actions
-class CommentStatus(my_db.Base):
+class CommentStatus(BaseORM, my_db.Base):
     __tablename__ = "comment_status"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)

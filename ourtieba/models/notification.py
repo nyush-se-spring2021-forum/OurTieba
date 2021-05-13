@@ -1,11 +1,12 @@
 import time
 
-from sqlalchemy import Column, Integer, String, DECIMAL
+from sqlalchemy import Column, Integer, String
 
+from .baseORM import BaseORM
 from ..database import my_db
 
 
-class Notification(my_db.Base):
+class Notification(BaseORM, my_db.Base):
     __tablename__ = "notification"
 
     Nid = Column(Integer, primary_key=True)
