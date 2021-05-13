@@ -1,6 +1,5 @@
 import hashlib
 import json
-import re
 import time
 
 from flask import Blueprint, jsonify, request
@@ -24,23 +23,19 @@ def add_post():
     """
     Uid = session["Uid"]
     # check whether user is banned
-    match_user: User = my_db.query(User, User.Uid == Uid, first=True)
-    if match_user.banned:
-        if match_user.banDuration > datetime.datetime.utcnow():
-            return jsonify({"error": {"msg": "user banned"}, "status": 0})
+    if User.is_banned(Uid):
+        return jsonify({"error": {"msg": "You are banned."}, "status": 0})
 
     Bid = request.form.get("Bid")
     title = request.form.get("title")
     if not Bid or not Bid.isnumeric() or not title:
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     if len(title) > 150:
         return jsonify({"error": {"msg": "Title word count exceeded. Maximum: 150"}, "status": 0})
 
-    match_board = my_db.query(Board, Board.Bid == Bid, first=True)
-    if not match_board:
-        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
-    match_board.postCount += 1
+    if not Board.action_on_post(Bid, 0):
+        return jsonify({"error": {"msg": "Board not found."}, "status": 0})
 
     content = request.form.get("content", "<p></p>")
     text = request.form.get("text", "")
@@ -64,8 +59,7 @@ def add_post():
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
 
-    new_post = Post(Uid, int(Bid), title, content, medias, text)
-    my_db.add(new_post)
+    Post.new(Uid, int(Bid), title, content, medias, text)
     return jsonify({"status": 1})
 
 
