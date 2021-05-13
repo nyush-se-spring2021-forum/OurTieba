@@ -210,8 +210,11 @@ def add_comment():
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    text = request.form.get("text", "")  # can be None because comment may only contain photos and/or videos
+    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
+    if not match_post:
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
+    text = request.form.get("text", "")  # can be None because comment may only contain photos and/or videos
     if len(text) > 1000:
         return jsonify({"error": {"msg": "Word count exceeded. Maximum: 1000"}, "status": 0})
 
@@ -220,6 +223,7 @@ def add_comment():
     except Exception as e:
         return jsonify({"error": {"msg": e}, "status": 0})
 
+    # fetch media list
     medias = []
     for ele in html.find("img.OT_image,iframe.OT_video"):
         src = ele.attrs.get("src")
@@ -228,9 +232,22 @@ def add_comment():
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
 
-    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
-    if not match_post:
-        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
+    # check if the comment is replying other's comment
+    reply_ele = html.find(".OT_reply", first=True)
+    if reply_ele:
+        ele_text_length = len(reply_ele.text)
+        if len(text) <= ele_text_length and not medias:  # content is empty if not text nor media
+            return jsonify({"error": {"msg": "Empty reply!"}, "status": 0})
+
+        Rid = reply_ele.attrs["data-uid"]
+        Tid = reply_ele.attrs["data-cid"]
+        # send notification to comment owner
+        ntf_to_commenter = Notification("user", Uid, "user", Rid, "comment", Tid, "reply")
+        my_db.add(ntf_to_commenter)
+
+    # send notification to post owner
+    ntf_to_poster = Notification("user", Uid, "user", match_post.owner.Uid, "post", Pid, "comment")
+    my_db.add(ntf_to_poster)
 
     floor = match_post.available_floor
     match_post.available_floor += 1
@@ -729,7 +746,7 @@ def get_log():
     last_check = session.get("last_check")
     if not Uid or not last_check:
         return jsonify({"code": -1})
-    cur_ts = time.time()
+    cur_ts = request.args.get("t") or time.time()  # can be used for synchronization given FIFO channel
     new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
                                                Notification.timestamp.between(last_check, cur_ts)))
     if not new_count:
