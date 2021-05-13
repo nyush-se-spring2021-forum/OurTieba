@@ -47,6 +47,10 @@ class myDb:
                 return _db_session.query(func.count(target)).join(join).filter(condition).order_by(order).scalar()
             return _db_session.query(target).join(join).filter(condition).order_by(order).all() or []
 
+    def get(self, target, primary_key):
+        with auto_scope(self._session) as _db_session:
+            return _db_session.query(target).get(primary_key)
+
     def add(self, new):
         with auto_scope(self._session) as _db_session:
             return _db_session.add(new)
