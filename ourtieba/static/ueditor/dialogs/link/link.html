@@ -74,7 +74,8 @@
                 'href' : href,  // fake href
                 'target' : "_blank",  // force target be _blank
                 'title' : $G("title").value.replace(/^\s+|\s+$/g, ''),
-                '_href': "/redirect?link=" + encodeURIComponent(href)  // true href
+                '_href': window.location.protocol+"//"+window.location.host+"/redirect?link="
+                    + encodeURIComponent(href)  // true href
             };
 
             //修改链接内容的情况太特殊了，所以先做到这里了
