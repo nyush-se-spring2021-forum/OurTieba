@@ -8,6 +8,7 @@ from requests_html import HTML
 
 from ..configs import *
 from ..database import *
+from ..html_parser import *
 from ..models import *
 
 api = Blueprint("api", __name__, url_prefix="/api")
@@ -49,6 +50,7 @@ def add_post():
     if len(text) > 2000:
         return jsonify({"error": {"msg": "Content word count exceeded. Maximum: 2000"}, "status": 0})
 
+    content = my_parser.clean(content)
     try:
         html = HTML(html=content)
     except Exception as e:
@@ -174,6 +176,8 @@ def add_report():
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
         return jsonify({"error": {"msg": "invalid data"}}), 403
 
+    reason = my_parser.clean(reason)
+
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
@@ -210,6 +214,8 @@ def add_comment():
     content = request.form.get("content")
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    # filter content
+    content = my_parser.clean(content)
 
     # verify post exists
     match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
