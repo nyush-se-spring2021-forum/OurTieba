@@ -493,15 +493,15 @@ def login_auth():
     return jsonify({"status": 1, "Uid": match_user.Uid})
 
 
-@api.route('/auth/logout', methods=["POST", "GET"])
+@api.route('/auth/logout', methods=["POST"])
 @login_required
 def logout_auth():
     """
-    This function is used for logged in user to logout
-    :return: a html text message
+    This function is used for logged in user to logout. Clear all session data
+    :return: if successful return status 1
     """
     session.clear()
-    return "<script>location.replace(document.referrer);</script>", 200
+    return jsonify({"status": 1})
 
 
 @api.route("/upload", methods=["POST", "GET"])

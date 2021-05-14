@@ -77,7 +77,7 @@
                                             <li>
                                                 <hr class="dropdown-divider">
                                             </li>
-                                            <li><a class="dropdown-item" href="{{ url_for('api.logout_auth') }}">Sign
+                                            <li><a class="dropdown-item" id="log-out" style="cursor: pointer">Sign
                                                 out</a></li>
                                         </ul>
                                     </div>
@@ -114,6 +114,19 @@
                 <script>
                     $(function () {
                         $('[data-toggle="tooltip"]').tooltip()
+                        $("#log-out").on("click", function () {
+                            $.post({
+                                url: "/api/auth/logout",
+                                success: data => {
+                                    if (data.status) {
+                                        location.reload();
+                                    } else {
+                                        alert("Something went wrong. Try again later.")
+                                    }
+                                },
+                                dataType: "json"
+                            })
+                        })
                     })
                 </script>
             {%- endblock scripts %}
