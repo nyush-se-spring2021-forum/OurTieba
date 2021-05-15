@@ -41,43 +41,5 @@
 
     <div id="username-err" class="alert alert-warning" style="display: none">
     </div>
-{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    <script>
-        $(document).ready(function () {
-            $("#btn_submit").click(function () {
-                let uname = $("#uname").val().trim();
-                let nickname = $("#nickname").val().trim();
-                let password = $("#password").val().trim();
-                let rpassword = $("#repeat-password").val().trim();
-
-                if (password !== rpassword) {
-                    $("#username-err").html("Passwords don't match.").show();
-                } else if (uname !== "" && nickname !== "" && password !== "") {
-                    $.ajax({
-                        url: '/api/auth/register',
-                        type: 'post',
-                        dataType: 'json',
-                        data: {uname: uname, password: password, nickname: nickname},
-                        success: function (response) {
-                            let msg = "";
-                            if (response.status !== 0) {
-                                window.location = "/login";
-                            } else {
-                                msg = response.error['msg'];
-                                console.log(msg);
-                                $("#username-err").show();
-
-                            }
-                            $("#username-err").html(msg);
-
-                        }
-                    });
-                }
-            });
-        });
-
-    </script>
+    <script src="{{ url_for("static", filename="/js/register.js") }}"></script>
 {% endblock %}

@@ -13,7 +13,7 @@ function getLog() {
         url: "/api/get_log?t=" + new Date().getTime(),
         success: data => {
             let count = (data.code===200) ? data.new_count : 0;
-            $(".new_message").text("New Messages: " + count);
+            $("#new_message").text("New Messages: " + count);
         }
     })
     setTimeout(getLog, 5000);

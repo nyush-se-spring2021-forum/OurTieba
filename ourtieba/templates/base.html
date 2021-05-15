@@ -11,7 +11,13 @@
                     <meta charset="utf-8">
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                 {%- endblock metas %}
-
+                <script>  // This piece of script will not be executed if CSP is on
+                    if (sessionStorage.getItem("has_warned") !== "1") {
+                        sessionStorage.setItem("has_warned", "1");
+                        alert("Development environment. Or your browser does not support CSP.\n" +
+                            "(This will only show once for every window.)");
+                    }
+                </script>
                 <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}"
                       type="image/x-icon">
                 <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
@@ -25,6 +31,9 @@
                 <style>
                     body {
                         background-color: #fbfbfd;
+                    }
+                    #new_message {
+                        margin-right: 3%;
                     }
                 </style>
             {%- endblock head %}
@@ -47,7 +56,7 @@
                                 <li><a href="/" class="nav-link px-2 text-secondary">Home</a></li>
                             </ul>
                             {% if session.Uid %}
-                                <button class="new_message btn btn-outline-light" onclick="window.open('/notifications');"></button>&nbsp;
+                                <button class="btn btn-outline-light" id="new_message">New Messages: -</button>
                             {% endif %}
                             <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3"
                                   action="{{ url_for('abstract_user.search_board') }}" method="get">
@@ -102,33 +111,19 @@
             {%- endblock content %}
 
             {% block scripts %}
-                {{ moment.include_moment() }}
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment-with-locales.min.js"
+                        integrity="sha512-LGXaggshOkD/at6PFNcp2V2unf9LzFq6LE+sChH7ceMTDP0g2kn6Vxwgg7wkPP7AAtX+lmPqPdxB47A0Nz0cMQ=="
+                        crossorigin="anonymous"></script>
+                <script src="{{ url_for('static', filename='js/include_moment.js') }}"></script>
                 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"
                         integrity="sha384-SR1sx49pcuLnqZUnnPwx6FCym0wLsk5JZuNx2bPPENzswTNFaQU1RDvt3wT4gWFG"
                         crossorigin="anonymous"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
                         integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
                         crossorigin="anonymous"></script>
+                <script src="{{ url_for('static', filename='js/base.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/get_log.js') }}"></script>
-                <script>
-                    $(function () {
-                        $('[data-toggle="tooltip"]').tooltip()
-                        $("#log-out").on("click", function () {
-                            $.post({
-                                url: "/api/auth/logout",
-                                success: data => {
-                                    if (data.status) {
-                                        location.reload();
-                                    } else {
-                                        alert("Something went wrong. Try again later.")
-                                    }
-                                },
-                                dataType: "json"
-                            })
-                        })
-                    })
-                </script>
             {%- endblock scripts %}
         {%- endblock body %}
         </body>

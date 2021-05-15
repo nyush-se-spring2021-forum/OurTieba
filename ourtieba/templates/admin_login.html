@@ -27,36 +27,5 @@
 
     <div id="username-err" class="alert alert-warning" style="display: none">
     </div>
-{% endblock %}
-
-{% block scripts %}
-    {{ super() }}
-    <script>
-        $(document).ready(function () {
-            $("#btn_submit").click(function () {
-                let aname = $("#aname").val().trim();
-                let password = $("#password").val().trim();
-
-                if (aname !== "" && password !== "") {
-                    $.ajax({
-                        url: '{{ url_for('admin.admin_auth_login') }}',
-                        type: 'post',
-                        dataType: 'json',
-                        data: {aname: aname, password: password},
-                        success: function (response) {
-                            let msg = "";
-                            if (response.status !== 0) {
-                                window.location = "{{ url_for('admin.admin_hello') }}";
-                            } else {
-                                msg = response.error['msg'];
-                                $("#username-err").html(msg).show();
-
-                            }
-
-                        }
-                    });
-                }
-            });
-        });
-    </script>
+    <script src="{{ url_for("static", filename="/js/admin_login.js") }}"></script>
 {% endblock %}

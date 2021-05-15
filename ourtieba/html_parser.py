@@ -21,6 +21,7 @@ class htmlParser(HTMLParser, ABC):
         "font": ["color"]
     }
     __instance = None
+    enabled = False
 
     # ensure that only one instance is created
     def __new__(cls, *args, **kwargs):
@@ -41,7 +42,12 @@ class htmlParser(HTMLParser, ABC):
     def __exit__(self, exc_type, exc_val, exc_tb):
         super().close()
 
+    def enable(self):
+        self.enabled = True
+
     def clean(self, content):
+        if not self.enabled:
+            return content
         self.feed(content)
         return self.get_html()
 
@@ -181,13 +187,16 @@ class htmlParser(HTMLParser, ABC):
             .replace('“', "\"") \
             .replace("‘", "'")
 
-    def close(self):
-        print("close")
-
 
 my_parser = htmlParser()
 
+
+def enable_parser():
+    my_parser.enable()
+
+
 if __name__ == '__main__':
+    enable_parser()
     ret = my_parser.clean("""<p><img src=1 οnerrοr=alert(/xss/)></p><div class="left">
         <a href='javascript:prompt(1)'><br />hehe</a></div>
         <p id="test" οnmοuseοver="alert(1)">>M<svg>

@@ -9,6 +9,8 @@ class Config:
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     TEMPLATES_AUTO_RELOAD = True
+    ENABLE_CSP = False  # XSS protection: CSP header
+    ENABLE_PARSER = True  # XSS protection: html parser
 
 
 class DevelopmentConfig(Config):
@@ -19,6 +21,8 @@ class DevelopmentConfig(Config):
 class ProductionConfig(Config):
     ENV = "production"
     DEBUG = False
+    ENABLE_CSP = True
+    ENABLE_PARSER = False
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=15)  # default is 31 days
 
 

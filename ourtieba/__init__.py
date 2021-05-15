@@ -3,6 +3,7 @@ from flask_moment import Moment
 
 from .configs import *  # import configurations
 from .database import *  # import database session
+from .html_parser import * # import html parser
 from .logger import *  # import logger
 from .models import *  # import all the models
 from .scheduler import *  # import scheduler
@@ -21,6 +22,13 @@ def create_app():
 
         # init_logger()
         # init_scheduler(app)
+        register_route(app)
+    if app.config.get("ENABLE_PARSER"):  # the parser is by default disabled
+        enable_parser()
+    return app
+
+
+def register_route(app):
     @app.teardown_appcontext
     def teardown_session(e):
         my_db.close()
@@ -51,7 +59,14 @@ def create_app():
         response.headers["Server"] = "OurTieba"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "sameorigin"
+        whitelist = ["'self'", "'unsafe-eval'", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net/"]
+        if app.config.get("ENABLE_CSP"):
+            response.headers["Content-Security-Policy"] = "script-src " + " ".join(whitelist) + "; object-src 'self'"
         return response
+
+    @app.route("/prepare_ueditor")
+    def prepare_ueditor_iframe():
+        return render_template("prepare_ueditor.html")
 
     @app.template_filter("index_format")
     def add_zeros(i, length):  # format index in photos.html
@@ -213,4 +228,3 @@ def create_app():
                 my_db.add(history)
 
             return "success!", 200
-    return app

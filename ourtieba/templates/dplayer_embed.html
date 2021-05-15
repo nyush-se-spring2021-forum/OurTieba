@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Loading...</title>
     <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
-	<script type="text/javascript" src="/js/DPlayer.min.js"></script>
+	<script type="text/javascript" src="{{ url_for("static", filename="/js/DPlayer.min.js") }}"></script>
     <style>
         body, html {
             width: 100%;
@@ -30,69 +30,6 @@
 </head>
 <body>
 <div id="dplayer"></div>
-<script>
-    document.title = "OurTieba Player";
-
-    var s = "{{ data["src"] }}";
-    var a = {{ data["autoplay"] }};
-    var l = {{ data["loop"] }};
-
-    var autopause = autopause || true;
-
-    const dp = new DPlayer({
-        container: document.getElementById('dplayer'),
-        theme: '#FADFA3',
-        lang: "en",
-        mutex: true,
-        autoplay: a,
-        loop: l,
-        contextmenu:[
-            {
-                text: autopause ? "Disable auto pause":"Enable auto pause",
-                click: (player) => {
-                    let des = document.getElementsByClassName("dplayer-menu-item")[0].getElementsByTagName("a")[0];
-                    if (autopause) {
-                        player.notice("Auto Pause OFF", 1000);
-                        des.text = "Enable auto pause";
-                        window.onblur = ()=>{};
-                        window.onfocus = ()=>{};
-                        autopause = false;
-                    } else  {
-                        player.notice("Auto Pause ON", 1000);
-                        des.text = "Disable auto pause";
-                        window.onblur = function () {
-                            player.pause();
-                        }
-                        window.onfocus = function () {
-                            player.play();
-                        }
-                        autopause = true;
-                    }
-                }
-            }
-        ],
-        video: {
-            url: s,
-        },
-    })
-
-    //  display notice when in/out fullscreen mode
-    dp.on("fullscreen", () => {
-        dp.notice("Enter Fullscreen", 1000);
-    })
-    dp.on("fullscreen_cancel", () => {
-        dp.notice("Exit Fullscreen", 1000);
-    })
-
-    //  init autopause handlers
-    if (autopause) {
-        window.onblur = function () {
-            dp.pause();
-        }
-        window.onfocus = function () {
-            dp.play();
-        }
-    }
-</script>
+<script src="{{ url_for("static", filename="/js/init_dplayer.js") }}"></script>
 </body>
 </html>
