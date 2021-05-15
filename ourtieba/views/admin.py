@@ -75,7 +75,7 @@ def admin_auth_login():
     return jsonify({'status': 1})
 
 
-@admin_blue.route("/auth/logout")
+@admin_blue.route("/auth/logout", methods=["POST"])
 @admin_login_required
 def admin_logout():
     """
@@ -83,7 +83,7 @@ def admin_logout():
     :return: redirect to another path of '/admin/login'
     """
     session.clear()
-    return redirect("/admin/login")
+    return jsonify({"status": 1})
 
 
 @admin_blue.route("/board/delete", methods=["POST"])
@@ -277,9 +277,52 @@ def admin_report_resolve():
 @admin_blue.route("/create")
 @admin_login_required
 def create_board_interface():
+    return render_template("create_board.html")
+
+
+@admin_blue.route("/board/add", methods=["POST"])
+@admin_login_required
+def add_board_by_admin():
+    name = request.form.get("name")
+    description = request.form.get("description")
+    cover = request.form.get("cover", "cover/OurTieba.png")
+    if not name or not description:
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    if len(name) > 40:
+        return jsonify({"error": {"msg": "Name word count exceeded. Maximum: 40"}, "status": 0})
+    if len(description) > 200:
+        return jsonify({"error": {"msg": "Description word count exceeded. Maximum: 200"}, "status": 0})
+    if Board.name_exists(name):
+        return jsonify({"error": {"msg": "Board name already exists."}, "status": 0})
+    Board.new(name, description, cover=cover)
+    return jsonify({'status': 1})
+
+
+@admin_blue.route("/upload", methods=["POST"])
+@admin_login_required
+def upload_by_admin():
+    action = request.args.get("action")
+    if action != "uploadcover":
+        return jsonify({"error": {"msg": "Wrong action."}, "status": 0})
+
     Aid = session["Aid"]
 
-    match_admin = my_db.query(Admin, Admin.Aid == Aid, first=True)
-    admin_info = {"Aid": Aid, "nickname": match_admin.nickname, "avatar": match_admin.avatar}
-    data = {"admin_info": admin_info}
-    return render_template("create_board.html", data=data)
+    file = request.files.get("file")
+    file_type = file.content_type
+    if not file_type or not file_type.startswith("image"):
+        return jsonify({"error": {"msg": "Invalid file type.", "status": 0}})
+    file_type = file_type.split("/")[-1]
+
+    file_size = int(request.headers.get("Content-Length", 0))
+    if file_size > 3 * 1024 * 1024:
+        return jsonify({"error": {"msg": "Cover size too large."}, "status": 0})
+
+    path = CDN_ROOT_PATH + COVER_PATH
+    if not os.path.exists(path):  # os is imported in config.py
+        os.mkdir(path)
+
+    src = str(hash(str(Aid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    while os.path.exists((filepath := path + src)):
+        src = str(hash(str(Aid) + str(datetime.datetime.utcnow()))) + "." + file_type
+    file.save(filepath)
+    return jsonify({"status": 1, "src": src})

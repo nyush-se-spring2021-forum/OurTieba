@@ -13,11 +13,11 @@ class Notification(BaseORM, my_db.Base):
     # All the columns are NOT nullable!
     starter = Column(String)  # "user", "admin"
     Sid = Column(Integer)  # starter's Uid or Aid
-    receiver = Column(String)  # "user", "broadcast"(not implemented)
+    receiver = Column(String)  # "user", "admin", "broadcast"
     Rid = Column(Integer)  # receiver's Uid, if broadcast set to -1
-    target = Column(String)  # "post", "comment", "user", "board"(not implemented)
+    target = Column(String)  # "post", "comment", "user", "board"
     Tid = Column(Integer)  # target's Pid or Cid or Uid or Bid
-    action = Column(String)  # "like", "dislike", "comment", "delete", "restore", "ban", "unban", "post"(not implement)
+    action = Column(String)  # "like", "dislike", "comment", "delete", "restore", "ban", "unban", "post", "create"
     timestamp = Column(Integer, default=time.time)  # must be UNIX timestamp, like "1620750628.290329" etc.
 
     def __init__(self, starter, Sid, receiver, Rid, target, Tid, action, timestamp=None):

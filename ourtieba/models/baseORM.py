@@ -32,7 +32,7 @@ class BaseORM:
         return not not cls._get(cls, *key_value, status=status)  # double negate to obtain Boolean value
 
     @classmethod
-    def new(cls, *args):
+    def new(cls, *args, **kwargs):
         """
         Add a new instance to class. If argument already an instance, directly add it to database; otherwise create
         from arguments then add.
@@ -41,4 +41,12 @@ class BaseORM:
         """
         if type((_new := args[0])) == type(cls):
             return my_db.add(_new)
-        return my_db.add(cls(*args))
+        return my_db.add(cls(*args, **kwargs))
+
+    @classmethod
+    def _query(cls, condition=True, order=True):
+        return my_db.query(cls, condition, order)
+
+    @classmethod
+    def query_exists(cls, condition=True, order=True):
+        return not not cls._query(condition, order)

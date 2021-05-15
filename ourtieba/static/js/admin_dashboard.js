@@ -8,6 +8,20 @@ var cls_dict = {
     1: "Pid",
     2: "Cid",
 }
+
+$("#admin-logout").on("click", function () {
+    $.post({
+        url: "/admin/auth/logout",
+        success: data => {
+            if (!data.status) {
+                alert("Something went wrong. Try again later.");
+            } else {
+                location.href = "/admin/login";
+            }
+        }
+    })
+})
+
 function manageTarget(action, target) {  // action: 0=delete, 1=restore; target: 0=board, 1=post, 2=comment
     let id = $('#'+cls_dict[target]).val().trim();
     $.ajax({

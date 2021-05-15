@@ -575,7 +575,7 @@ def handle_upload():
 
         file_size = int(request.headers.get("Content-Length", 0))
         if file_size > 2048000:  # must be the same as in static/ueditor/config.json ("imageMaxSize")
-            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE
+            return jsonify({"error": {"msg": "File too large"}, "status": 0})  # AE
 
         path = CDN_ROOT_PATH + PHOTO_PATH
         if not os.path.exists(path):  # os is imported in config.py
@@ -608,7 +608,7 @@ def handle_upload():
 
         file_size = int(request.headers.get("Content-Length", 0))
         if file_size > 102400000:  # must be the same as in static/ueditor/config.json ("videoMaxSize")
-            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE
+            return jsonify({"error": {"msg": "File too large"}, "status": 0})  # AE
 
         path = CDN_ROOT_PATH + VIDEO_PATH
         if not os.path.exists(path):  # os is imported in config.py

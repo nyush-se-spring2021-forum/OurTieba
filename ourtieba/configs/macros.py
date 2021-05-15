@@ -8,5 +8,6 @@ CDN_ROOT_PATH = "cdn/"  # relative to ourtieba working directory (which is .../O
 AVATAR_PATH = "avatar/"  # relative to CDN root path
 PHOTO_PATH = "photo/"  # relative to CDN root path
 VIDEO_PATH = "video/"  # relative to CDN root path
+COVER_PATH = "cover/"  # relative to CDN root path
 
 ALLOWED_METHODS = ("GET", "POST")

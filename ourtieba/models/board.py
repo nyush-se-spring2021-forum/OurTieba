@@ -11,7 +11,7 @@ class Board(BaseORM, my_db.Base):
     __tablename__ = "board"
 
     Bid = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=False)
     hot = Column(Integer, default=0)
     cover = Column(String, default="cover/OurTieba.png")
@@ -26,7 +26,7 @@ class Board(BaseORM, my_db.Base):
     subscribers = relationship("Subscription", back_populates="of_board")
 
     def __init__(self, name, description, hot=None, cover=None, status=None, sticky_on_top=None, postCount=None,
-                 viewCount=None, subscribeCount=None, timestamp=None, ):
+                 viewCount=None, subscribeCount=None, timestamp=None):
         if isinstance(timestamp, str):
             timestamp = datetime.datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
         self.name = name
@@ -50,3 +50,7 @@ class Board(BaseORM, my_db.Base):
             return 0  # board not exists, unsuccessful
         board.postCount += 1 if action == 0 else -1
         return 1
+
+    @classmethod
+    def name_exists(cls, name):
+        return cls.query_exists(cls.name == name)
