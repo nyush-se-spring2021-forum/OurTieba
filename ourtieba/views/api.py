@@ -763,3 +763,29 @@ def get_log():
     if not new_count:
         return jsonify({"code": 204})  # empty response
     return jsonify({"code": 200, "new_count": new_count})
+
+
+@api.route("/get_ntf")
+@login_required
+def fetch_ntf():
+    Uid = session["Uid"]
+    last_check = session["last_check"]
+    cur_ts = time.time()
+
+    end = request.args.get("end")
+    if end is None or not end.isnumeric():
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    end = int(end)
+    limit = 10  # IMPORTANT: how many ntfs to fetch every time
+    match_ntf = my_db.query(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid),
+                            Notification.timestamp.desc(), limit=limit, offset=end)
+    ntfs = [{"starter": n.starter, "Sid": n.Sid, "target": n.target, "Tid": n.Tid,
+             "action": n.action, "timestamp": (t := n.timestamp), "is_new": 1 if last_check < int(t) < cur_ts else 0}
+            for n in match_ntf]
+    if end == 0:  # update last check, however in this way at most 10 ntfs can be "is_new",
+        # to fix it, need to modify database, but I do not intend to do this
+        my_db.update(User, User.Uid == Uid, values={"lastCheck": cur_ts})
+        session["last_check"] = cur_ts
+    end += len(ntfs)
+    is_end = 1 if len(ntfs) < limit else 0
+    return jsonify({"cursor_end": end, "is_end": is_end, "ntfs": ntfs, "status": 1})

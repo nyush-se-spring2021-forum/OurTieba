@@ -60,19 +60,5 @@ def report():
 
 @user_blue.route("/notifications")
 @login_required
-def check_notification():
-    Uid = session["Uid"]
-    last_check = session["last_check"]
-
-    cur_ts = time.time()
-    match_ntf = my_db.query(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
-                                               Notification.timestamp.between(last_check, cur_ts)))
-    ntfs = []
-    for n in match_ntf:
-        n: Notification
-        ntfs.append({"starter": n.starter, "Sid": n.Sid, "target": n.target, "Tid": n.Tid,
-                     "action": n.action, "timestamp": n.timestamp})
-    data = {"ntfs": ntfs}
-    my_db.update(User, User.Uid == Uid, values={"lastCheck": cur_ts})
-    session["last_check"] = cur_ts
-    return render_template("notifications.html", data=data)
+def notification_interface():
+    return render_template("notifications.html")

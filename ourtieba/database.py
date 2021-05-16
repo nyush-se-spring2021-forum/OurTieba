@@ -33,10 +33,13 @@ class myDb:
             User, user_report_table
         self.Base.metadata.create_all(bind=self._engine)
 
-    def query(self, target, condition=True, order=True, first=False):
+    def query(self, target, condition=True, order=True, first=False, limit=False, offset=0):
         with auto_scope(self._session) as _db_session:
             if first:
                 return _db_session.query(target).filter(condition).order_by(order).first()
+            if limit:
+                return _db_session.query(target).filter(condition).order_by(order).limit(limit).offset(offset).all() \
+                       or []
             return _db_session.query(target).filter(condition).order_by(order).all() or []  # if None return []
 
     def query_join(self, target, join, condition=True, order=True, first=False, count=False):
