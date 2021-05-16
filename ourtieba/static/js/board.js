@@ -38,7 +38,7 @@ ue.ready(() => {
 
         // add log in display info
         var login_href = "/login?redirect=" + parent.location.href;
-        ue.setContent("Please <a href='" + login_href + "' target='_top'>log in</a> to create comment.")
+        ue.setContent("Please <a href='" + login_href + "' target='_top'>log in</a> to create post.")
 
         // disable buttons
         $(".btn-submit").attr("disabled", "disabled");
