@@ -46,6 +46,7 @@ def get_posts_in_board(Bid):
                   "subs_by_user": subs.subscribed if subs else 0}
 
     order = request.args.get("order", "latest_comment")
+    board_info.update({"order": order})
     page = request.args.get("page", "1")
     if order == "latest_comment":
         order = Post.latestCommentTime.desc()
@@ -119,7 +120,8 @@ def get_comments_in_post(Pid):
         else:
             match_history.lastVisitTime = datetime.datetime.utcnow()
 
-    order = request.args.get("order")
+    order = request.args.get("order", "asc")
+    post_info.update({"order": order})
     page = request.args.get("page", "1")
 
     if order == "desc":

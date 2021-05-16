@@ -182,9 +182,10 @@
     <br>
     <div style="text-align: right">
         Sort by:
-        <a class="text-decoration-none" href="javascript:setParam('order', 'latest_comment')">latest comment</a>
-        <a class="text-decoration-none" href="javascript:setParam('order', 'newest')">newest</a>
-        <a class="text-decoration-none" href="javascript:setParam('order', 'like_count')">likes</a>
+        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=latest_comment">latest comment</a>
+        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=newest">newest</a>
+        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=comment_count">comments</a>
+        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=like_count">likes</a>
     </div>
     <hr>
     {% if data['posts'] | length <= 0  %}
@@ -260,18 +261,18 @@
     <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
-                <a class="page-link" href="javascript:setParam('page',{{ data['page'] - 1 }})"
+                <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] - 1 }}&order={{ data['board_info']['order'] }}"
                    tabindex="-1">Previous</a>
             </li>
 
             {% for i in range(1, 1 + data['num_page']) %}
                 <li class="page-item{% if i == data['page'] %} active {% endif %}">
-                    <a class="page-link" href="javascript:setParam('page',{{ i }})">{{ i }}</a>
+                    <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ i }}&order={{ data['board_info']['order'] }}">{{ i }}</a>
                 </li>
             {% endfor %}
 
             <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
-                <a class="page-link" href="javascript:setParam('page',{{ data['page'] + 1 }})">Next</a>
+                <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] + 1 }}&order={{ data['board_info']['order'] }}">Next</a>
             </li>
         </ul>
     </nav>
@@ -281,7 +282,6 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
 
     <input type="hidden" id="Uid" value="{{ session["Uid"] or 0}}">
-    <input type="hidden" id="Bid" value="{{ data['board_info']["Bid"] }}">
     <script src="{{ url_for("static", filename="/js/board.js") }}"></script>
     <script src="{{ url_for("static", filename="/js/unbind_editor.js") }}"></script>
 {% endblock %}
