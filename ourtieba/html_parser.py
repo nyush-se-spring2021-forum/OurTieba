@@ -188,15 +188,22 @@ class htmlParser(HTMLParser, ABC):
             .replace("‘", "'")
 
 
-my_parser = htmlParser()
+class parserFactory:
+    @staticmethod
+    def produce():
+        return htmlParser()
 
 
-def enable_parser():
-    my_parser.enable()
+my_parser = parserFactory.produce()
+
+
+def enable_parser(app):
+    if app.config.get("ENABLE_PARSER"):  # the parser is by default disabled
+        my_parser.enable()
 
 
 if __name__ == '__main__':
-    enable_parser()
+    my_parser.enable()
     ret = my_parser.clean("""<p><img src=1 οnerrοr=alert(/xss/)></p><div class="left">
         <a href='javascript:prompt(1)'><br />hehe</a></div>
         <p id="test" οnmοuseοver="alert(1)">>M<svg>

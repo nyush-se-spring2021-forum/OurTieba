@@ -18,13 +18,12 @@ def create_app():
     with app.app_context():
         Moment(app)
         init_db()
+        enable_parser(app)
         register_blue(app)
 
         # init_logger()
         # init_scheduler(app)
         register_route(app)
-    if app.config.get("ENABLE_PARSER"):  # the parser is by default disabled
-        enable_parser()
     return app
 
 
