@@ -13,7 +13,7 @@ from .views import *  # import all the view
 
 def create_app():
     app = Flask(__name__, static_url_path="/")
-    config_app(app)
+    config_app(app, env="production")
 
     with app.app_context():
         Moment(app)
@@ -57,9 +57,8 @@ def register_route(app):
         response.headers["Server"] = "OurTieba"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-Frame-Options"] = "sameorigin"
-        whitelist = ["'self'", "'unsafe-eval'", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net/"]
         if app.config.get("ENABLE_CSP"):
-            response.headers["Content-Security-Policy"] = "script-src " + " ".join(whitelist) + "; object-src 'self'"
+            response.headers["Content-Security-Policy"] = "script-src " + " ".join(WHITELIST) + "; object-src 'self'"
         return response
 
     @app.route("/prepare_ueditor")
