@@ -58,6 +58,8 @@ class BaseORM:
         """
         if not cls.__dict__.get("status"):
             return my_db.query(cls, *conditions, **kw_conditions)
+        if not conditions:
+            return my_db.query(cls, cls.status == status, **kw_conditions)
         return my_db.query(cls, and_(cls.status == status, conditions[0]), *conditions[1:], **kw_conditions)
 
     @classmethod
@@ -84,6 +86,8 @@ class BaseORM:
         """
         if not cls.__dict__.get("status"):
             return my_db.count(cls, *conditions, **kw_conditions)
+        if not conditions:
+            return my_db.count(cls, cls.status == status, **kw_conditions)
         return my_db.count(cls, and_(cls.status == status, *conditions[0]), *conditions[1:], **kw_conditions)
 
     @classmethod
@@ -99,4 +103,6 @@ class BaseORM:
         """
         if not cls.__dict__.get("status"):
             return my_db.update(cls, *conditions, **kw_conditions)
+        if not conditions:
+            return my_db.update(cls, cls.status == status, **kw_conditions)
         return my_db.update(cls, and_(cls.status == status, *conditions[0]), *conditions[1:], **kw_conditions)
