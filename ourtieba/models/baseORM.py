@@ -88,7 +88,7 @@ class BaseORM:
             return my_db.count(cls, *conditions, **kw_conditions)
         if not conditions:
             return my_db.count(cls, cls.status == status, **kw_conditions)
-        return my_db.count(cls, and_(cls.status == status, *conditions[0]), *conditions[1:], **kw_conditions)
+        return my_db.count(cls, and_(cls.status == status, conditions[0]), *conditions[1:], **kw_conditions)
 
     @classmethod
     def update(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
@@ -105,4 +105,4 @@ class BaseORM:
             return my_db.update(cls, *conditions, **kw_conditions)
         if not conditions:
             return my_db.update(cls, cls.status == status, **kw_conditions)
-        return my_db.update(cls, and_(cls.status == status, *conditions[0]), *conditions[1:], **kw_conditions)
+        return my_db.update(cls, and_(cls.status == status, conditions[0]), *conditions[1:], **kw_conditions)
