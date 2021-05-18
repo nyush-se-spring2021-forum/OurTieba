@@ -47,6 +47,8 @@ class myDb:
             if first:
                 return _db_session.query(target).join(join).filter(condition).order_by(order).first()
             if count:
+                if issubclass(target, self.Base):
+                    target = inspect(target).primary_key[0]
                 return _db_session.query(func.count(target)).join(join).filter(condition).order_by(order).scalar()
             return _db_session.query(target).join(join).filter(condition).order_by(order).all() or []
 
