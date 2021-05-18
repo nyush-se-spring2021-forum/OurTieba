@@ -80,7 +80,8 @@ def like():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = my_db.query(query_from, filter_cond, first=True)
+    match_target = query_from._query(filter_cond, first=True)
+    #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
     if match_target.status != 0:
@@ -88,23 +89,27 @@ def like():
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    match_status = status._query((status.Uid == Uid and status_cond), first=True)
+    #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
         cur_status = 1
-        new_status = status(Uid, int(target_id), cur_status, 0)
-        my_db.add(new_status)
+        status.new(Uid, int(target_id), cur_status, 0)
+        # new_status = status(Uid, int(target_id), cur_status, 0)
+        # my_db.add(new_status)
         match_target.likeCount += 1
     else:
         liked = match_status.liked
         disliked = match_status.disliked
         cur_status = 0 if liked else 1
         new_status = status(Uid, int(target_id), cur_status, 0, datetime.datetime.utcnow())
+        ###Need to be more clear
         my_db.merge(new_status)
         match_target.likeCount += -1 if liked else 1
         match_target.dislikeCount -= 1 if disliked else 0
 
-    cur_target = my_db.query(query_from, filter_cond, first=True)
+    cur_target = query_from._query(filter_cond, first=True)
+    #cur_target = my_db.query(query_from, filter_cond, first=True)
     cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
     return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
@@ -126,7 +131,8 @@ def dislike():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = my_db.query(query_from, filter_cond, first=True)
+    match_target = query_from._query(filter_cond, first=True)
+    #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
     if match_target.status != 0:
@@ -134,23 +140,27 @@ def dislike():
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    match_status = status._query((status.Uid == Uid and status_cond), first=True)
+    #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
         cur_status = 1
-        new_status = status(Uid, int(target_id), 0, 1)
-        my_db.add(new_status)
+        status.new(Uid, int(target_id), 0, 1)
+        # new_status = status(Uid, int(target_id), 0, 1)
+        # my_db.add(new_status)
         match_target.dislikeCount += 1
     else:
         liked = match_status.liked
         disliked = match_status.disliked
         cur_status = 0 if disliked else 1
         new_status = status(Uid, int(target_id), 0, cur_status, datetime.datetime.utcnow())
+        #Need to be more clear
         my_db.merge(new_status)
         match_target.dislikeCount += -1 if disliked else 1
         match_target.likeCount -= 1 if liked else 0
 
-    cur_target = my_db.query(query_from, filter_cond, first=True)
+    cur_target = query_from._query(filter_cond, first=True)
+    #cur_target = my_db.query(query_from, filter_cond, first=True)
     cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
     return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
@@ -175,16 +185,19 @@ def add_report():
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
-    match_target = my_db.query(query_from, filter_cond, first=True)
+    match_target = query_from._query(filter_cond, first=True)
+    #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
 
     Pid = match_target.Pid
     # insert into db
+    Report.new(Uid, target, int(target_id), reason)
     new_report = Report(Uid, target, int(target_id), reason)
-    my_db.add(new_report)
+    # my_db.add(new_report)
 
-    reporter = my_db.query(User, User.Uid == Uid, first=True)
+    reporter = User._query(User.Uid == Uid, first=True)
+    #reporter = my_db.query(User, User.Uid == Uid, first=True)
     reporter.reports.append(new_report)
     return jsonify({"status": 1})
 
@@ -199,7 +212,8 @@ def add_comment():
     """
     Uid = session["Uid"]
     # check whether user is banned
-    match_user: User = my_db.query(User, User.Uid == Uid, first=True)
+    match_user: User = User._query(User.Uid == Uid, first=True)
+    #match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
         if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "User banned."}, "status": 0})
@@ -213,7 +227,8 @@ def add_comment():
     content = my_parser.clean(content)
 
     # verify post exists
-    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
+    match_post = Post._query((Post.Pid == Pid and Post.status == 0), first=True)
+    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
@@ -265,8 +280,9 @@ def add_comment():
     match_post.latestCommentTime = datetime.datetime.utcnow()
 
     # add comment into database
-    new_comment = Comment(Uid, Pid, content, floor, medias, text)
-    my_db.add(new_comment)
+    Comment.new(Uid, Pid, content, floor, medias, text)
+    # new_comment = Comment(Uid, Pid, content, floor, medias, text)
+    # my_db.add(new_comment)
     return jsonify({"status": 1})
 
 
@@ -284,16 +300,19 @@ def delete_post():
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
+    match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
+    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount -= 1
-    my_db.update(Post, Post.Pid == Pid, values={"status": 1})
+    Post.update(Post.Pid == Pid, values={"status": 1})
+    #my_db.update(Post, Post.Pid == Pid, values={"status": 1})
 
     # Then delete all corresponding data in other relating tables
     for c in match_post.comments:
-        my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 1})
+        Comment.update(Comment.Pid == c.Pid, values={"status": 1})
+        #my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 1})
 
     return jsonify({"status": 1})
 
@@ -311,12 +330,14 @@ def delete_comment():  # will not alter post lastCommentTime
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
+    match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
+    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
     match_comment.comment_in.commentCount -= 1
-    my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
+    Comment.update(Comment.Cid == Cid, values={"status": 1})
+    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
 
     return jsonify({"status": 1})
 
@@ -330,16 +351,19 @@ def restore_post():
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
+    match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
+    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount += 1
-    my_db.update(Post, Post.Pid == Pid, values={"status": 0})
+    Post.update(Post.Pid == Pid, values={"status": 0})
+    #my_db.update(Post, Post.Pid == Pid, values={"status": 0})
 
     # Then restore all corresponding data in other relating tables
     for c in match_post.comments:
-        my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
+        Comment.update(Comment.Pid == c.Pid, values={"status": 0})
+        #my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
 
     return jsonify({"status": 1})
 
@@ -352,12 +376,14 @@ def restore_comment():
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
+    match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
+    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
     match_comment.comment_in.commentCount += 1
-    my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
+    Comment.update(Comment.Cid == Cid, values={"status": 0})
+    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
 
     return jsonify({"status": 1})
 
@@ -404,9 +430,12 @@ def add_personal_info():
     except Exception as e:
         return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
 
-    my_db.update(User, User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
+    User.update(User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
                                                 "email": email, "address": address, "dateOfBirth": date_of_birth})
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    # my_db.update(User, User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
+    #                                             "email": email, "address": address, "dateOfBirth": date_of_birth})
+    match_user = User._query(User.Uid == Uid, first=True)
+    #match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
     session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     return redirect(f"/profile/{Uid}")
@@ -428,7 +457,8 @@ def register_auth():
     if not username:
         return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
     # (non-existence)
-    match_user = my_db.query(User, User.uname == username, first=True)
+    match_user = User._query(User.uname == username, first=True)
+    #match_user = my_db.query(User, User.uname == username, first=True)
     if match_user:
         return jsonify({"error": {"msg": "user already exists"}, "status": 0})
     # (validity)
@@ -453,11 +483,13 @@ def register_auth():
     if not nickname or len(nickname) > 20:
         return jsonify({"error": {"msg": "Invalid nickname"}, "status": 0})
 
-    new_user = User(password, username, nickname=nickname)
-    my_db.add(new_user)
+    User.new(password, username, nickname)
+    # new_user = User(password, username, nickname=nickname)
+    # my_db.add(new_user)
 
     # login once finish registration
-    new_user = my_db.query(User, User.uname == username, first=True)
+    new_user = User.query(User.uname == username, first=True)
+    #new_user = my_db.query(User, User.uname == username, first=True)
     session["Uid"] = new_user.Uid
     session["user_info"] = {"nickname": new_user.nickname, "avatar": new_user.avatar}
     session["last_check"] = new_user.lastCheck
@@ -481,7 +513,8 @@ def login_auth():
     if not username or not password:
         return jsonify({"error": {"msg": "Invalid input."}, "status": 0})
 
-    match_user: User = my_db.query(User, User.uname == username, first=True)
+    match_user: User = User._query(User.uname == username, first=True)
+    #match_user: User = my_db.query(User, User.uname == username, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "Username does not exist."}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
@@ -545,7 +578,8 @@ def handle_upload():
             filepath = path + src
         file.save(filepath)
 
-        match_user = my_db.query(User, User.Uid == Uid, first=True)
+        match_user = User._query(User.Uid == Uid, first=True)
+        #match_user = my_db.query(User, User.Uid == Uid, first=True)
         avatar = match_user.avatar
         if avatar != "default_avatar.jpg":
             old_path = path + avatar
@@ -553,7 +587,8 @@ def handle_upload():
                 os.remove(old_path)
 
         new_avatar = AVATAR_PATH + src
-        my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
+        User.update(User.Uid == Uid, values={"avatar": new_avatar})
+        #my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
         session.pop("user_info")
         session["user_info"] = {"nickname": match_user.nickname, "avatar": new_avatar}
         result = {"status": 1}
@@ -648,13 +683,15 @@ def subscribe():
     if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
         return jsonify({"error": {"msg": "invalid data"}, "status": 0})
 
-    match_board = my_db.query(Board, Board.Bid == Bid, first=True)
+    match_board = Board._query(Board.Bid == Bid, first=True)
+    #match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
         return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
     if match_board.status != 0:
         return jsonify({"error": {"msg": "Board not exists"}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
+    #Need to be more clear
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
     return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
@@ -680,7 +717,8 @@ def set_password():
     else:
         password = hashlib.sha3_512(password[0].encode()).hexdigest()
 
-    my_db.update(User, User.Uid == Uid, values={"password": password})
+    User.update(User.Uid == Uid, values={"password": password})
+    #my_db.update(User, User.Uid == Uid, values={"password": password})
     return jsonify({"status": 1})
 
 
@@ -695,7 +733,8 @@ def fetch_data():
     if not Uid or not type_data or not type_data.isnumeric() or not (0 <= (type_data := int(type_data)) <= 3):
         return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
 
-    match_user = my_db.query(User, User.Uid == Uid, first=True)
+    match_user = User._query(User.Uid == Uid, first=True)
+    #match_user = my_db.query(User, User.Uid == Uid, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "No user found!"}, "status": 0})
 
@@ -715,9 +754,12 @@ def fetch_data():
         for h in match_user.view:
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
-            history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
+            History.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
                             "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
-                            "status": p.status})  # "me" = whether post by me
+                            "status": p.status})
+            # history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
+            #                 "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
+            #                 "status": p.status})  # "me" = whether post by me
             history_info.append(history)
         # sort by LVT desc
         history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
@@ -759,8 +801,10 @@ def get_log():
     if not Uid or not last_check:
         return jsonify({"code": -1})
     cur_ts = request.args.get("t") or time.time()  # can be used for synchronization given FIFO channel
-    new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
+    new_count = Notification.count(and_(Notification.receiver == "user", Notification.Rid == Uid,
                                                Notification.timestamp.between(last_check, cur_ts)))
+    # new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
+    #                                            Notification.timestamp.between(last_check, cur_ts)))
     if not new_count:
         return jsonify({"code": 204})  # empty response
     return jsonify({"code": 200, "new_count": new_count})
@@ -778,14 +822,17 @@ def fetch_ntf():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     end = int(end)
     limit = 10  # IMPORTANT: how many ntfs to fetch every time
-    match_ntf = my_db.query(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid),
+    match_ntf = Notification._query(and_(Notification.receiver == "user", Notification.Rid == Uid),
                             Notification.timestamp.desc(), limit=limit, offset=end)
+    # match_ntf = my_db.query(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid),
+    #                         Notification.timestamp.desc(), limit=limit, offset=end)
     ntfs = [{"starter": n.starter, "Sid": n.Sid, "target": n.target, "Tid": n.Tid,
              "action": n.action, "timestamp": (t := n.timestamp), "is_new": 1 if last_check < int(t) < cur_ts else 0}
             for n in match_ntf]
     if end == 0:  # update last check, however in this way at most 10 ntfs can be "is_new",
         # to fix it, need to modify database, but I do not intend to do this
-        my_db.update(User, User.Uid == Uid, values={"lastCheck": cur_ts})
+        User.update(User.Uid == Uid, values={"lastCheck": cur_ts})
+        #my_db.update(User, User.Uid == Uid, values={"lastCheck": cur_ts})
         session["last_check"] = cur_ts
     end += len(ntfs)
     is_end = 1 if len(ntfs) < limit else 0

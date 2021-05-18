@@ -44,9 +44,44 @@ class BaseORM:
         return my_db.add(cls(*args, **kwargs))
 
     @classmethod
-    def _query(cls, condition=True, order=True):
-        return my_db.query(cls, condition, order)
+    def _query(cls, condition=True, order=True, first=False, limit=False, offset=0):
+        """
+        This is a more genral function compared to _get(). It can select objects not only by
+        key value. It can select objects by any conditions
+        :param condition: Used to pick objects in database
+        :param order: order
+        :param first: True means just pick one object that satisfies the condition
+        False means pick all
+        :return: a list of objects that satisifies conditions.
+        """
+        return my_db.query(cls, condition, order, first=first, limit=limit, offset=offset)
 
     @classmethod
     def query_exists(cls, condition=True, order=True):
+        """
+        This is a more genral function compared to _exist(). It can not only justify existsence
+        by key value. It can select objects by any conditions
+        :param condition: bool conditions
+        :param order: order
+        :return: True=existent or False=non-existent.
+        """
         return not not cls._query(condition, order)
+
+    @classmethod
+    def count(cls, condition=True):
+        """
+        This function is used to count the number of objects satisfies the conditions
+        :param condition: bool conditions
+        :return: int number
+        """
+        return my_db.count(cls, condition)
+
+    @classmethod
+    def update(cls, condition=True, **kwargs):
+        """
+        This function is used to update the existing value in the database
+        :param condition: bool condition
+        :param kwargs: dic whose keys are attribute and values are value
+        :return: corresponding row of data satifies the condition
+        """
+        return my_db.update(cls, condition, values=kwargs)

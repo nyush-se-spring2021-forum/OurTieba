@@ -19,7 +19,8 @@ def index():
     hot_articles = OT_spider.get_hot_news(num=RECOMMEND_NUM_NEWS, freq=NEWS_UPDATE_FREQUENCY)
     hot_news = [{"title": a["title"], "abstract": a["description"], "link": f"/redirect?link={a['url']}",
                  "img_src": a["urlToImage"]} for a in hot_articles]
-    boards = my_db.query(Board, and_(Board.status == 0), order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
+    boards = Board._query(Board.status == 0, order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
+    #boards = my_db.query(Board, and_(Board.status == 0), order=Board.hot.desc())[:RECOMMEND_NUM_BOARD]
     recommend_boards = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "cover": b.cover}
                         for b in boards]
     data = {"boards": recommend_boards, "news": hot_news}
@@ -33,13 +34,16 @@ def get_posts_in_board(Bid):
     :param Bid: the id of a Board
     :return: board.html, a board with corresponding Bid
     """
-    b = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
+    b = Board._query((Board.Bid == Bid and Board.status == 0), first=True)
+    #b = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
     if not b:
         abort(404)
 
     b.viewCount += 1  # when page is accessed, increment view count
-    subs = my_db.query(Subscription, and_(Subscription.Uid == (Uid := session.get("Uid")),
-                                          Subscription.Bid == Bid), first=True)
+    subs = Subscription._query((Subscription.Uid == (Uid := session.get("Uid"))
+                                and Subscription.Bid == Bid), first=True)
+    #subs = my_db.query(Subscription, and_(Subscription.Uid == (Uid := session.get("Uid")),
+                                          #Subscription.Bid == Bid), first=True)
 
     board_info = {"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "subs_count": b.subscribeCount,
                   "time": b.timestamp, "view_count": b.viewCount, "cover": b.cover, "description": b.description,
@@ -57,7 +61,8 @@ def get_posts_in_board(Bid):
     else:
         order = Post.commentCount.desc()
 
-    posts_match_result = my_db.query(Post, and_(Post.Bid == Bid, Post.status == 0), order)
+    posts_match_result = Post._query((Post.Bid == Bid and Post.status == 0), order)
+    #posts_match_result = my_db.query(Post, and_(Post.Bid == Bid, Post.status == 0), order)
     num_match = len(posts_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -76,7 +81,8 @@ def get_posts_in_board(Bid):
             post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
         else:
             Uid = session["Uid"]
-            match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
+            match_status = PostStatus._query((PostStatus.Uid == Uid and PostStatus.Pid == Pid), first=True)
+            #match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
             if not match_status:
                 post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
             else:
@@ -94,7 +100,8 @@ def get_comments_in_post(Pid):
     :param Pid: the id of a Post
     :return: post.html, a post with corresponding Pid
     """
-    p = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
+    p = Post._query((Post.Pid == Pid and Post.status == 0), first=True)
+    #p = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not p:
         abort(404)
 
@@ -107,16 +114,19 @@ def get_comments_in_post(Pid):
         post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
     else:
         Uid = session["Uid"]
-        match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
+        match_status = PostStatus._query((PostStatus.Uid == Uid and PostStatus.Pid == Pid), first=True)
+        #match_status = my_db.query(PostStatus, and_(PostStatus.Uid == Uid, PostStatus.Pid == Pid), first=True)
         if not match_status:
             post_info.update({"liked_by_user": 0, "disliked_by_user": 0})
         else:
             post_info.update({"liked_by_user": match_status.liked, "disliked_by_user": match_status.disliked})
 
-        match_history = my_db.query(History, and_(History.Uid == Uid, History.Pid == Pid), first=True)
+        match_history = History._query((History.Uid == Uid and History.Pid == Pid), first=True)
+        #match_history = my_db.query(History, and_(History.Uid == Uid, History.Pid == Pid), first=True)
         if not match_history:
-            new_history = History(Uid, Pid)
-            my_db.add(new_history)
+            History.new(Uid, Pid)
+            #new_history = History(Uid, Pid)
+            #my_db.add(new_history)
         else:
             match_history.lastVisitTime = datetime.datetime.utcnow()
 
@@ -131,7 +141,8 @@ def get_comments_in_post(Pid):
     else:  # if order is None or invalid parameters
         order = Comment.timestamp  # default order is asc()
 
-    comment_match_result = my_db.query(Comment, and_(Comment.Pid == Pid, Comment.status == 0), order)
+    comment_match_result = Comment._query((Comment.Pid == Pid and Comment.status == 0), order)
+    #comment_match_result = my_db.query(Comment, and_(Comment.Pid == Pid, Comment.status == 0), order)
     num_match = len(comment_match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -170,7 +181,8 @@ def search_board():
     order = request.args.get("order", "popular")
     page = request.args.get("page", "1")
     order = Board.timestamp.desc() if order == "popular" else Board.hot.desc()
-    match_result = my_db.query(Board, and_(Board.name.like("%" + keyword + "%"), Board.status == 0), order)
+    match_result = Board._query((Board.name.like("%" + keyword + "%") and Board.status == 0), order)
+    #match_result = my_db.query(Board, and_(Board.name.like("%" + keyword + "%"), Board.status == 0), order)
     num_match = len(match_result)
     num_page = (num_match - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
@@ -187,15 +199,20 @@ def get_personal_profile(Uid):
     :param Uid:
     :return: profile.html, which contains many information of corresponding user
     """
-    u = my_db.query(User, User.Uid == Uid, first=True)
+    u = User._get(Uid)
+    #u = my_db.query(User, User.Uid == Uid, first=True)
     if not u:
         abort(404)
 
-    post_count = my_db.count(Post, and_(Post.Uid == Uid, Post.status == 0))
-    comment_count = my_db.count(Comment, and_(Comment.Uid == Uid, Comment.status == 0))
+    post_count = Post.count((Post.Uid == Uid and Post.status == 0))
+    #post_count = my_db.count(Post, and_(Post.Uid == Uid, Post.status == 0))
+    comment_count = Comment.count((Comment.Uid == Uid and Comment.status == 0))
+    #comment_count = my_db.count(Comment, and_(Comment.Uid == Uid, Comment.status == 0))
+    #Need to be more clear
     subs_count = my_db.query_join(Subscription.Uid, Board, and_(Subscription.Uid == Uid, Subscription.subscribed == 1,
                                                                 Board.status == 0), count=True)
-    history_count = my_db.count(History, History.Uid == Uid)
+    history_count = History.count(History.Uid == Uid)
+    #history_count = my_db.count(History, History.Uid == Uid)
 
     user_info = {
         "nickname": u.nickname, "avatar": u.avatar, "timestamp": u.timestamp, "gender": u.gender,
@@ -220,7 +237,8 @@ def photo_gallery():
     src = request.args.get("src")
     if not Pid:
         abort(404)
-    match_post = my_db.query(Post, Post.Pid == Pid, first=True)
+    match_post = Post._get(Pid)
+    #match_post = my_db.query(Post, Post.Pid == Pid, first=True)
     if not match_post:
         abort(404)
 
@@ -238,7 +256,8 @@ def photo_gallery():
                 position = base_len
     # also get photos in comment if "src" specified
     if src:
-        comments = my_db.query(Comment, Comment.Pid == Pid)
+        comments = Comment._query(Comment.Pid == Pid)
+        #comments = my_db.query(Comment, Comment.Pid == Pid)
         for c in comments:
             medias = c.medias
             for i, m in enumerate(medias):
