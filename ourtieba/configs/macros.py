@@ -13,3 +13,7 @@ COVER_PATH = "cover/"  # relative to CDN root path
 ALLOWED_METHODS = ("GET", "POST")
 
 WHITELIST = ["'self'", "'unsafe-eval'", "https://cdnjs.cloudflare.com/", "https://cdn.jsdelivr.net/"]
+
+STATUS_NORMAL = 0
+STATUS_DELETED = 1
+STATUS_BANNED = 2
