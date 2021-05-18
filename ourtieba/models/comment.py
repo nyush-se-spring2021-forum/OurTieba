@@ -43,3 +43,12 @@ class Comment(BaseORM, my_db.Base):
 
     def __repr__(self):
         return '<Comment %r>' % self.Cid
+
+    @classmethod
+    def get_info_list_by_page(cls, page_num, page_size, key, order):
+        comments = cls._query(cls.Pid == key, order, limit=page_size, offset=(page_num - 1) * page_size)
+        comment_info_list = [{"Cid": c.Cid, "Uid": c.Uid, "content": c.content, "publish_time": c.timestamp,
+                              "like_count": c.likeCount, "dislike_count": c.dislikeCount,
+                              "publish_user": c.comment_by.nickname,
+                              "user_avatar": c.comment_by.avatar, "floor": c.floor} for c in comments]
+        return comment_info_list

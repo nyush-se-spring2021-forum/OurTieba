@@ -18,7 +18,7 @@ class User(BaseORM, my_db.Base):
     password = Column(String)
     uname = Column(String, unique=True)
     nickname = Column(String)
-    avatar = Column(String, default=AVATAR_PATH+"default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
+    avatar = Column(String, default=AVATAR_PATH + "default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
     lastCheck = Column(Integer, default=time.time)  # time the user last check message
     # personal info
@@ -70,3 +70,14 @@ class User(BaseORM, my_db.Base):
         if user.banDuration <= datetime.datetime.utcnow():
             user.banned = 0
         return user.banned
+
+    @classmethod
+    def get_info(cls, Uid):
+        user = cls._get(Uid)
+        if not user:
+            return None
+        user_info = {"Uid": Uid, "nickname": user.nickname, "avatar": user.avatar, "timestamp": user.timestamp,
+                     "gender": user.gender, "phoneNumber": user.phoneNumber, "email": user.email,
+                     "address": user.address, "dateOfBirth": user.dateOfBirth, "banned": user.banned,
+                     "banDuration": str(user.banDuration)}
+        return user_info

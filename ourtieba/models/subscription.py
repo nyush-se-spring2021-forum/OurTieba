@@ -31,3 +31,10 @@ class Subscription(BaseORM, my_db.Base):
 
     def __repr__(self):
         return f"<Subscription ({self.Uid}, {self.Bid})>"
+
+    @classmethod
+    def subs_by_user(cls, Uid, Bid):
+        subs = cls._get(Uid, Bid)
+        if not subs:
+            return 0
+        return subs.subscribed

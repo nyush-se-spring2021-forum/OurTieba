@@ -31,3 +31,10 @@ class CommentStatus(BaseORM, my_db.Base):
 
     def __repr__(self):
         return f"<CommentStatus ({self.Uid}, {self.Cid})>"
+
+    @classmethod
+    def status_by_user(cls, Uid, Cid):
+        status = cls._get(Uid, Cid)
+        if not status:
+            return 0, 0
+        return status.liked, status.disliked

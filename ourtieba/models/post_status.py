@@ -31,3 +31,10 @@ class PostStatus(BaseORM, my_db.Base):
 
     def __repr__(self):
         return f"<PostStatus ({self.Uid}, {self.Pid})>"
+
+    @classmethod
+    def status_by_user(cls, Uid, Pid):
+        status = cls._get(Uid, Pid)
+        if not status:
+            return 0, 0
+        return status.liked, status.disliked

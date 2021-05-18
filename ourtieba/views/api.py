@@ -273,9 +273,9 @@ def add_comment():
         my_db.add(ntf_to_poster)
 
     # record current available floor
-    floor = match_post.available_floor
+    floor = match_post.availableFloor
     # update post statistics
-    match_post.available_floor += 1
+    match_post.availableFloor += 1
     match_post.commentCount += 1
     match_post.latestCommentTime = datetime.datetime.utcnow()
 

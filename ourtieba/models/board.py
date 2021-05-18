@@ -16,7 +16,7 @@ class Board(BaseORM, my_db.Base):
     hot = Column(Integer, default=0)
     cover = Column(String, default="cover/OurTieba.png")
     status = Column(Integer, default=0)  # 0=normal, 1=deleted(by user), 2=banned(by admin)
-    sticky_on_top = Column(PickleType, default=[])  # the list of Pid of post sticky on top
+    stickyOnTop = Column(PickleType, default=[])  # the list of Pid of post sticky on top
     postCount = Column(Integer, default=0)
     viewCount = Column(Integer, default=0)
     subscribeCount = Column(Integer, default=0)
@@ -34,7 +34,7 @@ class Board(BaseORM, my_db.Base):
         self.hot = hot
         self.cover = cover
         self.status = status
-        self.sticky_on_top = sticky_on_top
+        self.stickyOnTop = sticky_on_top
         self.viewCount = viewCount
         self.subscribeCount = subscribeCount
         self.postCount = postCount
@@ -45,7 +45,7 @@ class Board(BaseORM, my_db.Base):
 
     @classmethod
     def action_on_post(cls, Bid, action):  # 0=add, 1=delete/ban
-        board = cls._get(Bid, status=0)
+        board = cls._get(Bid)
         if not board:
             return 0  # board not exists, unsuccessful
         board.postCount += 1 if action == 0 else -1
@@ -54,3 +54,34 @@ class Board(BaseORM, my_db.Base):
     @classmethod
     def name_exists(cls, name):
         return cls.query_exists(cls.name == name)
+
+    @classmethod
+    def get_recommend(cls, num):
+        boards = cls._query(order=Board.hot.desc(), limit=num)
+        boards_info_list = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "cover": b.cover}
+                            for b in boards]
+        return boards_info_list
+
+    @classmethod
+    def get_info(cls, Bid, increment_view=False):
+        board = cls._get(Bid)
+        if not board:
+            return None  # board not exists, unsuccessful
+        if increment_view:
+            board.viewCount += 1
+        board_info = {"Bid": board.Bid, "name": board.name, "hot": board.hot, "post_count": board.postCount,
+                      "subs_count": board.subscribeCount, "time": board.timestamp, "view_count": board.viewCount,
+                      "cover": board.cover, "description": board.description}
+        return board_info
+
+    @classmethod
+    def get_search_count(cls, keyword):
+        search_count = cls.count(Board.name.like("%" + keyword + "%"))
+        return search_count
+
+    @classmethod
+    def get_search_list_by_page(cls, page_num, page_size, keyword, order):
+        boards = cls._query(Board.name.like("%" + keyword + "%"), order=order, limit=page_size,
+                            offset=(page_num-1)*page_size)
+        board_search_list = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
+        return board_search_list
