@@ -4,14 +4,13 @@
 {% block page_content %}
     <div class="h3">You're filing a report for {{ data['target'] + ' ' + data['id'] }}</div>
     <br>
-    <form action="{{ url_for('api.add_report') }}" method="post">
-        <input type="hidden" name="target" value="{{ data['target'] }}">
-        <input type="hidden" name="id" value="{{ data['id'] }}">
-        <textarea class="form-control" name="reason" id="reason" rows="10"
-                  placeholder="Please state your reason" required></textarea>
+    <form>
+        <input type="hidden" id="target" value="{{ data['target'] }}">
+        <input type="hidden" id="id" value="{{ data['id'] }}">
+        <textarea class="form-control" name="reason" id="r-reason" rows="10"
+                  placeholder="Please state your reason"></textarea>
         <br>
-        <div class="form-group">
-            <button class="btn btn-primary" type="submit">Submit</button>
-        </div>
     </form>
+    <button class="btn btn-primary" id="report-submit">Submit</button>
+    <script src="{{ url_for("static", filename="/js/report.js") }}"></script>
 {% endblock %}

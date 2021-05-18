@@ -167,8 +167,9 @@ def add_report():
     target = request.form.get("target")
     target_id = request.form.get("id")
     reason = request.form.get("reason")
+    print(target, target_id, reason)
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     reason = my_parser.clean(reason)
 
@@ -176,7 +177,7 @@ def add_report():
         Post, Post.Pid == target_id)
     match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}}), 403
+        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
 
     Pid = match_target.Pid
     # insert into db
@@ -185,7 +186,7 @@ def add_report():
 
     reporter = my_db.query(User, User.Uid == Uid, first=True)
     reporter.reports.append(new_report)
-    return redirect(f"/post/{Pid}")
+    return jsonify({"status": 1})
 
 
 @api.route('/comment/add', methods=["POST"])
