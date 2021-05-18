@@ -106,3 +106,15 @@ class BaseORM:
         if not conditions:
             return my_db.update(cls, cls.status == status, **kw_conditions)
         return my_db.update(cls, and_(cls.status == status, conditions[0]), *conditions[1:], **kw_conditions)
+
+    @classmethod
+    def _query_join(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
+        if not cls.__dict__.get("status"):
+            return my_db.query_join(cls, *conditions, **kw_conditions)
+        if not conditions:
+            return my_db.query_join(cls, cls.status == status, **kw_conditions)
+        return my_db.query_join(cls, and_(cls.status == status, conditions[0]), *conditions[1:], **kw_conditions)
+
+    @classmethod
+    def join_count(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
+        return cls._query_join(*conditions, count=True, status=status, **kw_conditions)
