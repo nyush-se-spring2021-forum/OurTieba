@@ -38,8 +38,8 @@
                                 <input class="form-control" type="text" name="Bid" id="Bid">
                             </div>
                         </form>
-                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 0);">Delete</button>
-                        <button class="btn btn-primary" onclick="manageTarget(1, 0);">Restore</button>
+                        <button class="btn btn-primary btn-danger mt-btn" data-action=0 data-target=0>Delete</button>
+                        <button class="btn btn-primary mt-btn" data-action=1 data-target=0>Restore</button>
                     </div>
                 </div>
             </div>
@@ -55,8 +55,8 @@
                                 <input class="form-control" type="text" name="Pid" id="Pid">
                             </div>
                         </form>
-                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 1);">Delete</button>
-                        <button class="btn btn-primary" onclick="manageTarget(1, 1);">Restore</button>
+                        <button class="btn btn-primary btn-danger mt-btn" data-action=0 data-target=1>Delete</button>
+                        <button class="btn btn-primary mt-btn" data-action=1 data-target=1>Restore</button>
                     </div>
                 </div>
             </div>
@@ -72,8 +72,8 @@
                                 <input class="form-control" type="text" name="Cid" id="Cid">
                             </div>
                         </form>
-                        <button class="btn btn-primary btn-danger" onclick="manageTarget(0, 2);">Delete</button>
-                        <button class="btn btn-primary" onclick="manageTarget(1, 2);">Restore</button>
+                        <button class="btn btn-primary btn-danger mt-btn" data-action=0 data-target=2>Delete</button>
+                        <button class="btn btn-primary mt-btn" data-action=1 data-target=2>Restore</button>
                     </div>
                 </div>
             </div>
@@ -91,8 +91,8 @@
                                 <input type="text" class="form-control" name="days" id="days">
                             </div>
                         </form>
-                        <button class="btn btn-primary btn-danger" onclick="manageUser(0);">Ban</button>
-                        <button class="btn btn-primary" onclick="manageUser(1);">Unban</button>
+                        <button class="btn btn-primary btn-danger mu-btn" data-action=0>Ban</button>
+                        <button class="btn btn-primary mu-btn" data-action=1>Unban</button>
                     </div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
                 <div class="card-body">
                     <h3>Create Board</h3>
                     <div style="height: 78%;display: flex; align-items: center; flex-direction: column; justify-content: center">
-                    <button class="btn btn-primary btn-success" onclick="window.open('/admin/create');">Click to Navigate</button>
+                    <button class="btn btn-primary btn-success" id="create-btn">Click to Navigate</button>
                     </div>
                 </div>
             </div>
@@ -125,7 +125,7 @@
                 <form>
                     <input name="Rid" type="hidden" value="{{ report['Rid'] }}">
                 </form>
-                <button class="btn btn-outline-dark" data-rid="{{ report['Rid'] }}" onclick="resolve(this);">Resolve
+                <button class="btn btn-outline-dark resolve-btn" data-rid="{{ report['Rid'] }}">Resolve
                 </button>
                 <hr>
             {% endfor %}

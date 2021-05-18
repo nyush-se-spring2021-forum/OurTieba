@@ -35,7 +35,7 @@ function manageTarget(action, target) {  // action: 0=delete, 1=restore; target:
             } else {
                 alert(((action)?'Restore ':'Delete ')+target_dict[target]+id+' successful!');
             }
-            location.reload();
+            clearInput(target);
         }
     });
 }
@@ -72,7 +72,31 @@ function manageUser(action) {  // action: 0=ban, 1=unban
             } else {
                 alert(((action)?'Unban':'Ban')+' user'+Uid+' successful!');
             }
-            location.reload();
+            $("#Uid").val("");
+            $("#days").val("");
         }
     });
 }
+
+function clearInput(target) {
+    $('#'+cls_dict[target]).val("");
+}
+
+$(".mt-btn").on("click", function () {
+    let action = $(this).data("action");
+    let target = $(this).data("target");
+    manageTarget(action, target);
+})
+
+$(".mu-btn").on("click", function () {
+    let action = $(this).data("action");
+    manageUser(action);
+})
+
+$("#create-btn").on("click", () => {
+    window.open('/admin/create');
+})
+
+$(".resolve-btn").on("click", function () {
+    resolve(this);
+})
