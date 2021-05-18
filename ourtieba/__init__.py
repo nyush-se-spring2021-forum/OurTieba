@@ -3,7 +3,7 @@ from flask_moment import Moment
 
 from .configs import *  # import configurations
 from .database import *  # import database session
-from .html_parser import * # import html parser
+from .html_parser import *  # import html parser
 from .logger import *  # import logger
 from .models import *  # import all the models
 from .scheduler import *  # import scheduler
@@ -19,10 +19,10 @@ def create_app():
         Moment(app)
         init_db()
         enable_parser(app)
+        register_route(app)
         register_blue(app)
         # init_logger()
         # init_scheduler(app)
-        register_route(app)
     return app
 
 
