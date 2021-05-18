@@ -109,6 +109,9 @@ sub_btn.on("mouseenter", function () {
 })
 
 function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=dislike
+    if (!Uid) {
+        return location.href = "/login";
+    }
     let url = which ? "/api/like" : "/api/dislike";
     $.ajax({
         method: "POST",
