@@ -29,7 +29,7 @@ class BaseORM:
         :param status: same as _get.
         :return: True=existent or False=non-existent.
         """
-        return not not cls._get(cls, *key_value, status=status)  # double negate to obtain Boolean value
+        return not not cls._get(*key_value, status=status)  # double negate to obtain Boolean value
 
     @classmethod
     def new(cls, *args, **kwargs):
