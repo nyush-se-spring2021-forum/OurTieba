@@ -1,4 +1,9 @@
-alert('Still in Beta phase. Only the first 10 new notifications will be correctly marked as "new".')
+var e=document.createElement("div")
+e.className="alert alert-warning"
+e.innerHTML='Still in Beta phase. Only the first 10 new notifications will be correctly marked as "new".'
+document.getElementsByClassName("container")[1].firstElementChild.prepend(e)
+
+//alert('Still in Beta phase. Only the first 10 new notifications will be correctly marked as "new".')
 var is_end = 0;
 var cursor_end = 0;
 
