@@ -1,7 +1,7 @@
 from sqlalchemy import inspect, and_
 
 from ..database import my_db
-from ..configs.macros import STATUS_NORMAL
+from ..configs.macros import STATUS_NORMAL, STATUS_DELETED, STATUS_BANNED
 
 
 class BaseORM:
@@ -34,7 +34,7 @@ class BaseORM:
     @classmethod
     def new(cls, *cols, **kw_cols):
         """
-        Add a new instance to class. If argument already an instance, directly add it to database; otherwise create
+        Add a new instance to table. If argument already an instance, directly add it to database; otherwise create
         from arguments then add.
         :param cols: instance or values of columns of instance.
         :return: whether add succeeds (affected rows, either 1=success or 0=failure).
@@ -50,7 +50,7 @@ class BaseORM:
     def _query(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
         """
         Get instances with status by conditions (i.e. filter, order, limit, offset etc.). Default status is normal(0).
-        args[0] is the positional argument "condition" in func my_db.query.
+        conditions[0] is the positional argument "condition" in func my_db.query.
         :param conditions: conditions passed in as positional arguments.
         :param status: the status that represents whether an object is deleted or not. Default is STATUS_NORMAL.
         :param kw_conditions: conditions passed in as keyword arguments.
@@ -78,7 +78,7 @@ class BaseORM:
     def count(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
         """
         Get the number of instances with status by conditions (i.e. filter, order, limit, offset etc.). Default status
-        is normal(0). args[0] is the positional argument "condition" in func my_db.query.
+        is normal(0). conditions[0] is the positional argument "condition" in func my_db.query.
         :param conditions: conditions passed in as positional arguments.
         :param status: the status that represents whether an object is deleted or not. Default is STATUS_NORMAL.
         :param kw_conditions: conditions passed in as keyword arguments.
@@ -93,8 +93,8 @@ class BaseORM:
     @classmethod
     def update(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
         """
-        Update instance with status by conditions (i.e. filter, order, limit, offset etc.) and return the affected rows.
-        Default status is normal(0). args[0] is the positional argument "condition" in func my_db.query.
+        Update instance with status by conditions and return the number of affected rows. Default status is normal(0).
+        conditions[0] is the positional argument "condition" in func my_db.query.
         :param conditions: conditions passed in as positional arguments.
         :param status: the status that represents whether an object is deleted or not. Default is STATUS_NORMAL.
         :param kw_conditions: conditions passed in as keyword arguments.
@@ -109,6 +109,14 @@ class BaseORM:
 
     @classmethod
     def _query_join(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
+        """
+        Similar to func _query but allows joining of another table. Default status is normal(0). conditions[0] is the
+        table to join, conditions[1] is the positional argument "condition" in func my_db.query.
+        :param conditions: conditions passed in as positional arguments.
+        :param status: the status that represents whether an object is deleted or not. Default is STATUS_NORMAL.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: list of instances in joined table whose conditions match those in arguments, or [].
+        """
         if not cls.__dict__.get("status"):
             return my_db.query_join(cls, *conditions, **kw_conditions)
         return my_db.query_join(cls, conditions[0], and_(cls.status == status, conditions[1]), *conditions[2:],
@@ -116,10 +124,75 @@ class BaseORM:
 
     @classmethod
     def join_count(cls, *conditions, status=STATUS_NORMAL, **kw_conditions):
+        """
+        Similar to func count but allows joining of another table. Default status is normal(0).
+        :param conditions: conditions passed in as positional arguments.
+        :param status: the status that represents whether an object is deleted or not. Default is STATUS_NORMAL.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of instances in joined table whose conditions match those in arguments.
+        """
         return cls._query_join(*conditions, count=True, status=status, **kw_conditions)
 
     @classmethod
     def merge(cls, *cols, **kw_cols):
+        """
+        Merge (if exists will overwrite, else create new) an instance into table. If argument already an instance,
+        directly add it to database; otherwise create from arguments then add.
+        :param cols: instance or values of columns of instance.
+        :return: whether merge succeeds (affected rows, either 1=success or 0=failure).
+        """
         if type((_new := cols[0])) == type(cls):
             return my_db.merge(_new)
         return my_db.merge(cls(*cols, **kw_cols))
+
+    @classmethod
+    def _alter_status(cls, *conditions, status, **kw_conditions):
+        """
+        Change the status of instances by conditions and return the number of affected rows.
+        :param conditions: conditions passed in as positional arguments.
+        :param status: the status to change to. Required.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of affected instances. If 0, status change fails.
+        """
+        if not cls.__dict__.get("status"):
+            return 0
+        return my_db.update(cls, *conditions, values={"status": status}, **kw_conditions)
+
+    @classmethod
+    def _real_delete(cls, *conditions, synchronize_session="fetch", **kw_conditions):
+        """
+        Delete instances from table by conditions. Will NOT automatically filter status.
+        :param conditions: conditions passed in as positional arguments.
+        :param synchronize_session: what to do with database session before deletion. "fetch", "evaluate" or False.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of affected instances.
+        """
+        return my_db.delete(cls, *conditions, synchronize_session=synchronize_session, **kw_conditions)
+
+    @classmethod
+    def _delete(cls, *conditions, real_delete=False, **kw_conditions):
+        """
+        If not real_delete, set all instances' status to STATUS_DELETED by conditions. Else delete all instances by
+        conditions.
+        :param conditions: conditions passed in as positional arguments.
+        :param real_delete: whether to actually delete instances.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of affected instances.
+        """
+        if real_delete:
+            return cls._real_delete(*conditions, **kw_conditions)
+        return cls._alter_status(*conditions, STATUS_DELETED, **kw_conditions)
+
+    @classmethod
+    def _ban(cls, *conditions, real_delete=False, **kw_conditions):
+        """
+        If not real_delete, set all instances' status to STATUS_BANNED by conditions. Else delete all instances by
+        conditions.
+        :param conditions: conditions passed in as positional arguments.
+        :param real_delete: whether to actually delete instances.
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of affected instances.
+        """
+        if real_delete:
+            return cls._real_delete(*conditions, **kw_conditions)
+        return cls._alter_status(*conditions, STATUS_BANNED, **kw_conditions)
