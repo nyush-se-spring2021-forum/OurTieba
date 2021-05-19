@@ -14,7 +14,7 @@ $(function () {
         })
     })
     $("#new_message").on("click", function () {
-        $(this).text("New Messages: 0");  // pretend there is no new message in between, which mostly happens
+        $(this).text("New Messages: -");  // transitional visual effect
         window.open('/notifications');
     })
 })

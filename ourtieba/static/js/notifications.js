@@ -5,6 +5,8 @@ var cursor_end = 0;
 var flag = false;  // flag that forces await on async fetch
 var win = $(window);
 
+$("#new_message").text("New Messages: -");  // transitional visual effect
+
 function fetchNtf() {
     flag = false;
     $.get({

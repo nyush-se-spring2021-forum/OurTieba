@@ -24,6 +24,10 @@ $(function () {
                     if (response.status !== 0) {
                         if (!r_link) {
                             let ref = document.referrer;
+                            if (ref.trim().length === 0) {
+                                location.href = "/";
+                                return
+                            }
                             r_link = (ref.indexOf(location.protocol+"//"+location.host) === 0) ?
                                 ref : "/redirect?link="+ref;
                         }
