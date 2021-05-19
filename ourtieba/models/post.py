@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
+from ..database import my_db
 from ..configs.macros import STATUS_NORMAL
 
 
