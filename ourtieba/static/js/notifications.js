@@ -24,8 +24,9 @@ function fetchNtf() {
                 for (let i=0;i<ntfs.length;i++) {
                     let ntf = ntfs[i];
                     // !!IMPORTANT: layout design here
-                    $(".ntf-body").append('<div class="ntf-box' +((ntf.is_new)?" new-ntf":"")+'">'+ntf.starter+
-                        ntf.Sid+" "+ntf.action+ "ed your "+ ntf.target+ntf.Tid+" on "+ntf.timestamp+'</div>');
+                    $(".ntf-body").append('<div class="ntf-box'+((ntf.is_new)?" new-ntf":"") + '">' +
+                        '<div class="ntf-msg">'+ ntf.message + '</div>' + '<div class="ntf-time">' + ntf.timestamp
+                        + '</div>' + '</div>');
                 }
                 flag = true;
             }

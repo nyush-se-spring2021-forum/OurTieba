@@ -822,17 +822,12 @@ def fetch_ntf():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     end = int(end)
     limit = 10  # IMPORTANT: how many ntfs to fetch every time
-    match_ntf = Notification._query(and_(Notification.receiver == "user", Notification.Rid == Uid),
-                            Notification.timestamp.desc(), limit=limit, offset=end)
-    # match_ntf = my_db.query(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid),
-    #                         Notification.timestamp.desc(), limit=limit, offset=end)
-    ntfs = [{"starter": n.starter, "Sid": n.Sid, "target": n.target, "Tid": n.Tid,
-             "action": n.action, "timestamp": (t := n.timestamp), "is_new": 1 if last_check < int(t) < cur_ts else 0}
-            for n in match_ntf]
+
+    cls_dict = {"user": User, "admin": Admin, "post": Post, "comment": Comment, "board": Board}
+    ntfs = Notification.compose_ntfs(cls_dict, Uid, Notification.timestamp.desc(), limit, end, last_check)
     if end == 0:  # update last check, however in this way at most 10 ntfs can be "is_new",
         # to fix it, need to modify database, but I do not intend to do this
         User.update(User.Uid == Uid, values={"lastCheck": cur_ts})
-        #my_db.update(User, User.Uid == Uid, values={"lastCheck": cur_ts})
         session["last_check"] = cur_ts
     end += len(ntfs)
     is_end = 1 if len(ntfs) < limit else 0
