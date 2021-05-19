@@ -15,15 +15,12 @@ $(function () {
                 dataType: 'json',
                 data: {uname: uname, password: password, nickname: nickname},
                 success: function (response) {
-                    let msg = "";
                     if (response.status !== 0) {
-                        window.location = "/login";
+                        location.href = "/";
                     } else {
-                        msg = response.error['msg'];
-                        console.log(msg);
-                        u_err.show();
+                        let msg = response.error['msg'];
+                        u_err.html(msg).show();
                     }
-                    u_err.html(msg);
 
                 }
             });
