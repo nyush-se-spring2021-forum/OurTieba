@@ -117,7 +117,6 @@ class User(BaseORM, my_db.Base):
         match_user = cls._query(cls.uname == username, first=True)
         if match_user:
             return 0
-        password = hashlib.sha3_512(password.encode()).hexdigest()
         cls.new(password, username, nickname)
 
         new_user = cls._query(cls.uname == username, first=True)
@@ -135,3 +134,55 @@ class User(BaseORM, my_db.Base):
         if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
             return 1
         return [match_user.Uid, match_user.nickname, match_user.avatar, match_user.lastCheck]
+
+    @classmethod
+    def get_avatar(cls, Uid):
+        return cls._get(Uid).avatar
+
+    @classmethod
+    def change_avatar(cls, Uid, new_avatar):
+        cls.update(cls.Uid == Uid, values={"avatar": new_avatar})
+        user = cls._get(Uid)
+        return user.nickname, user.avatar
+
+    @classmethod
+    def get_post_info_list(cls, Uid):
+        user = cls._get(Uid)
+        post_info_list = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
+                           "timestamp": p.timestamp, "status": p.status} for p in user.posts]
+        return post_info_list
+
+    @classmethod
+    def get_comment_info_list(cls, Uid):
+        user = cls._get(Uid)
+        comment_info_list = []
+        for c in user.comments:
+            comment = {"Cid": c.Cid, "text": c.text, "timestamp": c.timestamp, "status": c.status}
+            p = c.comment_in
+            comment.update({"Pid": p.Pid, "title": p.title})
+            comment_info_list.append(comment)
+        return comment_info_list
+
+    @classmethod
+    def get_subs_info_list(cls, Uid):
+        user = cls._get(Uid)
+        subs_info_list = []
+        for s in user.subscriptions:
+            if s.subscribed == 1:
+                if (b := s.of_board).status == 0:
+                    subs_info_list.append({"Bid": s.Bid, "bname": b.name, "LM": s.lastModified,
+                                      "cover": b.cover, "status": 0})
+        return subs_info_list
+
+    @classmethod
+    def get_history_info_list(cls, Uid, cur_Uid):
+        user = cls._get(Uid)
+        history_info_list = []
+        for h in user.view:
+            history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
+            p = h.related_post
+            history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
+                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
+                            "status": p.status})  # "me" = whether post by me
+            history_info_list.append(history)
+        return history_info_list

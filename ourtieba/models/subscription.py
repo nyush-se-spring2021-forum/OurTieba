@@ -38,3 +38,10 @@ class Subscription(BaseORM, my_db.Base):
         if not subs:
             return 0
         return subs.subscribed
+
+    @classmethod
+    def needs_update(cls, Uid, Bid, action):
+        subs = cls._get(Uid, Bid)
+        if subs and subs.subscribed == action:  # do not update if no subs record or subs matches action
+            return 0
+        return 1 if action == 1 else -1  # else return update on subs count

@@ -60,3 +60,8 @@ class Notification(BaseORM, my_db.Base):
             ntf_info.update({"message": message})
             ntf_info_list.append(ntf_info)
         return ntf_info_list
+
+    @classmethod
+    def get_count_between(cls, Uid, start, end):
+        return Notification.count(and_(Notification.receiver == "user", Notification.Rid == Uid,
+                                       Notification.timestamp.between(start, end)))

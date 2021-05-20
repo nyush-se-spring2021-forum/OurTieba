@@ -119,3 +119,9 @@ class Board(BaseORM, my_db.Base):
                             offset=(page_num-1)*page_size)
         board_search_list = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
         return board_search_list
+
+    @classmethod
+    def action_on_subs(cls, Bid, update):
+        board = cls._get(Bid)
+        board.subscribeCount += update
+        return board.subscribeCount

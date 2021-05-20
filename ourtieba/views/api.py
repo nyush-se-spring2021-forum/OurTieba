@@ -552,19 +552,16 @@ def handle_upload():
             filepath = path + src
         file.save(filepath)
 
-        match_user = User._query(User.Uid == Uid, first=True)
-        # match_user = my_db.query(User, User.Uid == Uid, first=True)
-        avatar = match_user.avatar
+        avatar = User.get_avatar(Uid)
         if avatar != "default_avatar.jpg":
             old_path = path + avatar
             if os.path.exists(old_path):
                 os.remove(old_path)
 
         new_avatar = AVATAR_PATH + src
-        User.update(User.Uid == Uid, values={"avatar": new_avatar})
-        # my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
+        nickname, avatar_path = User.change_avatar(Uid, new_avatar)
         session.pop("user_info")
-        session["user_info"] = {"nickname": match_user.nickname, "avatar": new_avatar}
+        session["user_info"] = {"nickname": nickname, "avatar":avatar_path}
         result = {"status": 1}
 
     elif action == "config" and method == "GET":  # ueditor action. Config the ueditor, user may not be logged-in
@@ -662,18 +659,13 @@ def subscribe():
     if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_board = Board._query(Board.Bid == Bid, first=True)
-    # match_board = my_db.query(Board, Board.Bid == Bid, first=True)
-    if not match_board:
+    if not Board.exists(Bid):
         return jsonify({"error": {"msg": "Board not found."}, "status": 0})
-    match_sub = Subscription._get(Uid, Bid)
-    if match_sub and match_board.subscribed != int(action):
-        match_board.subscribeCount += 1 if action == "1" else -1
 
-    # Need to be more clear
-    new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
-    my_db.merge(new_sub)
-    return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
+    update = Subscription.needs_update(Uid, Bid, (action := int(action)))
+    subs_count = Board.action_on_subs(Bid, update)
+    Subscription.merge(Uid, Bid, action, lastModified=datetime.datetime.utcnow())
+    return jsonify({"subs_count": subs_count, "status": 1})
 
 
 @api.route("/fetch")
@@ -685,66 +677,42 @@ def fetch_data():
     type_data = request.args.get("type")
 
     if not Uid or not type_data or not type_data.isnumeric() or not (0 <= (type_data := int(type_data)) <= 3):
-        return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_user = User._query(User.Uid == Uid, first=True)
-    # match_user = my_db.query(User, User.Uid == Uid, first=True)
-    if not match_user:
-        return jsonify({"error": {"msg": "No user found!"}, "status": 0})
+    if not User.exists(Uid):
+        return jsonify({"error": {"msg": "User not found."}, "status": 0})
 
     base_info = {"status": 1}
 
     if type_data == 0:
-        post_info = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
-                      "timestamp": p.timestamp, "status": p.status} for p in match_user.posts]
+        post_info_list = User.get_post_info_list(Uid)
         # sort by timestamp desc
-        post_info.sort(key=lambda p: p["timestamp"], reverse=True)
+        post_info_list.sort(key=lambda pi: pi["timestamp"], reverse=True)
         # convert times into shorter format
-        for p in post_info:
+        for p in post_info_list:
             p["timestamp"] = convert_time(p["timestamp"])
-        base_info.update({"info": post_info, "count": len(post_info)})
-    elif type_data == 3:
-        history_info = []
-        for h in match_user.view:
-            history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
-            p = h.related_post
-            history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-                            "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
-                            "status": p.status})
-            # history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
-            #                 "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
-            #                 "status": p.status})  # "me" = whether post by me
-            history_info.append(history)
-        # sort by LVT desc
-        history_info.sort(key=lambda ht: ht["LVT"], reverse=True)
-        # convert times into shorter format
-        for h in history_info:
-            h["LVT"] = convert_time(h["LVT"])
-        base_info.update({"info": history_info, "count": len(history_info)})
-    elif type_data == 2:
-        subs_info = []
-        for s in match_user.subscriptions:
-            if s.subscribed == 1:
-                if (b := s.of_board).status == 0:
-                    subs_info.append({"Bid": s.Bid, "bname": b.name, "LM": s.lastModified,
-                                      "cover": b.cover, "status": 0})
-        # sort by LM desc
-        subs_info.sort(key=lambda sb: sb["LM"], reverse=True)
-        base_info.update({"info": subs_info, "count": len(subs_info)})
-    else:
-        comment_info = []
-        for c in match_user.comments:
-            comment = {"Cid": c.Cid, "text": c.text, "timestamp": c.timestamp, "status": c.status}
-            p = c.comment_in
-            comment.update({"Pid": p.Pid, "title": p.title})
-            comment_info.append(comment)
+        base_info.update({"info": post_info_list, "count": len(post_info_list)})
+    elif type_data == 1:
+        comment_info_list = User.get_comment_info_list(Uid)
         # sort by timestamp desc
-        comment_info.sort(key=lambda ci: ci["timestamp"], reverse=True)
+        comment_info_list.sort(key=lambda ci: ci["timestamp"], reverse=True)
         # convert times into shorter format
-        for c in comment_info:
+        for c in comment_info_list:
             c["timestamp"] = convert_time(c["timestamp"])
-        base_info.update({"info": comment_info, "count": len(comment_info)})
-
+        base_info.update({"info": comment_info_list, "count": len(comment_info_list)})
+    elif type_data == 2:
+        subs_info_list = User.get_subs_info_list(Uid)
+        # sort by LM desc
+        subs_info_list.sort(key=lambda sb: sb["LM"], reverse=True)
+        base_info.update({"info": subs_info_list, "count": len(subs_info_list)})
+    else:  # if type_data == 3
+        history_info_list = User.get_history_info_list(Uid, cur_Uid)
+        # sort by LVT desc
+        history_info_list.sort(key=lambda ht: ht["LVT"], reverse=True)
+        # convert times into shorter format
+        for h in history_info_list:
+            h["LVT"] = convert_time(h["LVT"])
+        base_info.update({"info": history_info_list, "count": len(history_info_list)})
     return jsonify(base_info)
 
 
@@ -755,10 +723,7 @@ def get_log():
     if not Uid or not last_check:
         return jsonify({"code": -1})
     cur_ts = request.args.get("t") or time.time()  # can be used for synchronization given FIFO channel
-    new_count = Notification.count(and_(Notification.receiver == "user", Notification.Rid == Uid,
-                                        Notification.timestamp.between(last_check, cur_ts)))
-    # new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
-    #                                            Notification.timestamp.between(last_check, cur_ts)))
+    new_count = Notification.get_count_between(Uid, last_check, cur_ts)
     if not new_count:
         return jsonify({"code": 204})  # empty response
     return jsonify({"code": 200, "new_count": new_count})
@@ -771,7 +736,7 @@ def fetch_ntf():
     last_check = session["last_check"]
     cur_ts = time.time()
 
-    end = request.args.get("end")
+    end = request.args.get("end")  # cursor end
     if end is None or not end.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     end = int(end)
