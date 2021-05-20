@@ -729,7 +729,7 @@ def fetch_data():
         for h in match_user.view:
             history = {"Pid": h.Pid, "LVT": h.lastVisitTime}
             p = h.related_post
-            History.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
+            history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
                             "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
                             "status": p.status})
             # history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
