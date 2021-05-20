@@ -398,14 +398,19 @@ def add_personal_info():
     otherwise, it will return json error message
     """
     Uid = session["Uid"]
+    values = {}
 
     nickname = request.form.get("nickname")
     if len(nickname) > 20:
         return jsonify({"error": {"msg": "Nickname too long."}, "status": 0})
+    if nickname != "":
+        values.update({"nickname": nickname})
     # check gender
     gender = request.form.get("gender")
     if gender != "" and gender not in ("male", "female", "other"):
         return jsonify({"error": {"msg": "Invalid gender."}, "status": 0})
+    if gender != "":
+        values.update({"gender": gender})
     # check phone number
     phone_number = request.form.get("phone_number")
     if phone_number != "":
@@ -414,6 +419,7 @@ def add_personal_info():
             return jsonify({"error": {"msg": "Invalid phone number."}, "status": 0})
         else:
             phone_number = phone_number[0]
+            values.update({"phoneNumber": phone_number})
     # check email
     email = request.form.get("email")
     if email != "":
@@ -422,10 +428,13 @@ def add_personal_info():
             return jsonify({"error": {"msg": "Invalid email."}, "status": 0})
         else:
             email = email[0]
+            values.update({"email": email})
     # check address
     address = request.form.get("address")
     if address != "" and len(address) > 200:
         return jsonify({"error": {"msg": "Address too long."}, "status": 0})
+    if address != "":
+        values.update({"address": address})
     # check date of birth
     date_of_birth = request.form.get("date_of_birth")
     if date_of_birth != "":
@@ -433,11 +442,10 @@ def add_personal_info():
             date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d")
         except Exception as e:
             return jsonify({"error": {"msg": f"Invalid date of birth: {e}."}, "status": 0})
+        values.update({"dateOfBirth": date_of_birth})
 
-    User.update(User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
-                                         "email": email, "address": address, "dateOfBirth": date_of_birth})
-    # my_db.update(User, User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
-    #                                             "email": email, "address": address, "dateOfBirth": date_of_birth})
+    User.update(User.Uid == Uid, values=values)
+
     match_user = User._query(User.Uid == Uid, first=True)
     # match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
