@@ -89,7 +89,7 @@ def like():
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    match_status = status._query((status.Uid == Uid and status_cond), first=True)
+    match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
     #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
@@ -140,7 +140,7 @@ def dislike():
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    match_status = status._query((status.Uid == Uid and status_cond), first=True)
+    match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
     #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
@@ -351,18 +351,18 @@ def restore_post():
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
+    match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid), status=1, first=True)
     #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount += 1
-    Post.update(Post.Pid == Pid, values={"status": 0})
+    Post.update(Post.Pid == Pid, status=1, values={"status": 0})
     #my_db.update(Post, Post.Pid == Pid, values={"status": 0})
 
     # Then restore all corresponding data in other relating tables
     for c in match_post.comments:
-        Comment.update(Comment.Pid == c.Pid, values={"status": 0})
+        Comment.update(Comment.Pid == c.Pid, status=1, values={"status": 0})
         #my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
 
     return jsonify({"status": 1})
@@ -376,13 +376,13 @@ def restore_comment():
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
+    match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid), status=1, first=True)
     #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
     match_comment.comment_in.commentCount += 1
-    Comment.update(Comment.Cid == Cid, values={"status": 0})
+    Comment.update(Comment.Cid == Cid, status=1, values={"status": 0})
     #my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
 
     return jsonify({"status": 1})
@@ -695,31 +695,6 @@ def subscribe():
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
     return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
-
-
-@api.route("/auth/set_password")
-@login_required
-def set_password():
-    """
-    This function is used for logged in users to evaluate password setting process
-    :return: json information
-    if the setting is successful it will return status 1 otherwise it will return error message
-    """
-    Uid = session["Uid"]
-
-    # check password
-    password = request.form.get("password")
-    if not password:
-        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
-    password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
-    if not password:
-        return jsonify({"error": {"msg": "Invalid password"}, "status": 0})
-    else:
-        password = hashlib.sha3_512(password[0].encode()).hexdigest()
-
-    User.update(User.Uid == Uid, values={"password": password})
-    #my_db.update(User, User.Uid == Uid, values={"password": password})
-    return jsonify({"status": 1})
 
 
 @api.route("/fetch")
