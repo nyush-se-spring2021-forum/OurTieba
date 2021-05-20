@@ -1,9 +1,10 @@
 import datetime
 
-from sqlalchemy import Column, Integer, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, DateTime, ForeignKey, and_
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
+from .board import Board
 from ..database import my_db
 
 
@@ -38,6 +39,11 @@ class Subscription(BaseORM, my_db.Base):
         if not subs:
             return 0
         return subs.subscribed
+
+    @classmethod
+    def user_subs_count(cls, Uid):
+        count = cls.join_count(Board, and_(Subscription.Uid == Uid, Subscription.subscribed == 1))
+        return count
 
     @classmethod
     def needs_update(cls, Uid, Bid, action):

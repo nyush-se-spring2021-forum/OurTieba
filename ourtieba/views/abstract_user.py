@@ -3,7 +3,6 @@ import os.path
 from flask import Blueprint, render_template, request, session, abort
 
 from ..configs.macros import *
-from ..database import *
 from ..models import *
 from ..scrapper import *
 
@@ -141,7 +140,7 @@ def get_personal_profile(Uid):
 
     post_count = Post.count(Post.Uid == Uid)
     comment_count = Comment.count(Comment.Uid == Uid)
-    subs_count = Subscription.join_count(Board, and_(Subscription.Uid == Uid, Subscription.subscribed == 1))
+    subs_count = Subscription.user_subs_count(Uid)
     history_count = History.count(History.Uid == Uid)
 
     user_info.update({"isCurrent": int(Uid == session.get("Uid", -1)), "post_count": post_count,

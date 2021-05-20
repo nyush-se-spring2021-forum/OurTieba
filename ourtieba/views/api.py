@@ -5,7 +5,6 @@ from flask import Blueprint, jsonify, request
 from requests_html import HTML
 
 from ..configs import *
-from ..database import *
 from ..html_parser import *
 from ..models import *
 
@@ -91,40 +90,6 @@ def like():
         Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
     return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
 
-    # query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
-    #     Post, Post.Pid == target_id)
-    # match_target = query_from._query(filter_cond, first=True)
-    # # match_target = my_db.query(query_from, filter_cond, first=True)
-    # if not match_target:
-    #     return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
-    # if match_target.status != 0:
-    #     return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
-    #
-    # status = CommentStatus if target == "comment" else PostStatus
-    # status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    # match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
-    # # match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
-    #
-    # if not match_status:
-    #     cur_status = 1
-    #     status.new(Uid, int(target_id), cur_status, 0)
-    #     # new_status = status(Uid, int(target_id), cur_status, 0)
-    #     # my_db.add(new_status)
-    #     match_target.likeCount += 1
-    # else:
-    #     liked = match_status.liked
-    #     disliked = match_status.disliked
-    #     cur_status = 0 if liked else 1
-    #     new_status = status(Uid, int(target_id), cur_status, 0, datetime.datetime.utcnow())
-    #     ###Need to be more clear
-    #     my_db.merge(new_status)
-    #     match_target.likeCount += -1 if liked else 1
-    #     match_target.dislikeCount -= 1 if disliked else 0
-    #
-    # cur_target = query_from._query(filter_cond, first=True)
-    # # cur_target = my_db.query(query_from, filter_cond, first=True)
-    # cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
-
 
 @api.route('/dislike', methods=["POST"])
 @login_required
@@ -155,41 +120,6 @@ def dislike():
         Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
     return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
 
-    # query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
-    #     Post, Post.Pid == target_id)
-    # match_target = query_from._query(filter_cond, first=True)
-    # # match_target = my_db.query(query_from, filter_cond, first=True)
-    # if not match_target:
-    #     return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
-    # if match_target.status != 0:
-    #     return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
-    #
-    # status = CommentStatus if target == "comment" else PostStatus
-    # status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
-    # match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
-    # # match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
-    #
-    # if not match_status:
-    #     cur_status = 1
-    #     status.new(Uid, int(target_id), 0, 1)
-    #     # new_status = status(Uid, int(target_id), 0, 1)
-    #     # my_db.add(new_status)
-    #     match_target.dislikeCount += 1
-    # else:
-    #     liked = match_status.liked
-    #     disliked = match_status.disliked
-    #     cur_status = 0 if disliked else 1
-    #     new_status = status(Uid, int(target_id), 0, cur_status, datetime.datetime.utcnow())
-    #     # Need to be more clear
-    #     my_db.merge(new_status)
-    #     match_target.dislikeCount += -1 if disliked else 1
-    #     match_target.likeCount -= 1 if liked else 0
-    #
-    # cur_target = query_from._query(filter_cond, first=True)
-    # # cur_target = my_db.query(query_from, filter_cond, first=True)
-    # cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
-    # return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
-
 
 @api.route('/report/add', methods=["POST"])
 @login_required
@@ -216,24 +146,6 @@ def add_report():
     else:
         message = Post.report(Uid, target_id, reason)
     return jsonify(message)
-
-    # query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
-    #     Post, Post.Pid == target_id)
-    # match_target = query_from._query(filter_cond, first=True)
-    # # match_target = my_db.query(query_from, filter_cond, first=True)
-    # if not match_target:
-    #     return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
-    #
-    # Pid = match_target.Pid
-    # # insert into db
-    # Report.new(Uid, target, int(target_id), reason)
-    # new_report = Report(Uid, target, int(target_id), reason)
-    # # my_db.add(new_report)
-    #
-    # reporter = User._query(User.Uid == Uid, first=True)
-    # # reporter = my_db.query(User, User.Uid == Uid, first=True)
-    # reporter.reports.append(new_report)
-    # return jsonify({"status": 1})
 
 
 @api.route('/comment/add', methods=["POST"])
@@ -294,8 +206,6 @@ def add_comment():
 
     # add comment into database
     Comment.new(Uid, Pid, content, floor, medias, text)
-    # new_comment = Comment(Uid, Pid, content, floor, medias, text)
-    # my_db.add(new_comment)
     return jsonify({"status": 1})
 
 
