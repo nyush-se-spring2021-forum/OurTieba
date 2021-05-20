@@ -33,3 +33,28 @@ class Report(BaseORM, my_db.Base):
 
     def __repr__(self):
         return "<Report %r>" % self.Rid
+
+    @classmethod
+    def get_unresolved_reports_info_by_page(cls, page_num, page_size, order):
+        reports = cls._query(cls.resolved == 0, order=order, limit=page_size, offset=(page_num - 1) * page_size)
+        report_info_list = []
+        for r in reports:
+            report_info = {"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
+                           "timestamp": r.timestamp, "Uid": r.Uid}
+            report_info_list.append(report_info)
+        return report_info_list
+
+    @classmethod
+    def count_unresolved_reports(cls):
+        number = cls.count(cls.resolved == 0)
+        return number
+
+    @classmethod
+    def resolve(cls, Rid):
+        report = cls._get(Rid)
+        if not report:
+            error = {"error": {"msg": "Report not found."}, "status": 0}
+            return error
+        cls.update(cls.Rid == Rid, values={"resolved": 1})
+        success = {'status': 1}
+        return success

@@ -28,3 +28,8 @@ class Admin(BaseORM, my_db.Base):
 
     def __repr__(self):
         return '<Admin %r>' % self.Aid
+
+    @classmethod
+    def get_admin_by_name(cls, name):
+        admin = Admin._query(Admin.aname == name, first=True)
+        return admin

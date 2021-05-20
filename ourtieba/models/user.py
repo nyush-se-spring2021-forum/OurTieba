@@ -81,3 +81,56 @@ class User(BaseORM, my_db.Base):
                      "address": user.address, "dateOfBirth": user.dateOfBirth, "banned": user.banned,
                      "banDuration": str(user.banDuration)}
         return user_info
+
+    @classmethod
+    def ban(cls, Uid, days):
+        user = cls._get(Uid)
+        if not user:
+            error = {"error": {"msg": "User not found."}, "status": 0}
+            return error
+        cls.update(User.Uid == Uid, values={"banned": 1,
+                                            "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=int(days))})
+        success = {'status': 1}
+        return success
+
+    @classmethod
+    def unban(cls, Uid):
+        user = cls._get(Uid)
+        if not user:
+            error = {"error": {"msg": "User not found."}, "status": 0}
+            return error
+        cls.update(User.Uid == Uid, values={"banned": 0,
+                                            "banDuration": datetime.datetime.utcnow()})
+        success = {'status': 1}
+        return success
+
+    @classmethod
+    def add_personal_info(cls, Uid, values):
+        cls.update(Uid, values=values)
+        match_user = User._get(Uid)
+        nickname = match_user.nickname
+        avatar = match_user.avatar
+        return nickname, avatar
+
+    @classmethod
+    def register_auth(cls, password, username, nickname):
+        match_user = cls._query(cls.uname == username)
+        if match_user:
+            return 0
+        cls.new(password, username, nickname)
+
+        new_user = cls._query(cls.uname == username)
+        uid = new_user.Uid
+        n_nickname = new_user.nickname
+        n_avatar = new_user.avatar
+        last_check = new_user.lastCheck
+        return [uid, n_nickname, n_avatar, last_check]
+
+    @classmethod
+    def login_auth(cls, username, password):
+        match_user = cls._query(cls.uname == username)
+        if not match_user:
+            return 0
+        if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
+            return 1
+        return [match_user.Uid, match_user.nickname, match_user.avatar, match_user.lastCheck]

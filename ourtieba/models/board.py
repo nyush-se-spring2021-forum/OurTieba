@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
 from ..database import my_db
+from .comment import Comment
+from .post import Post
 
 
 class Board(BaseORM, my_db.Base):
@@ -61,6 +63,38 @@ class Board(BaseORM, my_db.Base):
         boards_info_list = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount, "cover": b.cover}
                             for b in boards]
         return boards_info_list
+
+    @classmethod
+    def ban_board(cls, Bid):
+        match_board = cls._get(Bid)
+        if not match_board:
+            error = {"error": {"msg": "Board not found."}, "status": 0}
+            return error
+
+        match_board.postCount -= 1
+        cls._ban(cls.Bid == Bid)
+        for p in match_board.posts:
+            for c in p.comments:
+                Comment._ban(Comment.Cid == c.Cid)
+            Post._ban(Post.Pid == p.Pid)
+        success = {'status': 1}
+        return success
+
+    @classmethod
+    def restore_board(cls, Bid, by):
+        match_board = cls._get(Bid)
+        if not match_board:
+            error = {"error": {"msg": "Board not found."}, "status": 0}
+            return error
+
+        match_board.postCount += 1
+        cls._restore(cls.Bid == Bid)
+        for p in match_board.posts:
+            for c in p.comments:
+                Comment._restore(Comment.Cid == c.Cid, by=by)
+            Post._restore(Post.Pid == p.Pid, by=by)
+        success = {'status': 1}
+        return success
 
     @classmethod
     def get_info(cls, Bid, increment_view=False):

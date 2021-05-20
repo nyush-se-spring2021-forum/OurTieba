@@ -1,9 +1,9 @@
 import hashlib
+import time
 
 from flask import Blueprint, jsonify, render_template, request
 
 from ..configs import *
-from ..database import *
 from ..models import *
 
 admin_blue = Blueprint("admin", __name__, url_prefix="/admin")
@@ -37,14 +37,15 @@ def admin_dashboard():
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
 
-    match_reports = Report._query(Report.resolved == 0, order)
+    match_reports = Report.count_unresolved_reports()
     #match_reports = my_db.query(Report, Report.resolved == 0, order)
     num_reports = len(match_reports)
     num_page = (num_reports - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
-    reports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
-                "timestamp": r.timestamp, "Uid": r.Uid}
-               for r in match_reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
+    reports = Report.get_unresolved_reports_info_by_page(page, PAGE_SIZE, order)
+    # reports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
+    #             "timestamp": r.timestamp, "Uid": r.Uid}
+    #            for r in match_reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": reports}
     return render_template("admin_dashboard.html", data=data)
 
@@ -61,7 +62,7 @@ def admin_auth_login():
     if not aname or not password:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    admin_result = Admin._query(Admin.aname == aname, first=True)
+    admin_result = Admin.get_admin_by_name(aname)
     #admin_result = my_db.query(Admin, Admin.aname == aname, first=True)
     if not admin_result:
         return jsonify({"error": {"msg": "Admin name Not Found"}, 'status': 0})
@@ -99,21 +100,9 @@ def admin_board_delete():
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_board = Board._query((Board.Bid == Bid and Board.status == 0), first=True)
-    #match_board = my_db.query(Board, and_(Board.Bid == Bid, Board.status == 0), first=True)
-    if not match_board:
-        return jsonify({"error": {"msg": "Board not found."}, "status": 0})
 
-    Board.update(Board.Bid == Bid, values={"status": 2})
-    #my_db.update(Board, Board.Bid == Bid, values={"status": 2})
-    # Then delete all corresponding posts and comments in that Bid
-    for p in match_board.posts:
-        for c in p.comments:
-            Comment.update(Comment.Cid == c.Cid, values={"status": 2})
-            #my_db.update(Comment, Comment.Cid == c.Cid, values={"status": 2})
-        Post.update(Post.Pid == p.Pid, values={"status": 2})
-        #my_db.update(Post, Post.Pid == p.Pid, values={"status": 2})
-    return jsonify({'status': 1})
+    message = Board.ban_board(Bid)
+    return jsonify(message)
 
 
 @admin_blue.route("/post/delete", methods=["POST"])
@@ -127,18 +116,12 @@ def admin_post_delete():
     Pid = request.form.get("Pid")
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_post = Post._query((Post.Pid == Pid and Post.status == 0), first=True)
-    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
-    if not match_post:
-        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
-    match_post.under.postCount -= 1
-    Post.update(Post.Pid == Pid, values={"status": 2})
-    #my_db.update(Post, Post.Pid == Pid, values={"status": 2})
-    # Then delete all corresponding data in other relating tables
-    for c in match_post.comments:
-        Comment.update(Comment.Pid == c.Pid, status={"status": 2})
-        #my_db.update(Comment, Comment.Pid == c.Pid, status={"status": 2})
+    Uid = Post.ban_post(Pid)
+    if Uid == 0:
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
+    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid,
+                     "delete", time.time())
     return jsonify({'status': 1})
 
 
@@ -153,14 +136,12 @@ def admin_comment_delete():
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_comment = Comment._query((Comment.Cid == Cid and Comment.status == 0), first=True)
-    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.status == 0), first=True)
-    if not match_comment:
-        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
-    match_comment.comment_in.commentCount -= 1
-    Comment.update(Comment.Cid == Cid, values={"status": 2})
-    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 2})
+    Uid = Comment.ban_comment(Cid)
+    if Uid == 0:
+        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
+    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid,
+                     "delete", time.time())
     return jsonify({'status': 1})
 
 
@@ -175,21 +156,9 @@ def admin_board_restore():
     Bid = request.form.get("Bid")
     if not Bid or not Bid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_board = Board._query((Board.Bid == Bid and Board.status.in_((1, 2))), first=True)
-    #match_board = my_db.query(Board, and_(Board.Bid == Bid, Board.status.in_((1, 2))), first=True)
-    if not match_board:
-        return jsonify({"error": {"msg": "Board not found."}, "status": 0})
 
-    Board.update(Board.Bid == Bid, values={"status": 0})
-    #my_db.update(Board, Board.Bid == Bid, values={"status": 0})
-    # Then delete all corresponding posts and comments in that Bid
-    for p in match_board.posts:
-        for c in p.comments:
-            Comment.update(Comment.Cid == c.Cid, values={"status": 0})
-            #my_db.update(Comment, Comment.Cid == c.Cid, values={"status": 0})
-        Post.update(Post.Pid == p.Pid, values={"status": 0})
-        #my_db.update(Post, Post.Pid == p.Pid, values={"status": 0})
-    return jsonify({'status': 1})
+    message = Board.restore_board(Bid, "admin")
+    return jsonify(message)
 
 
 @admin_blue.route("/post/restore", methods=["POST"])
@@ -203,18 +172,12 @@ def admin_post_restore():
     Pid = request.form.get("Pid")
     if not Pid or not Pid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_post = Post._query((Post.Pid == Pid and Post.status.in_((1, 2))), first=True)
-    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status.in_((1, 2))), first=True)
-    if not match_post:
-        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
-    match_post.under.postCount += 1
-    Post.update(Post.Pid == Pid, values={"status": 0})
-    #my_db.update(Post, Post.Pid == Pid, values={"status": 0})
-    # Then delete all corresponding data in other relating tables
-    for c in match_post.comments:
-        Comment.update(Comment.Pid == c.Pid, status={"status": 0})
-        #my_db.update(Comment, Comment.Pid == c.Pid, status={"status": 0})
+    Uid = Post.restore_post(Pid, "admin")
+    if Uid == 0:
+        return jsonify({"error": {"msg": "Post not found."}, "status": 0})
+    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid,
+                     "restore", time.time())
     return jsonify({'status': 1})
 
 
@@ -229,14 +192,12 @@ def admin_comment_restore():
     Cid = request.form.get("Cid")
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    match_comment = Comment._query((Comment.Cid == Cid and Comment.status.in_((1, 2))), first=True)
-    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.status.in_((1, 2))), first=True)
-    if not match_comment:
-        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
-    match_comment.comment_in.commentCount += 1
-    Comment.update(Comment.Cid == Cid, values={"status": 0})
-    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
+    Uid = Comment.restore_comment(Cid, "admin")
+    if Uid == 0:
+        return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
+    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid,
+                     "restore", time.time())
     return jsonify({'status': 1})
 
 
@@ -252,14 +213,11 @@ def admin_user_ban():
     days = request.form.get("days")
     if not Uid or not Uid.isnumeric() or not days or not days.isnumeric() or int(days) <= 0:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    affected_row = User.update(User.Uid == Uid, values={"banned": 1,
-                                        "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=int(days))})
-    # affected_row = my_db.update(User, User.Uid == Uid,
-    #                             values={"banned": 1,
-    #                                     "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=int(days))})
-    if not affected_row:
-        return jsonify({"error": {"msg": "User not found."}, "status": 0})
-    return jsonify({'status': 1})
+
+    message = User.ban(Uid, days)
+    Notification.new("admin", session["Aid"], "user", Uid, "user", int(days),
+                     "ban", time.time())
+    return jsonify(message)
 
 
 @admin_blue.route("/user/unban", methods=["POST"])
@@ -273,11 +231,11 @@ def admin_user_unban():
     Uid = request.form.get("Uid")
     if not Uid or not Uid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    affected_row = User.update(User.Uid == Uid, values={"banned": 0})
-    #affected_row = my_db.update(User, User.Uid == Uid, values={"banned": 0})
-    if not affected_row:
-        return jsonify({"error": {"msg": "User not found."}, "status": 0})
-    return jsonify({'status': 1})
+
+    message = User.unban(Uid)
+    Notification.new("admin", session["Aid"], "user", Uid, "user", 0,
+                     "unban", time.time())
+    return jsonify(message)
 
 
 @admin_blue.route("/report/resolve", methods=["POST"])
@@ -291,11 +249,9 @@ def admin_report_resolve():
     Rid = request.form.get("Rid")
     if not Rid or not Rid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
-    affected_row = Report.update(Report.Rid == Rid, values={"resolved": 1})
-    #affected_row = my_db.update(Report, Report.Rid == Rid, values={"resolved": 1})
-    if not affected_row:
-        return jsonify({"error": {"msg": "Report not found."}, "status": 0})
-    return jsonify({'status': 1})
+
+    message = Report.resolve(Rid)
+    return jsonify(message)
 
 
 @admin_blue.route("/create")

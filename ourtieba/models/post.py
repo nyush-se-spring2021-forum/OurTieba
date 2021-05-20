@@ -6,6 +6,11 @@ from sqlalchemy.orm import relationship
 from .baseORM import BaseORM
 from ..database import my_db
 from ..configs.macros import STATUS_NORMAL
+from .comment import Comment
+from .post_status import PostStatus
+from .report import Report
+from .user import User
+from .notification import Notification
 
 
 class Post(BaseORM, my_db.Base):
@@ -106,3 +111,140 @@ class Post(BaseORM, my_db.Base):
             if c.status == STATUS_NORMAL:
                 comment_medias.extend(c.medias)
         return comment_medias
+
+    @classmethod
+    def ban_post(cls, Pid):
+        match_posts = cls._get(Pid)
+        if not match_posts:
+            return 0
+
+        match_posts.commentCount -= 1
+        cls._ban(cls.Pid == Pid)
+        for c in match_posts.comments:
+            Comment._ban(Comment.Cid == c.Cid)
+        return match_posts.Uid
+
+    @classmethod
+    def delete_post(cls, Pid):
+        match_posts = cls._get(Pid)
+        if not match_posts:
+            return 0
+
+        match_posts.commentCount -= 1
+        cls._delete(cls.Pid == Pid)
+        for c in match_posts.comments:
+            Comment._delete(Comment.Cid == c.Cid)
+        return match_posts.Uid
+
+    @classmethod
+    def restore_post(cls, Pid, by):
+        match_posts = cls._get(Pid)
+        if not match_posts:
+            return 0
+
+        match_posts.commentCount += 1
+        cls._restore(cls.Pid == Pid, by=by)
+        for c in match_posts.comments:
+            Comment._restore(Comment.Cid == c.Cid, by=by)
+        return match_posts.Uid
+
+    @classmethod
+    def like(cls, Pid, Uid):
+        match_post = cls._get(Pid)
+        if not match_post:
+            return 0
+        if match_post.status != 0:
+            return -1
+
+        match_status = PostStatus._get(Uid, Pid)
+        if not match_status:
+            cur_status = 1
+            PostStatus.new(Uid, Pid, cur_status, 0)
+            match_post.likeCount += 1
+        else:
+            liked = match_status.liked
+            disliked = match_status.disliked
+            cur_status = 0 if liked else 1
+            new_status = PostStatus(Uid, Pid, cur_status, 0, datetime.datetime.utcnow())
+            cls.merge(new_status)
+            cls.likeCount += -1 if liked else 1
+            cls.dislikeCount -= 1 if disliked else 0
+
+        cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
+        return [cur_status, cur_like, cur_dislike, match_post.Uid]
+
+    @classmethod
+    def dislike(cls, Cid, Uid):
+        match_post = cls._get(Cid)
+        if not match_post:
+            return 0
+        if match_post.status != 0:
+            return -1
+
+        match_status = PostStatus._get(Uid, Cid)
+        if not match_status:
+            cur_status = 1
+            PostStatus.new(Uid, Cid, 0, cur_status)
+            match_post.dislikeCount += 1
+        else:
+            liked = match_status.liked
+            disliked = match_status.disliked
+            cur_status = 0 if disliked else 1
+            new_status = PostStatus(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
+            cls.merge(new_status)
+            cls.likeCount += -1 if disliked else 1
+            cls.dislikeCount -= 1 if liked else 0
+
+        cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
+        return [cur_status, cur_like, cur_dislike, match_post.Uid]
+
+    @classmethod
+    def report(cls, Uid, Pid, reason):
+        match_post = cls._get(Pid)
+        if not match_post:
+            error = {"error": {"msg": "Invalid target ID."}, "status": 0}
+            return error
+
+        new_report = Report(Uid, "post", Pid, reason)
+        reporter = User._get(Uid)
+        reporter.reports.append(new_report)
+        Report.new(Uid, "post", Pid, reason)
+        success = {"status": 1}
+        return success
+
+    @classmethod
+    def add_comment(cls, Pid, Uid, reply_ele, text, medias):
+        match_post = cls._get(Pid)
+        if not match_post:
+            return 0
+
+        if reply_ele:
+            ele_text_length = len(reply_ele.text)
+            if len(text) <= ele_text_length and not medias:  # content is empty if not text nor media
+                return -1
+                # return jsonify({"error": {"msg": "Empty reply!"}, "status": 0})
+
+            # retrieve receiver ID and target ID from data attributes (added by ourself) in HTML tag
+            Rid = reply_ele.attrs["data-uid"]
+            Tid = reply_ele.attrs["data-cid"]
+            # if sender != receiver, send notification to comment owner
+            if Uid != Rid:
+                Notification.new("user", Uid, "user", Rid, "comment", Tid, "reply")
+                # ntf_to_commenter = Notification("user", Uid, "user", Rid, "comment", Tid, "reply")
+                # my_db.add(ntf_to_commenter)
+
+        # if sender != receiver, send notification to post owner
+        if Uid != (Rid := match_post.owner.Uid):
+            Notification.new("user", Uid, "user", Rid, "post", Pid, "comment")
+            # ntf_to_poster = Notification("user", Uid, "user", Rid, "post", Pid, "comment")
+            # my_db.add(ntf_to_poster)
+
+        # record current available floor
+        floor = match_post.availableFloor
+        # update post statistics
+        match_post.availableFloor += 1
+        match_post.commentCount += 1
+        match_post.latestCommentTime = datetime.datetime.utcnow()
+        return floor
+
+

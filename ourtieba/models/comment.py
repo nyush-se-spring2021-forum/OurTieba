@@ -5,6 +5,9 @@ from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
 from ..database import my_db
+from .comment_status import CommentStatus
+from .report import Report
+from .user import User
 
 
 class Comment(BaseORM, my_db.Base):
@@ -52,3 +55,94 @@ class Comment(BaseORM, my_db.Base):
                               "publish_user": c.comment_by.nickname,
                               "user_avatar": c.comment_by.avatar, "floor": c.floor} for c in comments]
         return comment_info_list
+
+    @classmethod
+    def ban_comment(cls, Cid):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            return 0
+
+        cls._ban(cls.Cid == Cid)
+        return match_comment.Uid
+
+    @classmethod
+    def delete_comment(cls, Cid):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            return 0
+
+        cls._delete(cls.Cid == Cid)
+        return match_comment.Uid
+
+    @classmethod
+    def restore_comment(cls, Cid, by):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            return 0
+
+        cls._restore(cls.Cid == Cid, by=by)
+        return match_comment.Uid
+
+    @classmethod
+    def like(cls, Cid, Uid):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            return 0
+        if match_comment.status != 0:
+            return -1
+
+        match_status = CommentStatus._get(Uid, Cid)
+        if not match_status:
+            cur_status = 1
+            CommentStatus.new(Uid, Cid, cur_status, 0)
+            match_comment.likeCount += 1
+        else:
+            liked = match_status.liked
+            disliked = match_status.disliked
+            cur_status = 0 if liked else 1
+            new_status = CommentStatus(Uid, Cid, cur_status, 0, datetime.datetime.utcnow())
+            cls.merge(new_status)
+            cls.likeCount += -1 if liked else 1
+            cls.dislikeCount -= 1 if disliked else 0
+
+        cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
+        return [cur_status, cur_like, cur_dislike, match_comment.Uid]
+
+    @classmethod
+    def dislike(cls, Cid, Uid):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            return 0
+        if match_comment.status != 0:
+            return -1
+
+        match_status = CommentStatus._get(Uid, Cid)
+        if not match_status:
+            cur_status = 1
+            CommentStatus.new(Uid, Cid, 0, cur_status)
+            match_comment.dislikeCount += 1
+        else:
+            liked = match_status.liked
+            disliked = match_status.disliked
+            cur_status = 0 if disliked else 1
+            new_status = CommentStatus(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
+            cls.merge(new_status)
+            cls.likeCount += -1 if disliked else 1
+            cls.dislikeCount -= 1 if liked else 0
+
+        cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
+        return [cur_status, cur_like, cur_dislike, match_comment.Uid]
+
+    @classmethod
+    def report(cls, Uid, Cid, reason):
+        match_comment = cls._get(Cid)
+        if not match_comment:
+            error = {"error": {"msg": "Invalid target ID."}, "status": 0}
+            return error
+
+        new_report = Report(Uid, "comment", Cid, reason)
+        reporter = User._get(Uid)
+        reporter.reports.append(new_report)
+        Report.new(Uid, "comment", Cid, reason)
+        success = {"status": 1}
+        return success
