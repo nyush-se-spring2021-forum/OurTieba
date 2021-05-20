@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
 from ..database import my_db
-from ..configs.macros import STATUS_NORMAL
+from ..configs.macros import STATUS_NORMAL, STATUS_DELETED, STATUS_BANNED
 from .comment import Comment
 from .post_status import PostStatus
 from .report import Report
@@ -138,7 +138,8 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def restore_post(cls, Pid, by):
-        match_posts = cls._get(Pid)
+        query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
+        match_posts = cls._get(Pid, status=query_status)
         if not match_posts:
             return 0
 
@@ -165,10 +166,9 @@ class Post(BaseORM, my_db.Base):
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if liked else 1
-            new_status = PostStatus(Uid, Pid, cur_status, 0, datetime.datetime.utcnow())
-            cls.merge(new_status)
-            cls.likeCount += -1 if liked else 1
-            cls.dislikeCount -= 1 if disliked else 0
+            PostStatus.merge(Uid, Pid, cur_status, 0, datetime.datetime.utcnow())
+            match_post.likeCount += -1 if liked else 1
+            match_post.dislikeCount -= 1 if disliked else 0
 
         cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
         return [cur_status, cur_like, cur_dislike, match_post.Uid]
@@ -190,10 +190,9 @@ class Post(BaseORM, my_db.Base):
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if disliked else 1
-            new_status = PostStatus(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
-            cls.merge(new_status)
-            cls.likeCount += -1 if disliked else 1
-            cls.dislikeCount -= 1 if liked else 0
+            PostStatus.merge(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
+            match_post.dislikeCount += -1 if disliked else 1
+            match_post.likeCount -= 1 if liked else 0
 
         cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
         return [cur_status, cur_like, cur_dislike, match_post.Uid]

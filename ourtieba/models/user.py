@@ -114,12 +114,13 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def register_auth(cls, password, username, nickname):
-        match_user = cls._query(cls.uname == username)
+        match_user = cls._query(cls.uname == username, first=True)
         if match_user:
             return 0
+        password = hashlib.sha3_512(password.encode()).hexdigest()
         cls.new(password, username, nickname)
 
-        new_user = cls._query(cls.uname == username)
+        new_user = cls._query(cls.uname == username, first=True)
         uid = new_user.Uid
         n_nickname = new_user.nickname
         n_avatar = new_user.avatar
@@ -128,7 +129,7 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def login_auth(cls, username, password):
-        match_user = cls._query(cls.uname == username)
+        match_user = cls._query(cls.uname == username, first=True)
         if not match_user:
             return 0
         if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:

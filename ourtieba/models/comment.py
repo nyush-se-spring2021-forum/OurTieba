@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
+from ..configs.macros import STATUS_DELETED, STATUS_BANNED
 from ..database import my_db
 from .comment_status import CommentStatus
 from .report import Report
@@ -76,7 +77,8 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def restore_comment(cls, Cid, by):
-        match_comment = cls._get(Cid)
+        query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
+        match_comment = cls._get(Cid, status=query_status)
         if not match_comment:
             return 0
 
@@ -100,10 +102,9 @@ class Comment(BaseORM, my_db.Base):
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if liked else 1
-            new_status = CommentStatus(Uid, Cid, cur_status, 0, datetime.datetime.utcnow())
-            cls.merge(new_status)
-            cls.likeCount += -1 if liked else 1
-            cls.dislikeCount -= 1 if disliked else 0
+            CommentStatus.merge(Uid, Cid, cur_status, 0, datetime.datetime.utcnow())
+            match_comment.likeCount += -1 if liked else 1
+            match_comment.dislikeCount -= 1 if disliked else 0
 
         cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
         return [cur_status, cur_like, cur_dislike, match_comment.Uid]
@@ -125,10 +126,9 @@ class Comment(BaseORM, my_db.Base):
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if disliked else 1
-            new_status = CommentStatus(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
-            cls.merge(new_status)
-            cls.likeCount += -1 if disliked else 1
-            cls.dislikeCount -= 1 if liked else 0
+            CommentStatus.merge(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
+            match_comment.dislikeCount += -1 if disliked else 1
+            match_comment.likeCount -= 1 if liked else 0
 
         cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
         return [cur_status, cur_like, cur_dislike, match_comment.Uid]

@@ -1,4 +1,3 @@
-import hashlib
 import json
 import time
 
@@ -87,7 +86,7 @@ def like():
     if info == -1:
         return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
 
-    #Check whether the user likes his own target
+    # Check whether the user likes his own target
     if Uid != info[-1]:
         Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
     return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
@@ -151,7 +150,7 @@ def dislike():
     if info == -1:
         return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
 
-    #Check whether the user is dislike his own target
+    # Check whether the user is dislike his own target
     if Uid != info[-1]:
         Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
     return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
@@ -204,7 +203,7 @@ def add_report():
     target = request.form.get("target")
     target_id = request.form.get("id")
     reason = request.form.get("reason")
-    print(target, target_id, reason)
+
     if User.is_banned(Uid):
         return jsonify({"error": {"msg": "You are banned."}, "status": 0})
     if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
@@ -256,7 +255,6 @@ def add_comment():
     if not Pid or not Pid.isnumeric() or not content:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-
     # filter content
     content = my_parser.clean(content)
 
@@ -285,7 +283,6 @@ def add_comment():
             tag = ele.tag
             path = PHOTO_PATH if tag == "img" else VIDEO_PATH
             medias.append(path + src.split("/")[-1])
-
 
     # check if the comment is replying other's comment
     reply_ele = html.find(".OT_reply", first=True)
@@ -582,6 +579,8 @@ def handle_upload():
         Uid = session["Uid"]
 
         file = request.files.get("upfile")
+        if not file:
+            return jsonify({"error": {"msg": "Please upload a file."}, "status": 0})
         file_type = file.content_type
         if not file_type or not file_type.startswith("image"):
             return jsonify({"error": {"msg": "Invalid file type."}, "status": 0})
@@ -615,6 +614,8 @@ def handle_upload():
         Uid = session["Uid"]
 
         file = request.files.get("upfile")
+        if not file:
+            return jsonify({"error": {"msg": "Please upload a file."}, "status": 0})
         file_type = file.content_type
         if not file_type or not file_type.startswith("video"):
             return jsonify({"error": {"msg": "Invalid file type."}, "status": 0})
@@ -664,10 +665,10 @@ def subscribe():
     match_board = Board._query(Board.Bid == Bid, first=True)
     # match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "Invalid board ID."}, "status": 0})
-    if match_board.status != 0:
-        return jsonify({"error": {"msg": "Board not exists."}, "status": 0})
-    match_board.subscribeCount += 1 if action == "1" else -1
+        return jsonify({"error": {"msg": "Board not found."}, "status": 0})
+    match_sub = Subscription._get(Uid, Bid)
+    if match_sub and match_board.subscribed != int(action):
+        match_board.subscribeCount += 1 if action == "1" else -1
 
     # Need to be more clear
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
