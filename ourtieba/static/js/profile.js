@@ -304,3 +304,20 @@ $(".c-del").on("click", function () {
         }
     })
 })
+
+// edit personal info
+$(".submit-pi").on("click", function () {
+    $.post({
+        url: "/api/personal_info/add",
+        data: {nickname: $("#nickname").val().trim(), gender: $("#gender").val(),
+            phone_number: $("#phone").val().trim(), email: $("#email").val().trim(),
+            address: $("#address").val().trim(), date_of_birth: $("#dateOfBirth").val()},
+        success: data => {
+            if (!data.status) {
+                alert(data.error.msg);
+            } else {
+                location.reload();
+            }
+        }
+    })
+})
