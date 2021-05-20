@@ -76,16 +76,16 @@ def like():
     target_id = request.form.get("id")
 
     if target not in ("comment", "post") or not target_id or not target_id.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = query_from._query(filter_cond, first=True)
     #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
     if match_target.status != 0:
-        return jsonify({"error": {"msg": "Object not exists"}, "status": 0})
+        return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
@@ -127,16 +127,16 @@ def dislike():
     target_id = request.form.get("id")
 
     if target not in ("comment", "post") or not target_id or not target_id.isnumeric():
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = query_from._query(filter_cond, first=True)
     #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
     if match_target.status != 0:
-        return jsonify({"error": {"msg": "Object not exists"}, "status": 0})
+        return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
 
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
@@ -188,7 +188,7 @@ def add_report():
     match_target = query_from._query(filter_cond, first=True)
     #match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
-        return jsonify({"error": {"msg": "invalid target ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
 
     Pid = match_target.Pid
     # insert into db
@@ -400,35 +400,35 @@ def add_personal_info():
 
     nickname = request.form.get("nickname")
     if not nickname:
-        return jsonify({"error": {"msg": "invalid data"}}), 403
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     # check gender
     gender = request.form.get("gender")
     if gender not in ["male", "female", "other"]:
-        return jsonify({"error": {"msg": "invalid gender"}}), 403
+        return jsonify({"error": {"msg": "Invalid gender."}, "status": 0})
     # check phone number
     phone_number = request.form.get("phone_number")
     phone_number = re.findall(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$", phone_number)
     if not phone_number:
-        return jsonify({"error": {"msg": "invalid phone number"}}), 403
+        return jsonify({"error": {"msg": "Invalid phone number."}, "status": 0})
     else:
         phone_number = phone_number[0]
     # check email
     email = request.form.get("email")
     email = re.findall(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
     if not email:
-        return jsonify({"error": {"msg": "invalid email"}}), 403
+        return jsonify({"error": {"msg": "Invalid email."}, "status": 0})
     else:
         email = email[0]
     # check address
     address = request.form.get("address")
     if len(address) > 200:
-        return jsonify({"error": {"msg": "invalid address"}}), 403
+        return jsonify({"error": {"msg": "Invalid address."}, "status": 0})
     # check date of birth
     date_of_birth = request.form.get("date_of_birth")
     try:
         date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d")
     except Exception as e:
-        return jsonify({"error": {"msg": f"invalid date of birth: {e}"}}), 403
+        return jsonify({"error": {"msg": f"Invalid date of birth: {e}."}, "status": 0})
 
     User.update(User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
                                                 "email": email, "address": address, "dateOfBirth": date_of_birth})
@@ -438,7 +438,7 @@ def add_personal_info():
     #match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
     session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
-    return redirect(f"/profile/{Uid}")
+    return jsonify({"status": 1})
 
 
 @api.route('/auth/register', methods=["POST"])
@@ -455,33 +455,33 @@ def register_auth():
     # check username
     username = request.form.get("uname")
     if not username:
-        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     # (non-existence)
     match_user = User._query(User.uname == username, first=True)
     #match_user = my_db.query(User, User.uname == username, first=True)
     if match_user:
-        return jsonify({"error": {"msg": "user already exists"}, "status": 0})
+        return jsonify({"error": {"msg": "User already exists."}, "status": 0})
     # (validity)
     username = re.findall(r"[\w_]+$", username)
     if not username:
-        return jsonify({"error": {"msg": "Invalid username"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid username."}, "status": 0})
     else:
         username = username[0]
     if len(username) < 5 or len(username) > 20:
-        return jsonify({"error": {"msg": "username must be of length 5 ~ 20"}, "status": 0})
+        return jsonify({"error": {"msg": "Username must be of length 5 ~ 20."}, "status": 0})
     # check password
     password = request.form.get("password")
     if not password:
-        return jsonify({"error": {"msg": "Invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     password = re.findall(r"^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$", password)
     if not password:
-        return jsonify({"error": {"msg": "Invalid password"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid password."}, "status": 0})
     else:
         password = password[0]
     # check nickname
     nickname = request.form.get("nickname")
     if not nickname or len(nickname) > 20:
-        return jsonify({"error": {"msg": "Invalid nickname"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid nickname."}, "status": 0})
 
     User.new(password, username, nickname)
     # new_user = User(password, username, nickname=nickname)
@@ -556,16 +556,16 @@ def handle_upload():
         file = request.files.get("file")
         # check if file
         if not file:
-            return jsonify({"error": {"msg": "Please upload a file"}})
+            return jsonify({"error": {"msg": "Please upload a file."}, "status": 0})
         # check file type
         file_type = file.content_type
         if not file_type or not file_type.startswith("image"):
-            return jsonify({"error": {"msg": "Invalid file type"}})
+            return jsonify({"error": {"msg": "Invalid file type."}, "status": 0})
         file_type = file_type.split("/")[-1]
         # check file size
         file_size = int(request.headers.get("Content-Length", 0))
         if file_size > 3 * 1024 * 1024:
-            return jsonify({"error": {"msg": "Image too large"}})
+            return jsonify({"error": {"msg": "Image too large."}, "status": 0})
 
         path = CDN_ROOT_PATH + AVATAR_PATH
         if not os.path.exists(path):  # os is imported in config.py
@@ -600,18 +600,18 @@ def handle_upload():
 
     elif action == "uploadimage" and method == "POST":  # ueditor + user action. Upload photo within post and comment
         if not session.get("Uid"):
-            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})  # AE: can be any error, ignored by ueditor
+            return jsonify({"error": {"msg": "Not logged in."}, "status": 0})  # AE: can be any error, ignored by ueditor
         Uid = session["Uid"]
 
         file = request.files.get("upfile")
         file_type = file.content_type
         if not file_type or not file_type.startswith("image"):
-            return jsonify({"error": {"msg": "Invalid file type"}})
+            return jsonify({"error": {"msg": "Invalid file type."}, "status": 0})
         file_type = file_type.split("/")[-1]
 
         file_size = int(request.headers.get("Content-Length", 0))
         if file_size > 2048000:  # must be the same as in static/ueditor/config.json ("imageMaxSize")
-            return jsonify({"error": {"msg": "File too large"}, "status": 0})  # AE
+            return jsonify({"error": {"msg": "File too large."}, "status": 0})  # AE
 
         path = CDN_ROOT_PATH + PHOTO_PATH
         if not os.path.exists(path):  # os is imported in config.py
@@ -633,18 +633,18 @@ def handle_upload():
 
     elif action == "uploadvideo" and method == "POST":  # ueditor + user action. Upload video within post and comment
         if not session.get("Uid"):
-            return jsonify({"error": {"msg": "Not logged in"}, "status": 0})
+            return jsonify({"error": {"msg": "Not logged in."}, "status": 0})
         Uid = session["Uid"]
 
         file = request.files.get("upfile")
         file_type = file.content_type
         if not file_type or not file_type.startswith("video"):
-            return jsonify({"error": {"msg": "Invalid file type"}})
+            return jsonify({"error": {"msg": "Invalid file type."}, "status": 0})
         file_type = file_type.split("/")[-1]
 
         file_size = int(request.headers.get("Content-Length", 0))
         if file_size > 102400000:  # must be the same as in static/ueditor/config.json ("videoMaxSize")
-            return jsonify({"error": {"msg": "File too large"}, "status": 0})  # AE
+            return jsonify({"error": {"msg": "File too large."}, "status": 0})  # AE
 
         path = CDN_ROOT_PATH + VIDEO_PATH
         if not os.path.exists(path):  # os is imported in config.py
@@ -664,7 +664,7 @@ def handle_upload():
             "original": ""
         }
     else:
-        result = {"error": {"msg": "Something went wrong"}, "status": 0}
+        result = {"error": {"msg": "Something went wrong."}, "status": 0}
     return jsonify(result)
 
 
@@ -681,14 +681,14 @@ def subscribe():
     Bid = request.form.get("Bid")
     action = request.form.get("action")  # "0"=unsub, "1"=sub
     if not Bid or not Bid.isnumeric() or action not in ("0", "1"):
-        return jsonify({"error": {"msg": "invalid data"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     match_board = Board._query(Board.Bid == Bid, first=True)
     #match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
-        return jsonify({"error": {"msg": "invalid board ID"}, "status": 0})
+        return jsonify({"error": {"msg": "Invalid board ID."}, "status": 0})
     if match_board.status != 0:
-        return jsonify({"error": {"msg": "Board not exists"}, "status": 0})
+        return jsonify({"error": {"msg": "Board not exists."}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
     #Need to be more clear
