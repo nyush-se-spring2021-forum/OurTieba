@@ -146,19 +146,6 @@ class BaseORM:
         return my_db.merge(cls(*cols, **kw_cols))
 
     @classmethod
-    def _alter_status(cls, *conditions, status, **kw_conditions):
-        """
-        Change the status of instances by conditions and return the number of affected rows.
-        :param conditions: conditions passed in as positional arguments.
-        :param status: the status to change to. Required.
-        :param kw_conditions: conditions passed in as keyword arguments.
-        :return: number of affected instances. If 0, status change fails.
-        """
-        if not cls.__dict__.get("status"):
-            return 0
-        return my_db.update(cls, *conditions, values={"status": status}, **kw_conditions)
-
-    @classmethod
     def _real_delete(cls, *conditions, synchronize_session="fetch", **kw_conditions):
         """
         Delete instances from table by conditions. Will NOT automatically filter status.
@@ -172,8 +159,8 @@ class BaseORM:
     @classmethod
     def _delete(cls, *conditions, real_delete=False, **kw_conditions):
         """
-        If not real_delete, set all instances' status to STATUS_DELETED by conditions. Else delete all instances by
-        conditions.
+        If not real_delete, set all instances' status to STATUS_DELETED if their status is normal by conditions.
+        Else delete the instances.
         :param conditions: conditions passed in as positional arguments.
         :param real_delete: whether to actually delete instances.
         :param kw_conditions: conditions passed in as keyword arguments.
@@ -181,13 +168,13 @@ class BaseORM:
         """
         if real_delete:
             return cls._real_delete(*conditions, **kw_conditions)
-        return cls._alter_status(*conditions, STATUS_DELETED, **kw_conditions)
+        return cls.update(*conditions, status=STATUS_NORMAL, values={"status": STATUS_DELETED}, **kw_conditions)
 
     @classmethod
     def _ban(cls, *conditions, real_delete=False, **kw_conditions):
         """
-        If not real_delete, set all instances' status to STATUS_BANNED by conditions. Else delete all instances by
-        conditions.
+        If not real_delete, set all instances' status to STATUS_BANNED if their status is normal by conditions.
+        Else delete the instances.
         :param conditions: conditions passed in as positional arguments.
         :param real_delete: whether to actually delete instances.
         :param kw_conditions: conditions passed in as keyword arguments.
@@ -195,4 +182,17 @@ class BaseORM:
         """
         if real_delete:
             return cls._real_delete(*conditions, **kw_conditions)
-        return cls._alter_status(*conditions, STATUS_BANNED, **kw_conditions)
+        return cls.update(*conditions, status=STATUS_NORMAL, values={"status": STATUS_BANNED}, **kw_conditions)
+
+    @classmethod
+    def _restore(cls, *conditions, by, **kw_conditions):
+        """
+        Set all instances' status to STATUS_NORMAL by conditions. If restore by user, the instances will be filtered by
+        status is deleted else filtered by status is banned.
+        :param conditions: conditions passed in as positional arguments.
+        :param by: the starter of the action. "user" or "admin".
+        :param kw_conditions: conditions passed in as keyword arguments.
+        :return: number of affected instances.
+        """
+        query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
+        return cls.update(*conditions, status=query_status, values={"status": STATUS_NORMAL}, **kw_conditions)
