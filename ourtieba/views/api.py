@@ -81,7 +81,7 @@ def like():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = query_from._query(filter_cond, first=True)
-    #match_target = my_db.query(query_from, filter_cond, first=True)
+    # match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
     if match_target.status != 0:
@@ -90,7 +90,7 @@ def like():
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
     match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
-    #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    # match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
         cur_status = 1
@@ -109,7 +109,7 @@ def like():
         match_target.dislikeCount -= 1 if disliked else 0
 
     cur_target = query_from._query(filter_cond, first=True)
-    #cur_target = my_db.query(query_from, filter_cond, first=True)
+    # cur_target = my_db.query(query_from, filter_cond, first=True)
     cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
     return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
@@ -132,7 +132,7 @@ def dislike():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = query_from._query(filter_cond, first=True)
-    #match_target = my_db.query(query_from, filter_cond, first=True)
+    # match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
     if match_target.status != 0:
@@ -141,7 +141,7 @@ def dislike():
     status = CommentStatus if target == "comment" else PostStatus
     status_cond = CommentStatus.Cid == target_id if target == "comment" else PostStatus.Pid == target_id
     match_status = status._query(and_(status.Uid == Uid, status_cond), first=True)
-    #match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
+    # match_status = my_db.query(status, and_(status.Uid == Uid, status_cond), first=True)
 
     if not match_status:
         cur_status = 1
@@ -154,13 +154,13 @@ def dislike():
         disliked = match_status.disliked
         cur_status = 0 if disliked else 1
         new_status = status(Uid, int(target_id), 0, cur_status, datetime.datetime.utcnow())
-        #Need to be more clear
+        # Need to be more clear
         my_db.merge(new_status)
         match_target.dislikeCount += -1 if disliked else 1
         match_target.likeCount -= 1 if liked else 0
 
     cur_target = query_from._query(filter_cond, first=True)
-    #cur_target = my_db.query(query_from, filter_cond, first=True)
+    # cur_target = my_db.query(query_from, filter_cond, first=True)
     cur_like, cur_dislike = cur_target.likeCount, cur_target.dislikeCount
     return jsonify({"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike, "status": 1})
 
@@ -186,7 +186,7 @@ def add_report():
     query_from, filter_cond = (Comment, Comment.Cid == target_id) if target == "comment" else (
         Post, Post.Pid == target_id)
     match_target = query_from._query(filter_cond, first=True)
-    #match_target = my_db.query(query_from, filter_cond, first=True)
+    # match_target = my_db.query(query_from, filter_cond, first=True)
     if not match_target:
         return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
 
@@ -197,7 +197,7 @@ def add_report():
     # my_db.add(new_report)
 
     reporter = User._query(User.Uid == Uid, first=True)
-    #reporter = my_db.query(User, User.Uid == Uid, first=True)
+    # reporter = my_db.query(User, User.Uid == Uid, first=True)
     reporter.reports.append(new_report)
     return jsonify({"status": 1})
 
@@ -213,7 +213,7 @@ def add_comment():
     Uid = session["Uid"]
     # check whether user is banned
     match_user: User = User._query(User.Uid == Uid, first=True)
-    #match_user: User = my_db.query(User, User.Uid == Uid, first=True)
+    # match_user: User = my_db.query(User, User.Uid == Uid, first=True)
     if match_user.banned:
         if match_user.banDuration > datetime.datetime.utcnow():
             return jsonify({"error": {"msg": "User banned."}, "status": 0})
@@ -228,7 +228,7 @@ def add_comment():
 
     # verify post exists
     match_post = Post._query((Post.Pid == Pid and Post.status == 0), first=True)
-    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
+    # match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.status == 0), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
@@ -301,18 +301,18 @@ def delete_post():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
-    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
+    # match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 0), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount -= 1
     Post.update(Post.Pid == Pid, values={"status": 1})
-    #my_db.update(Post, Post.Pid == Pid, values={"status": 1})
+    # my_db.update(Post, Post.Pid == Pid, values={"status": 1})
 
     # Then delete all corresponding data in other relating tables
     for c in match_post.comments:
         Comment.update(Comment.Pid == c.Pid, values={"status": 1})
-        #my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 1})
+        # my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 1})
 
     return jsonify({"status": 1})
 
@@ -331,13 +331,13 @@ def delete_comment():  # will not alter post lastCommentTime
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
-    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
+    # match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 0), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
     match_comment.comment_in.commentCount -= 1
     Comment.update(Comment.Cid == Cid, values={"status": 1})
-    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
+    # my_db.update(Comment, Comment.Cid == Cid, values={"status": 1})
 
     return jsonify({"status": 1})
 
@@ -352,18 +352,18 @@ def restore_post():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     match_post = Post._query(and_(Post.Pid == Pid, Post.Uid == Uid), status=1, first=True)
-    #match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
+    # match_post = my_db.query(Post, and_(Post.Pid == Pid, Post.Uid == Uid, Post.status == 1), first=True)
     if not match_post:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
 
     match_post.under.postCount += 1
     Post.update(Post.Pid == Pid, status=1, values={"status": 0})
-    #my_db.update(Post, Post.Pid == Pid, values={"status": 0})
+    # my_db.update(Post, Post.Pid == Pid, values={"status": 0})
 
     # Then restore all corresponding data in other relating tables
     for c in match_post.comments:
         Comment.update(Comment.Pid == c.Pid, status=1, values={"status": 0})
-        #my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
+        # my_db.update(Comment, Comment.Pid == c.Pid, values={"status": 0})
 
     return jsonify({"status": 1})
 
@@ -377,13 +377,13 @@ def restore_comment():
     if not Cid or not Cid.isnumeric():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     match_comment = Comment._query(and_(Comment.Cid == Cid, Comment.Uid == Uid), status=1, first=True)
-    #match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
+    # match_comment = my_db.query(Comment, and_(Comment.Cid == Cid, Comment.Uid == Uid, Comment.status == 1), first=True)
     if not match_comment:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
 
     match_comment.comment_in.commentCount += 1
     Comment.update(Comment.Cid == Cid, status=1, values={"status": 0})
-    #my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
+    # my_db.update(Comment, Comment.Cid == Cid, values={"status": 0})
 
     return jsonify({"status": 1})
 
@@ -392,50 +392,54 @@ def restore_comment():
 @login_required
 def add_personal_info():
     """
-    This function is used for logged in users to add information in their profile
+    This function is used for logged in users to add information in their profile. They can choose to only update
+    part of it.
     :return: if successful, it will redirect to the profile page of this user
     otherwise, it will return json error message
     """
     Uid = session["Uid"]
 
     nickname = request.form.get("nickname")
-    if not nickname:
-        return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
+    if len(nickname) > 20:
+        return jsonify({"error": {"msg": "Nickname too long."}, "status": 0})
     # check gender
     gender = request.form.get("gender")
-    if gender not in ["male", "female", "other"]:
+    if gender != "" and gender not in ("male", "female", "other"):
         return jsonify({"error": {"msg": "Invalid gender."}, "status": 0})
     # check phone number
     phone_number = request.form.get("phone_number")
-    phone_number = re.findall(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$", phone_number)
-    if not phone_number:
-        return jsonify({"error": {"msg": "Invalid phone number."}, "status": 0})
-    else:
-        phone_number = phone_number[0]
+    if phone_number != "":
+        phone_number = re.findall(r"^[+]*[(]?[0-9]{1,4}[)]?[-\s./0-9]*$", phone_number)
+        if not phone_number:
+            return jsonify({"error": {"msg": "Invalid phone number."}, "status": 0})
+        else:
+            phone_number = phone_number[0]
     # check email
     email = request.form.get("email")
-    email = re.findall(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
-    if not email:
-        return jsonify({"error": {"msg": "Invalid email."}, "status": 0})
-    else:
-        email = email[0]
+    if email != "":
+        email = re.findall(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email)
+        if not email:
+            return jsonify({"error": {"msg": "Invalid email."}, "status": 0})
+        else:
+            email = email[0]
     # check address
     address = request.form.get("address")
-    if len(address) > 200:
-        return jsonify({"error": {"msg": "Invalid address."}, "status": 0})
+    if address != "" and len(address) > 200:
+        return jsonify({"error": {"msg": "Address too long."}, "status": 0})
     # check date of birth
     date_of_birth = request.form.get("date_of_birth")
-    try:
-        date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d")
-    except Exception as e:
-        return jsonify({"error": {"msg": f"Invalid date of birth: {e}."}, "status": 0})
+    if date_of_birth != "":
+        try:
+            date_of_birth = datetime.datetime.strptime(date_of_birth, "%Y-%m-%d")
+        except Exception as e:
+            return jsonify({"error": {"msg": f"Invalid date of birth: {e}."}, "status": 0})
 
     User.update(User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
-                                                "email": email, "address": address, "dateOfBirth": date_of_birth})
+                                         "email": email, "address": address, "dateOfBirth": date_of_birth})
     # my_db.update(User, User.Uid == Uid, values={"nickname": nickname, "gender": gender, "phoneNumber": phone_number,
     #                                             "email": email, "address": address, "dateOfBirth": date_of_birth})
     match_user = User._query(User.Uid == Uid, first=True)
-    #match_user = my_db.query(User, User.Uid == Uid, first=True)
+    # match_user = my_db.query(User, User.Uid == Uid, first=True)
     session.pop("user_info")
     session["user_info"] = {"nickname": match_user.nickname, "avatar": match_user.avatar}
     return jsonify({"status": 1})
@@ -458,7 +462,7 @@ def register_auth():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
     # (non-existence)
     match_user = User._query(User.uname == username, first=True)
-    #match_user = my_db.query(User, User.uname == username, first=True)
+    # match_user = my_db.query(User, User.uname == username, first=True)
     if match_user:
         return jsonify({"error": {"msg": "User already exists."}, "status": 0})
     # (validity)
@@ -489,7 +493,7 @@ def register_auth():
 
     # login once finish registration
     new_user = User.query(User.uname == username, first=True)
-    #new_user = my_db.query(User, User.uname == username, first=True)
+    # new_user = my_db.query(User, User.uname == username, first=True)
     session["Uid"] = new_user.Uid
     session["user_info"] = {"nickname": new_user.nickname, "avatar": new_user.avatar}
     session["last_check"] = new_user.lastCheck
@@ -514,7 +518,7 @@ def login_auth():
         return jsonify({"error": {"msg": "Invalid input."}, "status": 0})
 
     match_user: User = User._query(User.uname == username, first=True)
-    #match_user: User = my_db.query(User, User.uname == username, first=True)
+    # match_user: User = my_db.query(User, User.uname == username, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "Username does not exist."}, "status": 0})
     if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
@@ -579,7 +583,7 @@ def handle_upload():
         file.save(filepath)
 
         match_user = User._query(User.Uid == Uid, first=True)
-        #match_user = my_db.query(User, User.Uid == Uid, first=True)
+        # match_user = my_db.query(User, User.Uid == Uid, first=True)
         avatar = match_user.avatar
         if avatar != "default_avatar.jpg":
             old_path = path + avatar
@@ -588,7 +592,7 @@ def handle_upload():
 
         new_avatar = AVATAR_PATH + src
         User.update(User.Uid == Uid, values={"avatar": new_avatar})
-        #my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
+        # my_db.update(User, User.Uid == Uid, values={"avatar": new_avatar})
         session.pop("user_info")
         session["user_info"] = {"nickname": match_user.nickname, "avatar": new_avatar}
         result = {"status": 1}
@@ -600,7 +604,8 @@ def handle_upload():
 
     elif action == "uploadimage" and method == "POST":  # ueditor + user action. Upload photo within post and comment
         if not session.get("Uid"):
-            return jsonify({"error": {"msg": "Not logged in."}, "status": 0})  # AE: can be any error, ignored by ueditor
+            return jsonify(
+                {"error": {"msg": "Not logged in."}, "status": 0})  # AE: can be any error, ignored by ueditor
         Uid = session["Uid"]
 
         file = request.files.get("upfile")
@@ -684,14 +689,14 @@ def subscribe():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     match_board = Board._query(Board.Bid == Bid, first=True)
-    #match_board = my_db.query(Board, Board.Bid == Bid, first=True)
+    # match_board = my_db.query(Board, Board.Bid == Bid, first=True)
     if not match_board:
         return jsonify({"error": {"msg": "Invalid board ID."}, "status": 0})
     if match_board.status != 0:
         return jsonify({"error": {"msg": "Board not exists."}, "status": 0})
     match_board.subscribeCount += 1 if action == "1" else -1
 
-    #Need to be more clear
+    # Need to be more clear
     new_sub = Subscription(Uid, Bid, int(action), lastModified=datetime.datetime.utcnow())
     my_db.merge(new_sub)
     return jsonify({"subs_count": match_board.subscribeCount, "status": 1})
@@ -709,7 +714,7 @@ def fetch_data():
         return jsonify({"error": {"msg": "Invalid data!"}, "status": 0})
 
     match_user = User._query(User.Uid == Uid, first=True)
-    #match_user = my_db.query(User, User.Uid == Uid, first=True)
+    # match_user = my_db.query(User, User.Uid == Uid, first=True)
     if not match_user:
         return jsonify({"error": {"msg": "No user found!"}, "status": 0})
 
@@ -777,7 +782,7 @@ def get_log():
         return jsonify({"code": -1})
     cur_ts = request.args.get("t") or time.time()  # can be used for synchronization given FIFO channel
     new_count = Notification.count(and_(Notification.receiver == "user", Notification.Rid == Uid,
-                                               Notification.timestamp.between(last_check, cur_ts)))
+                                        Notification.timestamp.between(last_check, cur_ts)))
     # new_count = my_db.count(Notification, and_(Notification.receiver == "user", Notification.Rid == Uid,
     #                                            Notification.timestamp.between(last_check, cur_ts)))
     if not new_count:
