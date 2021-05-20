@@ -580,6 +580,12 @@ def subscribe():
 
 @api.route("/fetch")
 def fetch_data():
+    """
+    Fetch an user's personal data by Uid and type. Type can equal to 0, 1, 2 and 3, representing post data, comment
+    data, subscription data and view history data. Requests start by javascript, requested data will be sent back to
+    XHR object and filled into DOM.
+    :return: data list and the number of instances within.
+    """
     cur_Uid = session.get("Uid", 0)
     # Optional: Can block user's request when cur_Uid != session["Uid"] (the user is viewing other's profile)
 
@@ -628,6 +634,10 @@ def fetch_data():
 
 @api.route("/get_log")
 def get_log():
+    """
+    Requests start by javascript, will return status code and the number of new notifications to XHR object.
+    :return: status code, and the number of new notifications (if any).
+    """
     Uid = session.get("Uid")
     last_check = session.get("last_check")
     if not Uid or not last_check:
@@ -642,6 +652,11 @@ def get_log():
 @api.route("/get_ntf")
 @login_required
 def fetch_ntf():
+    """
+    Lazy load notifications when user enter the page for them. Requests start by javascript, will return at most
+    limit number of notifications to XHR object.
+    :return: notification instances, the number of them, and an "is_end" to indicate whether notifications reach bottom.
+    """
     Uid = session["Uid"]
     last_check = session["last_check"]
     cur_ts = time.time()

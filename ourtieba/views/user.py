@@ -10,7 +10,7 @@ user_blue = Blueprint("user", __name__)
 @login_required
 def report():
     """
-    This function is used to redirect the users to the report page
+    This function is used to direct users to the report page
     :return: report.html
     """
     target = request.args.get("target")
@@ -29,4 +29,8 @@ def report():
 @user_blue.route("/notifications")
 @login_required
 def notification_interface():
+    """
+    This function is used to direct users to the notifications page
+    :return: notifications.html
+    """
     return render_template("notifications.html")
