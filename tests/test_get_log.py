@@ -6,7 +6,7 @@ class TestGetLog:
         res = get_log.get_log()
         assert res.json()["code"] == -1
 
-    def test_2(self, auth, get_log):  # correct
+    def test_2(self, auth, get_log):  # correct (because U1 has 2 new notifications)
         auth.login()
         res = get_log.get_log()
         assert res.json()["new_count"] == 2
