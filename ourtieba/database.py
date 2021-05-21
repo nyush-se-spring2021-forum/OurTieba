@@ -103,5 +103,6 @@ class dbFactory:
 my_db = dbFactory.produce()
 
 
-def init_db(db_path):
+def init_db(app):
+    db_path = app.config['DATABASE_PATH']
     my_db.initialize(db_path=db_path)

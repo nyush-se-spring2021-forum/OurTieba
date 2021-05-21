@@ -17,11 +17,11 @@ def create_app():
 
     with app.app_context():
         Moment(app)
-        init_db(db_path=app.config['DATABASE_PATH'])
+        init_db(app)
         enable_parser(app)
         register_route(app)
         register_blue(app)
-        # init_logger(env="development")
+        # init_logger(app)
         # init_scheduler(app)
     return app
 
