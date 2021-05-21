@@ -16,11 +16,13 @@ class Config:
 class DevelopmentConfig(Config):
     ENV = "development"
     DEBUG = True
+    DATABASE_PATH = "sqlite:///test.db"
 
 
 class ProductionConfig(Config):
     ENV = "production"
     DEBUG = False
+    DATABASE_PATH = "sqlite:///OurTieba.db"
     ENABLE_CSP = True
     ENABLE_PARSER = False
     PERMANENT_SESSION_LIFETIME = datetime.timedelta(days=15)  # default is 31 days

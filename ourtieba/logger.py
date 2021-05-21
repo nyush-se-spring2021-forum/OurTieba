@@ -4,9 +4,10 @@ from .database import *  # must import this line here, otherwise cannot get sqla
 
 
 class Logger:
-    def __init__(self):
+    def __init__(self, env="development"):
         self.engine = my_db.get_engine().name
-        logging.basicConfig(filename="ourtieba/logs/test.log",
+        filename = "test.log" if env == "development" else "OutTieba.log"
+        logging.basicConfig(filename=f"ourtieba/logs/{filename}",
                             level=logging.DEBUG,
                             format='%(asctime)s [%(thread)d:%(threadName)s] [%(filename)s:%(module)s:%(funcName)s] '
                                    '[%(levelname)s]: %(message)s',
@@ -18,6 +19,6 @@ class Logger:
         logging.getLogger('apscheduler.executors.default').setLevel(logging.WARNING)
 
 
-def init_logger():
-    logger = Logger()
+def init_logger(*args, **kwargs):
+    logger = Logger(*args, **kwargs)
     return logger

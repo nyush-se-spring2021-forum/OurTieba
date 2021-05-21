@@ -20,8 +20,8 @@ class myDb:
         self._engine = None
         self._session = None
 
-    def connect(self, *args, **kwargs):
-        self._engine = create_engine('sqlite:///test.db', convert_unicode=True)
+    def connect(self, *args, db_path, **kwargs):
+        self._engine = create_engine(db_path, convert_unicode=True)
         # must use scoped session here
         self._session = scoped_session(sessionmaker(self._engine, *args, **kwargs))
         self.Base.query = self._session.query_property()
@@ -29,7 +29,7 @@ class myDb:
     def initialize(self, *args, **kwargs):
         self.connect(*args, **kwargs)
         # import all models here (only the class name)
-        from .models import Admin, Board, Comment, CommentStatus, Post, PostStatus, Report, Subscription,\
+        from .models import Admin, Board, Comment, CommentStatus, History, Post, PostStatus, Report, Subscription,\
             User, user_report_table
         self.Base.metadata.create_all(bind=self._engine)
 
@@ -103,5 +103,5 @@ class dbFactory:
 my_db = dbFactory.produce()
 
 
-def init_db():
-    my_db.initialize()
+def init_db(db_path):
+    my_db.initialize(db_path=db_path)
