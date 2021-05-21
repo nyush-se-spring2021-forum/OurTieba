@@ -1,5 +1,7 @@
 class TestPost:
-
+    """
+    Test all functions relating to post in api.py.
+    """
     def test_1(self, post):  # not logged in
         res = post.add(Bid=1, title="Hello", content="<p>Hello</p>", text="Hello")
         assert b"Please sign in" in res.content
@@ -48,4 +50,28 @@ class TestPost:
         res = post.dislike(Pid=1)
         assert res.json()["cur_status"] == 1
         assert res.json()["status"] == 1
+        auth.logout()
+
+    def test_9(self, auth, client, post):  # like/dislike: wrong target, empty target_id
+        auth.login()
+        res = client.post("/api/like", data={"target": "whatever", "Pid": 3})
+        assert b"Invalid data." in res.content
+
+        res = post.like(Pid=None)
+        assert b"Invalid data." in res.content
+
+        res = client.post("/api/dislike", data={"target": "whatever", "Pid": 4})
+        assert b"Invalid data." in res.content
+
+        res = post.dislike(Pid=None)
+        assert b"Invalid data." in res.content
+        auth.logout()
+
+    def test_10(self, auth, post):  # like/dislike: invalid target ID
+        auth.login()
+        res = post.like(Pid=0)
+        assert b"Target not found." in res.content
+
+        res = post.dislike(Pid=0)
+        assert b"Target not found." in res.content
         auth.logout()

@@ -1,5 +1,7 @@
 class TestFetch:
-
+    """
+    Test func "fetch_data" in api.py.
+    """
     def test_1(self, fetch):  # correct
         res = fetch.fetch_data(Uid=1, type_data=3)
         assert res.json()["count"] == 2

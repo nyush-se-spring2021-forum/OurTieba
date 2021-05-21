@@ -1,5 +1,7 @@
 class TestGetNtf:
-
+    """
+    Test func "fetch_ntf" in api.py.
+    """
     def test_1(self, get_ntf):  # not logged in
         res = get_ntf.get_ntf(end=0)
         assert b"Please sign in" in res.content

@@ -1,5 +1,7 @@
 class TestGetLog:
-
+    """
+    Test func "get_log" in api.py.
+    """
     def test_1(self, get_log):  # not logged in (not incorrect)
         res = get_log.get_log()
         assert res.json()["code"] == -1

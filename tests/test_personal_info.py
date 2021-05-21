@@ -1,6 +1,7 @@
 class TestPersonalInfo:
     """
-    Since users can choose to update only part of their personal info, test will focus on each argument separately.
+    Test all functions relating to personal info in api.py. In this phase, only testing add action is enough. Since
+    users can choose to update only part of their personal info, tests will focus on each argument separately.
     """
     def test_1(self, personal_info):  # not logged in
         res = personal_info.add(nickname="Hook")

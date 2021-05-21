@@ -1,5 +1,7 @@
 class TestComment:
-
+    """
+    Test all functions relating to comment in api.py.
+    """
     def test_1(self, comment):  # not logged in
         res = comment.add(Pid=1, content="<p>What</p>", text="What")
         assert b"Please sign in" in res.content
@@ -48,4 +50,28 @@ class TestComment:
         res = comment.dislike(Cid=1)
         assert res.json()["cur_status"] == 1
         assert res.json()["status"] == 1
+        auth.logout()
+
+    def test_9(self, auth, client, comment):  # like/dislike: wrong target, empty target_id
+        auth.login()
+        res = client.post("/api/like", data={"target": "whatever", "Cid": 5})
+        assert b"Invalid data." in res.content
+
+        res = comment.like(Cid=None)
+        assert b"Invalid data." in res.content
+
+        res = client.post("/api/dislike", data={"target": "whatever", "Cid": 2})
+        assert b"Invalid data." in res.content
+
+        res = comment.dislike(Cid=None)
+        assert b"Invalid data." in res.content
+        auth.logout()
+
+    def test_10(self, auth, comment):  # like/dislike: invalid target ID
+        auth.login()
+        res = comment.like(Cid=0)
+        assert b"Target not found." in res.content
+
+        res = comment.dislike(Cid=0)
+        assert b"Target not found." in res.content
         auth.logout()

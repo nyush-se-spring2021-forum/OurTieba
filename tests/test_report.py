@@ -1,6 +1,6 @@
 class TestReport:
     """
-    For report, only testing add action is enough.
+    Test all functions relating to report in api.py. In this phase, only testing add action is enough.
     """
     def test_1(self, report):  # not logged in
         res = report.add(target="post", id=1, reason="Not good!")
