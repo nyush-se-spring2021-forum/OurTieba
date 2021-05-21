@@ -46,6 +46,7 @@ $("#view-origin").on("click", () => {
 var cur_page = 1;
 var cur_max_page;
 var cur_type;
+var has_action = false;
 
 $(".status-box").on("click", function () {
     fetchData($(this).index()/2);  // because of the sep line
@@ -53,6 +54,7 @@ $(".status-box").on("click", function () {
 
 $(".hide").on("click", () => {
     hidePopup();
+    if (has_action) {location.reload()}  // I know it's a really bad way to synchronize, but I don't have time
 })
 
 $(".prev-arrow").on("click", () => {
@@ -142,10 +144,11 @@ function fillData(type) {
             $(".p-bname", cur_node).text(bname).attr("data-href", "/board/"+bid)
                 .css("cursor", (deleted)?"default":"pointer");
             $(".p-time", cur_node).text(p_time);
-            $(".p-del", cur_node).text(status_text).css("color", status_color)
+            $(".p-del", cur_node).text((has_content)?status_text:"").css("color", status_color)
                 .css("text-decoration", (status_text==="banned")?"none":"underline")
                 .css("cursor", (status_text==="banned")?"default":"pointer")
                 .attr("data-pid", pid);
+            $(".p-del", cur_node).on("click", () => {has_action = true});
         } else if (type === 3) {
             let h_title = get_("title");
             let is_me = get_("me");
@@ -168,6 +171,7 @@ function fillData(type) {
             $(".s-bname", cur_node).text(bname).attr("data-href", "/board/"+bid);
             if (is_current) {
                 $(".s-unsub", cur_node).text((has_content) ? "Unsubsribe" : "").attr("data-bid", bid);
+                $(".s-unsub", cur_node).on("click", () => {has_action = true});
             }
         } else {
             let c_text = get_("text");
@@ -180,10 +184,11 @@ function fillData(type) {
             $(".c-ptitle", cur_node).text(p_title).attr("data-href", "/post/"+pid)
                 .css("cursor", (deleted)?"default":"pointer");
             $(".c-time", cur_node).text(c_time);
-            $(".c-del", cur_node).text(status_text).css("color", status_color)
+            $(".c-del", cur_node).text((has_content)?status_text:"").css("color", status_color)
                 .css("text-decoration", (status_text==="banned")?"none":"underline")
                 .css("cursor", (status_text==="banned")?"default":"pointer")
                 .attr("data-cid", cid);
+            $(".c-del", cur_node).on("click", () => {has_action = true});
         }
     }
 }
