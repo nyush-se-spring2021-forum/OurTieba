@@ -16,6 +16,23 @@ from ..database import my_db
 class Post(BaseORM, my_db.Base):
     """
     Mapping of table "post". Note: "stickyOnTop" not implemented, "viewCount" not reflected on web page.
+
+    Attributes:
+        Pid: post's ID
+        title: post's title
+        content: post's content
+        medias: list of the path of every images or videos, [] if no images and videos
+        text: plain text in "content" column, not including any images and videos
+        timestamp: the time of the post be created
+        status: 0=normal, 1=deleted(by user), 2=banned(by admin)
+        stickyOnTop: the list of Cid of comment sticky on top
+        commentCount: number of comments of this post
+        likeCount: number of like of this post
+        dislikeCount: number of dislike of this post
+        viewCount: number of view of this post
+        lastestCommentTime: the latest time when a comment is created under this post
+        Uid: the user who created this post
+        Bid: the post is under this board
     """
     __tablename__ = "post"
 

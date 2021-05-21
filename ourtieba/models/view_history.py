@@ -10,6 +10,11 @@ from ..database import my_db
 class History(BaseORM, my_db.Base):
     """
     Mapping of table "history".
+
+    Attributes:
+        Uid: User ID
+        Pid: Post ID
+        lastVisitTime: time when the user last visit the post
     """
     __tablename__ = "history"
 

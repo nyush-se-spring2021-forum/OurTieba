@@ -14,6 +14,22 @@ from ..database import my_db
 class User(BaseORM, my_db.Base):
     """
     Mapping of table "user".
+
+    Attributes:
+        Uid: user's ID
+        password: user's password
+        uname: user's username, unique
+        nickname: user's nickname, can be seen by others
+        avatar: the path of the avatar of this user
+        timestamp: time of account creation
+        lastCheck: time the user last check message
+        gender: user's gender
+        phoneNumber: user's phone number
+        email: user's email
+        address: user's address
+        dateOfBirth: user's birthday
+        banned: whether the user is banned. 0 = False, 1 = True
+        banDuration: the user is banned until this time
     """
     __tablename__ = 'user'
 

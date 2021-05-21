@@ -11,6 +11,17 @@ from ..database import my_db
 class Notification(BaseORM, my_db.Base):
     """
     Mapping of table "notification". Note: some of the notifications are not implemented.
+
+    Attributes:
+        Nid: Notification ID
+        starter: the owner of the operation ("user" or "admin")
+        Sid: starter's ID (Uid or Aid)
+        receiver: the people who will receive this notification ("user", "admin" or "broadcast")
+        Rid: receiver's ID, if broadcast set to -1
+        target: the subject of the operation ("post", "comment", "user", "board")
+        Tid: Target's ID
+        action: the operation ("like", "dislike", "comment", "reply", "delete", "restore", "ban", "unban", "post")
+        timestamp: the time of notification
     """
     __tablename__ = "notification"
 

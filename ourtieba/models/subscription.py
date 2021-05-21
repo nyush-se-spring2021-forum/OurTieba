@@ -11,6 +11,12 @@ from ..database import my_db
 class Subscription(BaseORM, my_db.Base):
     """
     Mapping of table "subscription".
+
+    Attributes:
+        Uid: User ID
+        Bid: Board ID
+        subscribed: whether the board is subscribed by the user with Uid, 0 = False, 1 = True
+        lastModified: time of last subscription
     """
     __tablename__ = "subscription"
 

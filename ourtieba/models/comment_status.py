@@ -11,6 +11,13 @@ from ..database import my_db
 class CommentStatus(BaseORM, my_db.Base):
     """
     Mapping of table "comment_status".
+
+    Attributes:
+        Uid: the user who is going to do the like/dislike operation
+        Cid: the comment ID which is going to be liked/disliked
+        liked: 0 = this user doesn't like this comment, 1 = this user likes this comment
+        disliked: 0 = this user doesn't dislike this comment, 1 = this user dislikes this comment
+        lastModified: time of last action
     """
     __tablename__ = "comment_status"
 

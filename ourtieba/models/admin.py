@@ -10,6 +10,14 @@ from ..database import my_db
 class Admin(BaseORM, my_db.Base):
     """
     Mapping of table "admin".
+
+    Attributes:
+        Aid: admin ID
+        password: admin password
+        aname: admin username, unique
+        nickname: admin nickname, can be seen by other people, not unique
+        avatar: the path of the avatar, upon uploading, link=hash(Aid + timestamp) + ".png"
+        timestamp: time of account creation
     """
     __tablename__ = 'admin'
 

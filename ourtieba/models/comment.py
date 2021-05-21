@@ -14,6 +14,19 @@ from ..database import my_db
 class Comment(BaseORM, my_db.Base):
     """
     Mapping of table "comment".
+
+    Attributes:
+        Cid: comment's ID
+        content: comment's content
+        floor: where the comment locates
+        medias: list of the path of every images or videos, [] if no images and videos
+        text: plain text in "content" column, not including any images and videos
+        timestamp: the time of the comment be created
+        status: 0=normal, 1=deleted(by user), 2=banned(by admin)
+        likeCount: number of like of this comment
+        dislikeCount: number of dislike of this comment
+        Uid: the user who created this comment
+        Pid: the comment is under this post
     """
     __tablename__ = "comment"
 

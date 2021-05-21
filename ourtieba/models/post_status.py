@@ -11,6 +11,13 @@ from ..database import my_db
 class PostStatus(BaseORM, my_db.Base):
     """
     Mapping of table "post_status".
+
+    Attributes:
+        Uid: the user who is going to do the like/dislike operation
+        Pid: the post ID which is going to be liked/disliked
+        liked: 0 = this user doesn't like this post, 1 = this user likes this post
+        disliked: 0 = this user doesn't dislike this post, 1 = this user dislikes this post
+        lastModified: time of last action
     """
     __tablename__ = "post_status"
 

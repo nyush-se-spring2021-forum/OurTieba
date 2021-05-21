@@ -12,6 +12,19 @@ from ..database import my_db
 class Board(BaseORM, my_db.Base):
     """
     Mapping of table "board". Note: "stickyOnTop" not implemented, "viewCount" not reflected on web page.
+
+    Attributes:
+        Bid: Board ID
+        name: Board name
+        description: Board description
+        hot: represents the popularity of a board
+        cover: a path of the cover image
+        status: 0=normal, 1=deleted(by user), 2=banned(by admin)
+        stickyOnTop: the list of Pid of post sticky on top
+        postCount: number of posts in this board
+        viewCount: number of views of this board
+        subscribeCount: number of subscription of this board
+        timestamp: the time when the board is created
     """
     __tablename__ = "board"
 

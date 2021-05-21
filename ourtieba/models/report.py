@@ -11,6 +11,15 @@ from ..database import my_db
 class Report(BaseORM, my_db.Base):
     """
     Mapping of table "report".
+
+    Attributes:
+        Rid: report ID
+        target: the report target ("comment" or "post")
+        targetId: target's ID
+        reason: the reason why the user wants to report this target
+        timestamp: time of the report
+        resolved: whether the report has been resolved, 0 = False, 1 = True
+        Uid: ID of user who report the target
     """
     __tablename__ = "report"
 
