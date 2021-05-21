@@ -67,9 +67,9 @@ $(".next-arrow").on("click", () => {
 })
 
 var des_dict = {
-    0: ((is_current)?"My":"User") + "Posts",
-    1: ((is_current)?"My":"User") + "Comments",
-    2: ((is_current)?"My":"") + "Subscriptions",
+    0: ((is_current)?"My":"User") + " Posts",
+    1: ((is_current)?"My":"User") + " Comments",
+    2: ((is_current)?"My":"") + " Subscriptions",
     3: "Browse History",
 }
 var data_dict = {  // used for caching data
