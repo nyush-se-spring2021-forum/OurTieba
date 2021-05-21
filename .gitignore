@@ -22,3 +22,5 @@ access.log
 
 cdn/
 test.db
+ourtieba/logs
+OurTieba.db
