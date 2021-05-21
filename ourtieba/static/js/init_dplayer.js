@@ -2,13 +2,13 @@ var query = window.location.search.substring(1);
 var vars = query.split("&");
 
 function getQueryVariable(variable) {
-       for (let i=0;i<vars.length;i++) {
-               let pair = vars[i].split("=");
-               if(pair[0] === variable){
-                   return pair[1];
-               }
-       }
-       return false;
+    for (let i = 0; i < vars.length; i++) {
+        let pair = vars[i].split("=");
+        if (pair[0] === variable) {
+            return pair[1];
+        }
+    }
+    return false;
 }
 
 document.title = "OurTieba Player";
@@ -29,18 +29,20 @@ const dp = new DPlayer({
     mutex: true,
     autoplay: a,
     loop: l,
-    contextmenu:[
+    contextmenu: [
         {
-            text: autopause ? "Disable auto pause":"Enable auto pause",
+            text: autopause ? "Disable auto pause" : "Enable auto pause",
             click: (player) => {
                 let des = document.getElementsByClassName("dplayer-menu-item")[0].getElementsByTagName("a")[0];
                 if (autopause) {
                     player.notice("Auto Pause OFF", 1000);
                     des.text = "Enable auto pause";
-                    window.onblur = ()=>{};
-                    window.onfocus = ()=>{};
+                    window.onblur = () => {
+                    };
+                    window.onfocus = () => {
+                    };
                     autopause = false;
-                } else  {
+                } else {
                     player.notice("Auto Pause ON", 1000);
                     des.text = "Disable auto pause";
                     window.onblur = function () {

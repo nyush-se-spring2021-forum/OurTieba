@@ -1,6 +1,7 @@
 from flask_apscheduler import APScheduler
+from sqlalchemy import func
 
-from .logger import *
+from .database import my_db
 from .models import *
 
 record = {}

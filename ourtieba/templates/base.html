@@ -12,11 +12,11 @@
                     <meta name="viewport" content="width=device-width, initial-scale=1">
                 {%- endblock metas %}
                 <script>  // This piece of script will not be executed if CSP is on
-                    if (sessionStorage.getItem("has_warned") !== "1") {
-                        sessionStorage.setItem("has_warned", "1");
-                        alert("Development environment. Or your browser does not support CSP.\n" +
-                            "(This will only show once for every window.)");
-                    }
+                if (sessionStorage.getItem("has_warned") !== "1") {
+                    sessionStorage.setItem("has_warned", "1");
+                    alert("Development environment. Or your browser does not support CSP.\n" +
+                        "(This will only show once for every window.)");
+                }
                 </script>
                 <link rel="shortcut icon" href="{{ url_for('static', filename='ico/favicon.ico') }}"
                       type="image/x-icon">
@@ -32,6 +32,7 @@
                     body {
                         background-color: #fbfbfd;
                     }
+
                     #new_message {
                         margin-right: 3%;
                     }

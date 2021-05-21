@@ -1,6 +1,6 @@
-from contextlib import contextmanager
 import datetime
 import functools
+from contextlib import contextmanager
 
 from flask import session, redirect
 
@@ -15,6 +15,7 @@ def login_required(f):
     :param f: view function object.
     :return: decorated view function object.
     """
+
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if session.get("Uid"):
@@ -31,6 +32,7 @@ def admin_login_required(f):
     :param f: view function object.
     :return: decorated view function object.
     """
+
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if session.get("Aid"):

@@ -2,6 +2,7 @@ class TestPost:
     """
     Test all functions relating to post in api.py.
     """
+
     def test_1(self, post):  # not logged in
         res = post.add(Bid=1, title="Hello", content="<p>Hello</p>", text="Hello")
         assert b"Please sign in" in res.content

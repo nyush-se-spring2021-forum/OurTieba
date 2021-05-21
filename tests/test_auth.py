@@ -3,6 +3,7 @@ class TestAuth:
     Test all functions relating to authentication in api.py. Logout is designed always to return success (even if user
     not logged in), since its job is to clear session data.
     """
+
     def test_1(self, auth):  # login and logout: correct input and method
         res = auth.login(uname="U1", password="111")
         assert res.headers.get("Set-Cookie") is not None
@@ -45,5 +46,5 @@ class TestAuth:
         res = auth.register(uname="foo123", password="12345678", nickname="Hook")
         assert b"Invalid password." in res.content
 
-        res = auth.register(uname="foo123", password="@123456a", nickname="H"*21)
+        res = auth.register(uname="foo123", password="@123456a", nickname="H" * 21)
         assert b"Invalid nickname." in res.content

@@ -28,8 +28,8 @@ $(function () {
                                 location.href = "/";
                                 return
                             }
-                            r_link = (ref.indexOf(location.protocol+"//"+location.host) === 0) ?
-                                ref : "/redirect?link="+ref;
+                            r_link = (ref.indexOf(location.protocol + "//" + location.host) === 0) ?
+                                ref : "/redirect?link=" + ref;
                         }
                         location.href = r_link;
                     } else {

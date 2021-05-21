@@ -470,7 +470,7 @@ def handle_upload():
         new_avatar = AVATAR_PATH + src
         nickname, avatar_path = User.change_avatar(Uid, new_avatar)
         session.pop("user_info")
-        session["user_info"] = {"nickname": nickname, "avatar":avatar_path}
+        session["user_info"] = {"nickname": nickname, "avatar": avatar_path}
         result = {"status": 1}
 
     elif action == "config" and method == "GET":  # ueditor action. Config the ueditor, user may not be logged-in

@@ -5,13 +5,13 @@
 {% block page_content %}
     {# Should be the same as iframe.css (.card-body = body) #}
     <style>
-        .card-body,.comment-body {
+        .card-body, .comment-body {
             font-size: 18px;
         }
 
         {# Normally, the selectors ".card-body img" and ".OT_image" are the same. #}
-        .card-body img,.comment-body img {  {# in case users insert <img> by themselves #}
-            max-width: 384px;
+        .card-body img, .comment-body img {
+        {# in case users insert <img> by themselves #} max-width: 384px;
             max-height: 384px;
         }
 
@@ -20,9 +20,10 @@
             max-height: 30vh;
         }
 
-        .OT_image:hover {  {# only OT_image has hover effect (is clickable) #}
-            cursor: zoom-in;
+        .OT_image:hover {
+        {# only OT_image has hover effect (is clickable) #} cursor: zoom-in;
         }
+
         .OT_reply {
             padding: 0 5px;
             color: black;
@@ -30,22 +31,26 @@
             border: 1px solid black;
             border-radius: 20px;
             background-color: #c1fce3;
-            cursor: pointer;  /* IMPORTANT: only difference is here, because in the editor you cannot click the href */
+            cursor: pointer; /* IMPORTANT: only difference is here, because in the editor you cannot click the href */
             font-size: 16px;
         }
+
         .OT_reply:hover {
             color: #444444;
             background-color: #98fcd1;
         }
+
         /* Bootstrap overwrite */
         .btn {
             margin-right: 5px;
         }
-        .my-float-end {  /* replace float-end */
+
+        .my-float-end { /* replace float-end */
             display: flex;
             justify-content: flex-end;
             padding-right: -10px;
         }
+
         /* Other styles */
         .empty-notice {
             margin: 5% auto;
@@ -55,12 +60,14 @@
             font-style: italic;
             text-align: center;
         }
+
         .to-board {
             display: flex;
-            flex-direction: row;  /* overwrite what is in bootstrap */
+            flex-direction: row; /* overwrite what is in bootstrap */
             height: 40px;
             margin-bottom: 5px;
         }
+
         .to-board-item {
             display: flex;
             flex-direction: column;
@@ -68,40 +75,50 @@
             margin-left: 10px;
             cursor: pointer;
         }
+
         .cover {
             width: 30px;
             height: 30px;
             border: 1px solid transparent;
             border-radius: 5px;
         }
+
         .cover:hover {
             border: 1px solid #c9b4b4;
         }
+
         .back-to {
             color: #2d64b3;
         }
+
         .back-to:hover {
             text-decoration: underline;
         }
+
         .bname {
             font-size: 20px;
             color: #0d6efd;
         }
+
         .bname:hover {
             color: #0a58ca;
         }
+
         .floor {
             color: #999;
             font-size: 1rem;
         }
+
         .main-floor {
             margin-right: 10px;
         }
+
         .comment-body {
             text-align: justify;
             margin-top: 10px;
             margin-right: 20px;
         }
+
         .sub-floor {
             display: flex;
             flex-direction: column;
@@ -113,8 +130,8 @@
     </style>
     <div class="card to-board">
         <div class="back-to to-board-item">&lt;Back to {{ data["board_info"]["bname"] }}</div>
-{#        <div class="to-board-item"><img class="cover" src="{{ "/cdn/" + data["board_info"]["cover"] }}" alt=""></div>#}
-{#        <div class="bname to-board-item">{{ data["board_info"]["bname"] }}</div>#}
+        {#        <div class="to-board-item"><img class="cover" src="{{ "/cdn/" + data["board_info"]["cover"] }}" alt=""></div>#}
+        {#        <div class="bname to-board-item">{{ data["board_info"]["bname"] }}</div>#}
     </div>
     <div class="card">
         <div class="card-body">
@@ -144,11 +161,13 @@
             <br>
 
             <div class="btn-group">
-                <button id="plb-{{ data.post_info['Pid'] }}" class="btn like-btn btn-outline-danger {% if data.post_info['liked_by_user'] %}active{% endif %}">
+                <button id="plb-{{ data.post_info['Pid'] }}"
+                        class="btn like-btn btn-outline-danger {% if data.post_info['liked_by_user'] %}active{% endif %}">
                     <i class="bi bi-hand-thumbs-up"></i>
                     <span id="pl-{{ data.post_info['Pid'] }}"> {{ data.post_info['like_count'] }}</span></button>
 
-                <button id="pdb-{{ data.post_info['Pid'] }}" class="btn dislike-btn btn-outline-dark {% if data.post_info['disliked_by_user'] %}active{% endif %}">
+                <button id="pdb-{{ data.post_info['Pid'] }}"
+                        class="btn dislike-btn btn-outline-dark {% if data.post_info['disliked_by_user'] %}active{% endif %}">
                     <i class="bi bi-hand-thumbs-down"></i>
                     <span id="pd-{{ data.post_info['Pid'] }}"> {{ data.post_info['dislike_count'] }}</span></button>
 
@@ -187,7 +206,9 @@
                                     <input type="hidden" name="Bid" value="{{ data.post_info['Bid'] }}">
                                     <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
                                 </form>
-                                <button class="btn btn-primary p-del-btn" data-pid="{{ data.post_info['Pid'] }}">Delete</button>
+                                <button class="btn btn-primary p-del-btn" data-pid="{{ data.post_info['Pid'] }}">
+                                    Delete
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -231,12 +252,14 @@
 
                     <div class="btn-group">
 
-                        <button id="clb-{{ comment['Cid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if comment['liked_by_user'] %}active{% endif %}">
+                        <button id="clb-{{ comment['Cid'] }}"
+                                class="btn btn-sm like-btn btn-outline-danger {% if comment['liked_by_user'] %}active{% endif %}">
                             <i class="bi bi-hand-thumbs-up"></i>
                             <span id="cl-{{ comment['Cid'] }}"> {{ comment['like_count'] }}</span>
                         </button>
 
-                        <button id="cdb-{{ comment['Cid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if comment['disliked_by_user'] %}active{% endif %}">
+                        <button id="cdb-{{ comment['Cid'] }}"
+                                class="btn btn-sm dislike-btn btn-outline-dark {% if comment['disliked_by_user'] %}active{% endif %}">
                             <i class="bi bi-hand-thumbs-down"></i>
                             <span id="cd-{{ comment['Cid'] }}"> {{ comment['dislike_count'] }}</span>
                         </button>
@@ -268,7 +291,9 @@
                                             <input type="hidden" name="Cid" value="{{ comment['Cid'] }}">
                                             <input type="hidden" name="Pid" value="{{ data.post_info['Pid'] }}">
                                         </form>
-                                        <button class="btn btn-primary c-del-btn" data-cid="{{ comment['Cid'] }}">Delete</button>
+                                        <button class="btn btn-primary c-del-btn" data-cid="{{ comment['Cid'] }}">
+                                            Delete
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -327,7 +352,7 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
 
-    <input type="hidden" id="Uid" value="{{ session["Uid"] or 0}}">
+    <input type="hidden" id="Uid" value="{{ session["Uid"] or 0 }}">
     <input type="hidden" id="Bid" value="{{ data['post_info']["Bid"] }}">
     <script src="{{ url_for("static", filename="/js/post.js") }}"></script>
     <script src="{{ url_for("static", filename="/js/unbind_editor.js") }}"></script>
@@ -336,18 +361,21 @@
     <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
-                <a class="page-link" href="/post/{{ data['post_info']['Pid'] }}?page={{ data['page'] - 1 }}&order={{ data['post_info']['order'] }}"
+                <a class="page-link"
+                   href="/post/{{ data['post_info']['Pid'] }}?page={{ data['page'] - 1 }}&order={{ data['post_info']['order'] }}"
                    tabindex="-1">Previous</a>
             </li>
 
             {% for i in range(1, 1 + data['num_page']) %}
                 <li class="page-item{% if i == data['page'] %} active {% endif %}">
-                    <a class="page-link" href="/post/{{ data['post_info']['Pid'] }}?page={{ i }}&order={{ data['post_info']['order'] }}">{{ i }}</a>
+                    <a class="page-link"
+                       href="/post/{{ data['post_info']['Pid'] }}?page={{ i }}&order={{ data['post_info']['order'] }}">{{ i }}</a>
                 </li>
             {% endfor %}
 
             <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
-                <a class="page-link" href="/post/{{ data['post_info']['Pid'] }}?page={{ data['page'] + 1 }}&order={{ data['post_info']['order'] }}">Next</a>
+                <a class="page-link"
+                   href="/post/{{ data['post_info']['Pid'] }}?page={{ data['page'] + 1 }}&order={{ data['post_info']['order'] }}">Next</a>
             </li>
         </ul>
     </nav>

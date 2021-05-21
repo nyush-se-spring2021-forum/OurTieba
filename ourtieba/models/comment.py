@@ -4,11 +4,11 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
-from ..configs.macros import STATUS_DELETED, STATUS_BANNED
-from ..database import my_db
 from .comment_status import CommentStatus
 from .report import Report
 from .user import User
+from ..configs.macros import STATUS_DELETED, STATUS_BANNED
+from ..database import my_db
 
 
 class Comment(BaseORM, my_db.Base):

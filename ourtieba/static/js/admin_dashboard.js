@@ -23,17 +23,17 @@ $("#admin-logout").on("click", function () {
 })
 
 function manageTarget(action, target) {  // action: 0=delete, 1=restore; target: 0=board, 1=post, 2=comment
-    let id = $('#'+cls_dict[target]).val().trim();
+    let id = $('#' + cls_dict[target]).val().trim();
     $.ajax({
         method: 'post',
-        url: "/admin/"+target_dict[target]+"/"+((action)?"restore":"delete"),
+        url: "/admin/" + target_dict[target] + "/" + ((action) ? "restore" : "delete"),
         dataType: 'json',
         data: {Bid: id, Pid: id, Cid: id},
         success: data => {
             if (!data.status) {
                 alert(data.error.msg);
             } else {
-                alert(((action)?'Restore ':'Delete ')+target_dict[target]+id+' successful!');
+                alert(((action) ? 'Restore ' : 'Delete ') + target_dict[target] + id + ' successful!');
             }
             clearInput(target);
         }
@@ -63,14 +63,14 @@ function manageUser(action) {  // action: 0=ban, 1=unban
     let days = $('#days').val().trim();
     $.ajax({
         method: 'post',
-        url: "/admin/user/"+((action)?"unban":"ban"),
+        url: "/admin/user/" + ((action) ? "unban" : "ban"),
         dataType: 'json',
         data: {Uid: Uid, days: days},
         success: data => {
             if (!data.status) {
                 alert(data.error.msg);
             } else {
-                alert(((action)?'Unban':'Ban')+' user'+Uid+' successful!');
+                alert(((action) ? 'Unban' : 'Ban') + ' user' + Uid + ' successful!');
             }
             $("#Uid").val("");
             $("#days").val("");
@@ -79,7 +79,7 @@ function manageUser(action) {  // action: 0=ban, 1=unban
 }
 
 function clearInput(target) {
-    $('#'+cls_dict[target]).val("");
+    $('#' + cls_dict[target]).val("");
 }
 
 $(".mt-btn").on("click", function () {

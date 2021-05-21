@@ -17,14 +17,14 @@ $("#admin-logout").on("click", function () {
 $("#board-name").on("keyup", function () {
     let count = $(this).val().length;
     let is_exceed = count > 40;
-    $(".name-count").text((is_exceed?"Name length exceeded! ":"")+count+"/40")
-        .css("color", is_exceed?"#d00303":"#aaa");
+    $(".name-count").text((is_exceed ? "Name length exceeded! " : "") + count + "/40")
+        .css("color", is_exceed ? "#d00303" : "#aaa");
 })
 $("#board-des").on("keyup", function () {
     let count = $(this).val().length;
     let is_exceed = count > 200;
-    $(".des-count").text((is_exceed?"Description length exceeded! ":"")+count+"/200")
-        .css("color", is_exceed?"#d00303":"#aaa");
+    $(".des-count").text((is_exceed ? "Description length exceeded! " : "") + count + "/200")
+        .css("color", is_exceed ? "#d00303" : "#aaa");
 })
 
 // upload cover
@@ -51,7 +51,7 @@ $("#cover-upload").on("change", function () {
                 alert(data.error.msg);
             } else {
                 cover_src = data.src;
-                $(this).css("background", 'url('+'/cdn/'+ data.src+')')
+                $(this).css("background", 'url(' + '/cdn/' + data.src + ')')
                     .css("background-size", "cover");
             }
         }
@@ -67,7 +67,7 @@ $("#btn-cancel").on("click", () => {
 $("#btn-create").on("click", function () {
     $.post({
         url: "/admin/board/add",
-        data: {name:$("#board-name").val().trim(), description:$("#board-des").val().trim(), cover:cover_src},
+        data: {name: $("#board-name").val().trim(), description: $("#board-des").val().trim(), cover: cover_src},
         success: data => {
             if (!data.status) {
                 alert(data.error.msg);

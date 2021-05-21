@@ -5,9 +5,9 @@ import time
 from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 
-from ..configs.macros import AVATAR_PATH
 from ._tables import user_report_table
 from .baseORM import BaseORM
+from ..configs.macros import AVATAR_PATH
 from ..database import my_db
 
 

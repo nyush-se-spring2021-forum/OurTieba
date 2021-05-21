@@ -5,8 +5,8 @@ var like_btn = $(".like-btn");
 var dislike_btn = $(".dislike-btn");
 
 // must add css after DOM render, upper place won't work
-like_btn.css("border-radius","5px");
-dislike_btn.css("border-radius","5px");
+like_btn.css("border-radius", "5px");
+dislike_btn.css("border-radius", "5px");
 
 // bind back to board events
 $(".to-board-item").on("click", () => {
@@ -16,7 +16,7 @@ $(".to-board-item").on("click", () => {
 $(".OT_image").on("click", function () {
     // let cur_index = $(".OT_image").index(this);
     let src = $(this).attr("src");
-    window.open("/photos?Pid="+Pid+"&src="+src);  // show images within both the post and comment content
+    window.open("/photos?Pid=" + Pid + "&src=" + src);  // show images within both the post and comment content
 })
 // prepare ueditor
 var ue = UE.getEditor('editor', {
@@ -64,8 +64,8 @@ function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=like
             if (!data.status) {
                 alert(data.error.msg);
             } else {
-                let l_b = $("#"+target.substr(0, 1)+"lb-"+id);
-                let d_b = $("#"+target.substr(0, 1)+"db-"+id);
+                let l_b = $("#" + target.substr(0, 1) + "lb-" + id);
+                let d_b = $("#" + target.substr(0, 1) + "db-" + id);
                 let f = (which) ? d_b : l_b;
                 let u = (which) ? l_b : d_b;
                 f.removeClass("active");
@@ -74,8 +74,8 @@ function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=like
                 } else {
                     u.removeClass("active");
                 }
-                $("#"+target.substr(0, 1)+"l-"+id).text(" "+data["like_count"]);
-                $("#"+target.substr(0, 1)+"d-"+id).text(" "+data["dislike_count"]);
+                $("#" + target.substr(0, 1) + "l-" + id).text(" " + data["like_count"]);
+                $("#" + target.substr(0, 1) + "d-" + id).text(" " + data["dislike_count"]);
             }
         }
     })
@@ -84,12 +84,12 @@ function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=like
 // like/dislike post/comment
 like_btn.on("click", function () {
     let me = this.id;
-    sendLike(1, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+    sendLike(1, (me.substr(0, 1) === "p") ? "post" : "comment", me.substring(4, me.length));
 })
 
 dislike_btn.on("click", function () {
     let me = this.id;
-    sendLike(0, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+    sendLike(0, (me.substr(0, 1) === "p") ? "post" : "comment", me.substring(4, me.length));
 })
 
 $(".btn-submit").on("click", () => {
@@ -131,10 +131,12 @@ $(".btn-reply").on("click", function () {
 })
 
 function insertReply(uid, uname, floor, cid) {
-    if (!Uid) {return}  // do not insert any content if not logged in
+    if (!Uid) {
+        return
+    }  // do not insert any content if not logged in
     ue.ready(() => {
         // set as new text
-        ue.setContent('<p><a class="OT_reply" data-cid="'+ cid + '"' +' data-uid="'+uid+'"'+'href="/profile/' +
+        ue.setContent('<p><a class="OT_reply" data-cid="' + cid + '"' + ' data-uid="' + uid + '"' + 'href="/profile/' +
             uid + '" target="_blank">@' + uname + ' (#' + floor + '):</a>&nbsp;</p>')
         ue.focus(true);  // focus cursor at the end of text
     })

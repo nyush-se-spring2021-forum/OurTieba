@@ -2,6 +2,7 @@ class TestClient:
     """
     Test before_request and after_request decorators in __init__.py.
     """
+
     def test_1(self, client):  # disallowed methods
         res = client.put("/")
         assert res.status_code == 405

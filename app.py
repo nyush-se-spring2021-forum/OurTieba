@@ -6,6 +6,5 @@ env = "production" if len(sys.argv) == 1 or sys.argv[1] != "--dev" else "develop
 
 app = create_app(env)
 
-
 if __name__ == '__main__':
     app.run()

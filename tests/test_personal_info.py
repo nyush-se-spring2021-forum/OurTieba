@@ -3,6 +3,7 @@ class TestPersonalInfo:
     Test all functions relating to personal info in api.py. In this phase, only testing add action is enough. Since
     users can choose to update only part of their personal info, tests will focus on each argument separately.
     """
+
     def test_1(self, personal_info):  # not logged in
         res = personal_info.add(nickname="Hook")
         assert b"Please sign in" in res.content
@@ -15,7 +16,7 @@ class TestPersonalInfo:
 
     def test_3(self, auth, personal_info):  # nickname too long
         auth.login()
-        res = personal_info.add(nickname="H"*21)
+        res = personal_info.add(nickname="H" * 21)
         assert b"Nickname too long." in res.content
         auth.logout()
 
@@ -39,7 +40,7 @@ class TestPersonalInfo:
 
     def test_7(self, auth, personal_info):  # invalid email
         auth.login()
-        res = personal_info.add(address="K"*201)
+        res = personal_info.add(address="K" * 201)
         assert b"Address too long." in res.content
         auth.logout()
 

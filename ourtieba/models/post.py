@@ -4,13 +4,13 @@ from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, PickleType
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
-from ..database import my_db
-from ..configs.macros import STATUS_NORMAL, STATUS_DELETED, STATUS_BANNED
 from .comment import Comment
+from .notification import Notification
 from .post_status import PostStatus
 from .report import Report
 from .user import User
-from .notification import Notification
+from ..configs.macros import STATUS_NORMAL, STATUS_DELETED, STATUS_BANNED
+from ..database import my_db
 
 
 class Post(BaseORM, my_db.Base):

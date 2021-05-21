@@ -10,12 +10,14 @@
         span {
             margin-bottom: 5px;
         }
+
         .emoji-body {
             display: flex;
             flex-wrap: wrap;
             width: calc(100% - 2px);
             height: calc(100% - 39px);
         }
+
         .emoji-box {
             width: 23%;
             height: 23%;
@@ -23,13 +25,16 @@
             justify-content: space-between;
             align-content: space-between;
         }
+
         .emoji-content {
             font-size: 18px;
         }
+
         .emoji-content:hover {
             background: #eeeeee;
             cursor: pointer;
         }
+
         .focus {
             color: black;
         }
@@ -131,10 +136,13 @@
         <div class="emoji-box"><p class="emoji-content">&#x1f64f;</p></div>
     </div>
     <div class="emoji-body tabbody" style="display: none; flex-direction: column">
-        <label for="user-in"></label><div style="height: 30%; margin-bottom: 10px">unicode: &<input id="user-in">
-        <button id="add-emoji">add</button></div>
+        <label for="user-in"></label>
+        <div style="height: 30%; margin-bottom: 10px">unicode: &<input id="user-in">
+            <button id="add-emoji">add</button>
+        </div>
         <div style="width: 100%; overflow: hidden">Valid inputs look like "#9818"(decimal), "#x1f680"(hex)
-            or "larr;"(name)</div>
+            or "larr;"(name)
+        </div>
         <div id="fetch" style="display: none"></div>
     </div>
 </div>

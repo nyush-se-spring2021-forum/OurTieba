@@ -2,14 +2,17 @@
 body {
     font-size: 18px;
 }
+
 img {
     max-width: 384px;
     max-height: 384px;
 }
+
 iframe {
     max-width: 30vw;
     max-height: 30vh;
 }
+
 .OT_reply {
     padding: 0 5px;
     color: black;
@@ -20,6 +23,7 @@ iframe {
     cursor: not-allowed;
     font-size: 16px;
 }
+
 .OT_reply:hover {
     color: #444444;
     background-color: #98fcd1;

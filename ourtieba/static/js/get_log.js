@@ -12,12 +12,13 @@ function getLog() {
         method: "GET",
         url: "/api/get_log?t=" + new Date().getTime() / 1000,
         success: data => {
-            let count = (data.code===200) ? data.new_count : 0;
+            let count = (data.code === 200) ? data.new_count : 0;
             $("#new_message").text("New Messages: " + count);
         }
     })
     setTimeout(getLog, 5000);
 }
+
 window.onload = function () {
     getLog();
 }

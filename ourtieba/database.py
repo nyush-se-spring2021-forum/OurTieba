@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine, func, inspect, and_
+from sqlalchemy import create_engine, func, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
 
@@ -45,8 +45,6 @@ class myDb:
         """
         self.connect(*args, **kwargs)
         # import all models here (only the class name)
-        from .models import Admin, Board, Comment, CommentStatus, History, Post, PostStatus, Report, Subscription,\
-            User, user_report_table
         self.Base.metadata.create_all(bind=self._engine)
 
     def query(self, target, condition=True, order=True, first=False, limit=False, offset=0):

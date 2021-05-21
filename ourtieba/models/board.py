@@ -4,9 +4,9 @@ from sqlalchemy import Column, Integer, String, DateTime, PickleType
 from sqlalchemy.orm import relationship
 
 from .baseORM import BaseORM
-from ..database import my_db
 from .comment import Comment
 from .post import Post
+from ..database import my_db
 
 
 class Board(BaseORM, my_db.Base):
@@ -166,7 +166,7 @@ class Board(BaseORM, my_db.Base):
         :return: board info list.
         """
         boards = cls._query(Board.name.like("%" + keyword + "%"), order=order, limit=page_size,
-                            offset=(page_num-1)*page_size)
+                            offset=(page_num - 1) * page_size)
         board_search_list = [{"Bid": b.Bid, "name": b.name, "hot": b.hot, "post_count": b.postCount} for b in boards]
         return board_search_list
 

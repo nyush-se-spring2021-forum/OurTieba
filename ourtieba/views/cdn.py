@@ -2,7 +2,6 @@ from flask import Blueprint, make_response, abort, send_file
 
 from ..configs import *
 
-
 cdn = Blueprint("cdn", __name__, url_prefix="/cdn")
 
 

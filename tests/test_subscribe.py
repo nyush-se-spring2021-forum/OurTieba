@@ -3,6 +3,7 @@ class TestSubscribe:
     Test func "subscribe" in api.py. If a user has already subscribed/unsubscribed but sends an request with action =
     "1"/"0", this request is perfectly fine and not considered fault. In this case, only LMT will be updated.
     """
+
     def test_1(self, subscribe):  # not logged in
         res = subscribe.subscribe(Bid=2, action="1")
         assert b"Please sign in" in res.content

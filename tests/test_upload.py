@@ -2,6 +2,7 @@ class TestUpload:
     """
     Test func "handle_upload" in api.py. Will not test large image or video because it takes time to upload to Github.
     """
+
     def test_1(self, upload):  # wrong method for config
         res = upload.upload_file(action="config", files=None)
         assert b"Something went wrong." in res.content

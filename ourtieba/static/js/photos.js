@@ -4,7 +4,7 @@ var init_i = parseInt($("#init_i").val().trim());
 var left_arrow = $(".left-arrow");
 var right_arrow = $(".right-arrow");
 
-$(function(){
+$(function () {
     if (nb_photo === 0) {  // hide notice bar if no photos to display
         $("#notice-bar").css("display", "none");
     } else {
@@ -21,11 +21,15 @@ $(function(){
             // alter index, pad zeros before (just for visual effect)
             let p_index = d_index.toString();
             let p_nb = nb_photo.toString();
-            for (let i=0;i<p_nb.length-p_index.length;i++) {
+            for (let i = 0; i < p_nb.length - p_index.length; i++) {
                 p_index = "0" + p_index;
             }
-            if (p_index.length<=1) {p_index = "0" + p_index;}
-            if (p_nb.length<=1) {p_nb = "0" + p_nb;}
+            if (p_index.length <= 1) {
+                p_index = "0" + p_index;
+            }
+            if (p_nb.length <= 1) {
+                p_nb = "0" + p_nb;
+            }
             $(".index").text(p_index + " / " + p_nb);
 
             // first restore arrow style
@@ -61,7 +65,7 @@ $(function(){
     }
 
     // click image will open a new tab
-    $(".OT_image").on("click", function (){
+    $(".OT_image").on("click", function () {
         window.open(this.src, "_blank");
     })
 

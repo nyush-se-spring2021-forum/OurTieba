@@ -4,25 +4,27 @@
 
 {% block page_content %}
     <style>
-    .index-cover-wrap{
-        height: 80px;
-        width: 80px;
-        background-color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-right: 25px;
-        border: 1px solid #DADCDF;
-    }
-    .index-bname-wrap {
-        display: flex;
-        align-items: center;
-    }
-    .index-cover {
-        width: 70px;
-        height: 70px;
-        object-fit: cover;
-    }
+        .index-cover-wrap {
+            height: 80px;
+            width: 80px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 25px;
+            border: 1px solid #DADCDF;
+        }
+
+        .index-bname-wrap {
+            display: flex;
+            align-items: center;
+        }
+
+        .index-cover {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+        }
     </style>
     <div class="page-header">
         <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
@@ -46,7 +48,7 @@
                     </div>
                     <div class="col-auto d-none d-lg-block">
                         <img src="{{ news['img_src'] or "data:image/gif;base64,iVBORw0KGgo" +
-                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg=="}}"
+                        "AAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" }}"
                              alt="" height="100%" width="200"
                              style="object-fit: cover; object-position: center">
 
@@ -66,9 +68,10 @@
                 <div>
                     <div class="index-bname-wrap">
                         <div class="index-cover-wrap">
-                        <img class="index-cover" src="{{ "/cdn/" + board["cover"] }}" alt="">
+                            <img class="index-cover" src="{{ "/cdn/" + board["cover"] }}" alt="">
                         </div>
-                        <a href="/board/{{ board['Bid'] }}" class="text-decoration-none display-6">{{ board['name'] }}</a>
+                        <a href="/board/{{ board['Bid'] }}"
+                           class="text-decoration-none display-6">{{ board['name'] }}</a>
                     </div>
                     <div class="accordion-body">Hot: {{ board['hot'] }}</div>
                     <div class="accordion-body">Post count: {{ board['post_count'] }}</div>

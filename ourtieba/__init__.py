@@ -37,6 +37,7 @@ def register_route(app):
     :param app: Flask app instance
     :return: None.
     """
+
     @app.teardown_appcontext
     def teardown_session(e):
         """

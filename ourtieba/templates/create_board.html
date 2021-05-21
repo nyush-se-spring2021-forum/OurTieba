@@ -1,11 +1,11 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
-                      rel="stylesheet"
-                      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
-                      crossorigin="anonymous">
+      rel="stylesheet"
+      integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+      crossorigin="anonymous">
 <script src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"
-                        integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
-                        crossorigin="anonymous"></script>
+        integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
+        crossorigin="anonymous"></script>
 <link rel="icon" href="{{ url_for('static', filename='ico/favicon.ico') }}" type="image/x-icon">
 <title>Create Board</title>
 <style>
@@ -25,10 +25,12 @@
             flex-direction: column;
             font-size: 1.8rem;
         }
+
         .form-top {
             height: 85%;
             display: flex;
         }
+
         .form-left {
             display: flex;
             flex-direction: column;
@@ -37,10 +39,12 @@
             width: 30%;
             height: 100%;
         }
+
         .cover-text {
             margin-bottom: 30px;
         }
-        #cover-upload {  /* https://www.gxlcms.com/css-261197.html */
+
+        #cover-upload { /* https://www.gxlcms.com/css-261197.html */
             display: block;
             width: 100px;
             height: 100px;
@@ -52,6 +56,7 @@
             background: url("/cdn/cover/OurTieba.png");
             background-size: cover;
         }
+
         /* #cover-upload::before{
             content: '';
             position: absolute;
@@ -77,33 +82,40 @@
             color: #0a53be;
             cursor: pointer;
         }
+
         .hint {
             padding-top: 3%;
             font-size: 0.9rem;
             color: #aaa;
         }
+
         .form-right {
             display: flex;
             flex-direction: column;
             width: 70%;
             height: 100%;
         }
+
         .board-wrap {
             width: 100%;
             display: flex;
         }
+
         .board-name-text {
             margin-right: 10px;
             width: 20%;
         }
+
         .board-name-wrap {
             height: 15%;
             align-items: flex-end;
         }
+
         .board-des-wrap {
             height: 75%;
             flex-direction: column;
         }
+
         .word-count {
             height: 5%;
             font-size: 1rem;
@@ -111,12 +123,14 @@
             text-align: right;
             color: #aaa;
         }
+
         #board-name {
             line-height: 1.5rem;
             font-size: 1.3rem;
             width: 60%;
             margin-bottom: 5px;
         }
+
         #board-des {
             height: 80%;
             font-size: 1.3rem;
@@ -125,12 +139,14 @@
             margin-top: 10px;
             resize: none;
         }
+
         .form-bottom {
             height: 15%;
             display: flex;
             justify-content: center;
             align-items: center;
         }
+
         .action-btn {
             display: flex;
             flex-direction: column;
@@ -139,14 +155,17 @@
             height: 50%;
             font-size: 1.2rem;
         }
+
         #btn-create {
             margin-right: 150px;
         }
+
         #btn-cancel {
             color: black;
             background-color: #b1afaf;
             margin-left: 150px;
         }
+
         #btn-cancel:hover {
             background-color: #d2d2d2;
         }
@@ -162,18 +181,18 @@
     <div class="form-body">
         <div class="form-top">
             <div class="form-left">
-                <div class="cover-text">Cover: </div>
+                <div class="cover-text">Cover:</div>
                 <input id="cover-upload" accept="image/*" type="file">
                 <p class="hint">*click to upload cover</p>
             </div>
             <div class="form-right">
                 <div class="board-name-wrap board-wrap">
-                    <div class="board-name-text">Name: </div>
+                    <div class="board-name-text">Name:</div>
                     <label for="board-name"></label><input id="board-name" autocomplete="off">
                 </div>
                 <div class="name-count word-count">0/40</div>
                 <div class="board-des-wrap board-wrap">
-                    <div class="board-des-text">Description: </div>
+                    <div class="board-des-text">Description:</div>
                     <label for="board-des"></label><textarea id="board-des"></textarea>
                 </div>
                 <div class="des-count word-count">0/200</div>

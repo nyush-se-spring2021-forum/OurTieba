@@ -1,10 +1,10 @@
 // insert emoji into editor
-$(".emoji-content").on("click", function (){
+$(".emoji-content").on("click", function () {
     editor.execCommand("inserthtml", this.innerHTML);
     dialog.popup.hide();
 })
 // switch tabs
-$(".emoji-page").on("click", function (){
+$(".emoji-page").on("click", function () {
     $(".emoji-page").removeClass("focus");  // remove "focus" class for every class
     $(this).addClass("focus");
     $(".emoji-body").css("display", "none").eq($(this).index()).css("display", "flex");

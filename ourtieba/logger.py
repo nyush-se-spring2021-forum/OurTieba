@@ -7,6 +7,7 @@ class Logger:
     """
     Logger class used to record logs during runtime.
     """
+
     def __init__(self, lg_path):
         logging.basicConfig(filename=lg_path,
                             level=logging.DEBUG,

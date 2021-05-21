@@ -2,6 +2,7 @@ class TestComment:
     """
     Test all functions relating to comment in api.py.
     """
+
     def test_1(self, comment):  # not logged in
         res = comment.add(Pid=1, content="<p>What</p>", text="What")
         assert b"Please sign in" in res.content

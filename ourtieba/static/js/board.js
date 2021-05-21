@@ -8,8 +8,8 @@ var like_btn = $(".like-btn");
 var dislike_btn = $(".dislike-btn");
 
 // must add css after DOM render, upper place won't work
-like_btn.css("border-radius","5px");
-dislike_btn.css("border-radius","5px");
+like_btn.css("border-radius", "5px");
+dislike_btn.css("border-radius", "5px");
 
 // prepare ueditor
 var ue = UE.getEditor('editor', {
@@ -20,13 +20,13 @@ var ue = UE.getEditor('editor', {
     pasteplain: true,  // paste as plaintext
     enableContextMenu: false,
     imageScaleEnabled: false,
-    elementPathEnabled : false,
+    elementPathEnabled: false,
     wordCount: !!Uid,
     maximumWords: 2000
 });
 ue.ready(() => {
     // get rid of popup messages
-    $(".edui-editor-messageholder.edui-default").css({ "visibility": "hidden" });
+    $(".edui-editor-messageholder.edui-default").css({"visibility": "hidden"});
 
     // lock editor when user not logged-in
     if (!Uid) {
@@ -52,19 +52,19 @@ ue.ready(() => {
 // set preview-img link
 $(".preview-img").on("click", function () {
     let Pid = this.getAttribute("data-Pid");
-    window.open("/photos?Pid="+Pid);  // show images within the post content
+    window.open("/photos?Pid=" + Pid);  // show images within the post content
 })
 
 // monitor title word count
 title_input.on("keyup", function () {
     let count = $(this).val().length;
     let is_exceed = count > 150;
-    w_c.text((is_exceed?"Title length exceeded! ":"")+count+"/150").css("color", is_exceed?"#d00303":"#aaa");
+    w_c.text((is_exceed ? "Title length exceeded! " : "") + count + "/150").css("color", is_exceed ? "#d00303" : "#aaa");
 })
 
 function sendSub(action) {  // action: sub/unsub, 1=sub, 0=unsub
-    let hide_btn = action ? sub_btn: unsub_btn;
-    let show_btn = action ? unsub_btn: sub_btn;
+    let hide_btn = action ? sub_btn : unsub_btn;
+    let show_btn = action ? unsub_btn : sub_btn;
     $.ajax({
         method: "POST",
         url: "/api/subscribe",
@@ -76,8 +76,8 @@ function sendSub(action) {  // action: sub/unsub, 1=sub, 0=unsub
             } else {
                 hide_btn.css("display", "none");
                 show_btn.css("display", "inline");
-                alert(action ? "You are the No."+data.subs_count+" subscriber of this board!"
-                    :"Unsubscribe successful!");
+                alert(action ? "You are the No." + data.subs_count + " subscriber of this board!"
+                    : "Unsubscribe successful!");
                 $(".text-num").text(data.subs_count);
             }
         }
@@ -122,8 +122,8 @@ function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=dislik
             if (!data.status) {
                 alert(data.error.msg);
             } else {
-                let l_b = $("#"+target.substr(0, 1)+"lb-"+id);
-                let d_b = $("#"+target.substr(0, 1)+"db-"+id);
+                let l_b = $("#" + target.substr(0, 1) + "lb-" + id);
+                let d_b = $("#" + target.substr(0, 1) + "db-" + id);
                 let f = (which) ? d_b : l_b;
                 let u = (which) ? l_b : d_b;
                 f.removeClass("active");
@@ -132,21 +132,22 @@ function sendLike(which, target, id) {  // which: like/dislike, 1=like, 0=dislik
                 } else {
                     u.removeClass("active");
                 }
-                $("#"+target.substr(0, 1)+"l-"+id).text(" "+data["like_count"]);
-                $("#"+target.substr(0, 1)+"d-"+id).text(" "+data["dislike_count"]);
+                $("#" + target.substr(0, 1) + "l-" + id).text(" " + data["like_count"]);
+                $("#" + target.substr(0, 1) + "d-" + id).text(" " + data["dislike_count"]);
             }
         }
     })
 }
+
 // like/dislike post
 like_btn.on("click", function () {
     let me = this.id;  // plb-xxx
-    sendLike(1, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+    sendLike(1, (me.substr(0, 1) === "p") ? "post" : "comment", me.substring(4, me.length));
 })
 
 dislike_btn.on("click", function () {
     let me = this.id;
-    sendLike(0, (me.substr(0, 1)==="p")?"post":"comment", me.substring(4, me.length));
+    sendLike(0, (me.substr(0, 1) === "p") ? "post" : "comment", me.substring(4, me.length));
 })
 
 // submit post

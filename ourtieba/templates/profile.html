@@ -7,11 +7,13 @@
         #avatar-upload {
             margin-top: 4px;
         }
+
         #view-origin {
             margin-left: 2vw;
             position: relative;
             bottom: -20px;
         }
+
         /* status box */
         .status-wrapper {
             display: flex;
@@ -19,11 +21,13 @@
             height: 15vmin;
             width: 100%;
         }
+
         .sep-line {
             width: 0;
             height: 100%;
             border-left: 1px solid #7b7b7b;
         }
+
         .status-box {
             width: 25%;
             height: 15vmin;
@@ -31,9 +35,11 @@
             cursor: pointer;
             transition: background-color 0.3s ease-out;
         }
+
         .status-box:hover {
             background-color: #eeeeee;
         }
+
         .status-des {
             color: #171A21;
             font-family: Geneva, sans-serif;
@@ -43,6 +49,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .status-num {
             color: #171A21;
             font-size: 3.5vmin;
@@ -59,10 +66,11 @@
     {% endif %}
     <div class="avatar-wrapper">
         {% if data['isCurrent'] %}
-        <h4>Change your Avatar</h4>
-        <img id="avatar-upload" style=" cursor: pointer" src="{{ '/cdn/'+ session.user_info["avatar"] }}" width="100"
-             height="100" class="rounded-circle" data-toggle="tooltip" title="Change your avatar" alt="">
-        <input id="uploadImg" type="file" accept="image/*" style="display: none">
+            <h4>Change your Avatar</h4>
+            <img id="avatar-upload" style=" cursor: pointer" src="{{ '/cdn/'+ session.user_info["avatar"] }}"
+                 width="100"
+                 height="100" class="rounded-circle" data-toggle="tooltip" title="Change your avatar" alt="">
+            <input id="uploadImg" type="file" accept="image/*" style="display: none">
         {% else %}
             <img id="avatar-upload" src="{{ '/cdn/'+ data["avatar"] }}" width="100"
                  height="100" class="rounded-circle" alt="">
@@ -154,7 +162,8 @@
                         <div class="mb-3">
                             <label for="address" class="col-form-label">Address</label>
                             <label>
-                                <input type="text" id="address" class="form-control" name="address" placeholder="Address"
+                                <input type="text" id="address" class="form-control" name="address"
+                                       placeholder="Address"
                                        value="{{ '' if data['address'] is none else data['address'] }}">
                             </label>
                         </div>
@@ -180,6 +189,7 @@
             left: 0;
 
         }
+
         /* all wrapper */
         .list-wrapper {
             display: none;
@@ -187,32 +197,39 @@
             z-index: 10;
 
             position: relative;
-            left: calc(50% - 25px - 0px);  /* calc(50% - w1 - l1) */
-            top: calc(50% + 40px - 0px);  /* calc(50% + header height - t1) */
+            left: calc(50% - 25px - 0px); /* calc(50% - w1 - l1) */
+            top: calc(50% + 40px - 0px); /* calc(50% + header height - t1) */
             transform: translate(-50%, -50%);
         }
+
         .post-list-wrapper {
             width: 40vmax;
         }
+
         .comment-list-wrapper {
             width: 45vmax;
         }
+
         .subs-list-wrapper {
             width: 35vmax;
         }
+
         .history-list-wrapper {
             width: 40vmax;
         }
+
         /* head */
         .head-wrapper {
             display: flex;
             width: 100%;
-            height: calc(25px + 10px);  /* h1 + x2 (x2 is the top margin you want for list-wrapper) */
+            height: calc(25px + 10px); /* h1 + x2 (x2 is the top margin you want for list-wrapper) */
         }
+
         .list-des {
-            width: calc(100% - 25px - 10px - 0px);  /* calc(100% - w1 - x1 - l1) */
+            width: calc(100% - 25px - 10px - 0px); /* calc(100% - w1 - x1 - l1) */
             margin-left: 10px; /* x1 */
         }
+
         .des-text {
             display: flex;
             flex-direction: column;
@@ -231,9 +248,10 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
         .hide {
-            height: 25px;  /* h1 */
-            width: 25px;  /* w1 */
+            height: 25px; /* h1 */
+            width: 25px; /* w1 */
             outline: none;
             cursor: pointer;
             color: black;
@@ -246,39 +264,43 @@
             margin: 0;
 
             position: relative;
-            top: 0;  /* t1 */
-            left: 0;  /* l1 */
+            top: 0; /* t1 */
+            left: 0; /* l1 */
         }
+
         .hide:hover {
             border: 1px solid black;
             color: white;
             background-color: #5b5b5b;
             transform: rotate(90deg);
         }
+
         /* body (list) */
-        .content-list {  /* height and width are decided by each one's wrapper */
+        .content-list { /* height and width are decided by each one's wrapper */
             position: relative;
-            left: calc(25px + 0px + 10px);  /* 25px = w1, 0px = l1, x1 = 10px = left margin you want */
+            left: calc(25px + 0px + 10px); /* 25px = w1, 0px = l1, x1 = 10px = left margin you want */
             top: 0;
 
             border: 1px solid #2f2e2e;
             border-radius: 10px;
             background-color: rgb(245, 245, 245);
-            width: calc(100% - 25px - 10px - 0px);  /* calc(100% - h1 - x1 - l1) */
-            height: calc(100% - 25px - 10px - 0px);  /* calc(100% - h1 - x2 - t1) */
+            width: calc(100% - 25px - 10px - 0px); /* calc(100% - h1 - x1 - l1) */
+            height: calc(100% - 25px - 10px - 0px); /* calc(100% - h1 - x2 - t1) */
 
             display: flex;
             justify-content: center;
             align-content: flex-start;
             flex-wrap: wrap;
         }
+
         .content {
             display: flex;
             justify-content: space-between;
             border-bottom: 1px solid #b8b7b7;
             width: 95%;
-            height: 11.5%;  /* (100% - 8%) / 8 */
+            height: 11.5%; /* (100% - 8%) / 8 */
         }
+
         /* common class for content */
         .center-nowrap {
             text-align: center;
@@ -286,28 +308,34 @@
             white-space: nowrap;
             text-overflow: ellipsis;
         }
+
         .post-title {
             max-width: 80%;
             font-size: 20px;
             font-family: IBMPlexSans, Arial, sans-serif;
             font-weight: bold;
         }
+
         .post-title:hover {
             text-decoration: underline;
         }
+
         .board-name {
             font-family: BentonSans, sans-serif;
         }
+
         .timestamp {
             font-family: BentonSans, sans-serif;
             cursor: default;
             color: #999898;
         }
+
         /* content: post */
         .post {
             flex-direction: column;
             justify-content: space-around;
         }
+
         .p-top {
             height: 55%;
             display: flex;
@@ -315,6 +343,7 @@
             align-items: center;
             margin-top: 2px;
         }
+
         .p-bottom {
             height: 35%;
             display: flex;
@@ -322,16 +351,19 @@
             align-items: center;
             margin-bottom: 2px;
         }
+
         .p-del {
             color: blueviolet;
             text-decoration: underline;
             cursor: pointer;
         }
+
         /* content: comment */
         .comment {
             flex-direction: column;
             justify-content: space-around;
         }
+
         .c-top {
             height: 55%;
             display: flex;
@@ -339,6 +371,7 @@
             align-items: center;
             margin-top: 2px;
         }
+
         .c-bottom {
             height: 35%;
             display: flex;
@@ -346,70 +379,84 @@
             align-items: center;
             margin-bottom: 2px;
         }
+
         .c-text {
             max-width: 80%;
             font-size: 20px;
             font-family: IBMPlexSans, Arial, sans-serif;
             font-weight: bold;
         }
+
         .c-text:hover {
             text-decoration: underline;
         }
+
         .c-ptitle {
             font-family: BentonSans, sans-serif;
         }
+
         /* content: history */
         .history {
             flex-direction: column;
             justify-content: space-around;
         }
+
         .h-top {
             height: 55%;
             display: flex;
             margin-top: 2px;
         }
+
         .h-bottom {
             height: 35%;
             display: flex;
             justify-content: space-between;
             margin-bottom: 2px;
         }
+
         .h-bname {
             display: flex;
             flex-direction: column;
             justify-content: center;
             max-width: 40%;
         }
+
         .h-time {
             max-width: 25%;
         }
+
         .h-poster {
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
+
         .h-time {
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
+
         /* content: subs */
         .subs {
-            height: 18.4%;  /* (100% - 8%) / 5 */
+            height: 18.4%; /* (100% - 8%) / 5 */
             justify-content: space-between;
         }
+
         .s-left {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-basis: 70%;
         }
+
         .s-right {
             display: flex;
             justify-content: flex-end;
             align-items: center;
             flex-basis: 20%;
         }
+
         .s-cover {
             /* content width = 95% * (100% - 35px) * 35vmax, height = 11.5% * (100% - 35px) * 42vmax */
             height: 70%;
@@ -418,6 +465,7 @@
             background-color: white;
             object-fit: cover;
         }
+
         .s-bname {
             width: 68%;
             font-size: 20px;
@@ -426,17 +474,20 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .s-unsub {
             color: red;
             text-decoration: underline;
             cursor: pointer;
         }
+
         /* foot */
         .foot-wrapper {
             border-bottom: none;
             height: 8%;
             justify-content: space-around;
         }
+
         .arrow {
             display: flex;
             flex-direction: column;
@@ -445,6 +496,7 @@
             text-align: center;
             font-size: 20px;
         }
+
         .index {
             display: flex;
             flex-direction: column;
@@ -452,6 +504,7 @@
             text-align: center;
             font-size: 20px;
         }
+
         /* loading */
         .loading {
             display: none;
@@ -463,6 +516,7 @@
             font-size: 4rem;
             font-family: "Courier New", monospace;
         }
+
         .close-loading {
             background-color: red;
             border-radius: 100%;
@@ -478,18 +532,22 @@
             left: 50%;
             transform: translateX(-50%);
         }
+
         /* general class for content */
         .href {
             cursor: pointer;
         }
+
         /* status class */
-        .deleted {  /* status = 1 or 2 */
+        .deleted { /* status = 1 or 2 */
             color: darkgrey;
         }
     </style>
     <!-- popup (show when click on status box) -->
     <div class="pop-up">
-        <div class="loading">Loading...<br>Please wait...<div class="close-loading">&times;</div> </div>
+        <div class="loading">Loading...<br>Please wait...
+            <div class="close-loading">&times;</div>
+        </div>
         <!-- for posts -->
         <div class="post-list-wrapper list-wrapper">
             <div class="head-wrapper">
@@ -498,18 +556,18 @@
             </div>
             <div class="post-list content-list">
                 {% for _ in range(8) %}
-                <div class="post content">
-                    <div class="p-top">
-                        <div class="p-title post-title center-nowrap href"></div>
-                        {% if session["Uid"] == data["Uid"] %}
-                        <div class="p-del"></div>
-                        {% endif %}
+                    <div class="post content">
+                        <div class="p-top">
+                            <div class="p-title post-title center-nowrap href"></div>
+                            {% if session["Uid"] == data["Uid"] %}
+                                <div class="p-del"></div>
+                            {% endif %}
+                        </div>
+                        <div class="p-bottom">
+                            <div class="p-bname board-name center-nowrap href"></div>
+                            <div class="p-time timestamp center-nowrap"></div>
+                        </div>
                     </div>
-                    <div class="p-bottom">
-                        <div class="p-bname board-name center-nowrap href"></div>
-                        <div class="p-time timestamp center-nowrap"></div>
-                    </div>
-                </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
                     <div class="prev-arrow arrow">&#9668Prev</div>
@@ -526,18 +584,20 @@
             </div>
             <div class="comment-list content-list">
                 {% for _ in range(8) %}
-                <div class="comment content">
-                    <div class="c-top">
-                        <div class="c-text center-nowrap href"></div>  {# post-title #}
-                        {% if session["Uid"] == data["Uid"] %}
-                        <div class="c-del"></div>
-                        {% endif %}
+                    <div class="comment content">
+                        <div class="c-top">
+                            <div class="c-text center-nowrap href"></div>
+                            {# post-title #}
+                            {% if session["Uid"] == data["Uid"] %}
+                                <div class="c-del"></div>
+                            {% endif %}
+                        </div>
+                        <div class="c-bottom">
+                            <div class="c-ptitle center-nowrap href"></div>
+                            {# board-name #}
+                            <div class="c-time timestamp center-nowrap"></div>
+                        </div>
                     </div>
-                    <div class="c-bottom">
-                        <div class="c-ptitle center-nowrap href"></div> {# board-name #}
-                        <div class="c-time timestamp center-nowrap"></div>
-                    </div>
-                </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
                     <div class="prev-arrow arrow">&#9668Prev</div>
@@ -554,19 +614,19 @@
             </div>
             <div class="subs-list content-list">
                 {% for _ in range(5) %}
-                <div class="subs content">
-                    <div class="s-left">
-                        <img class="s-cover" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
+                    <div class="subs content">
+                        <div class="s-left">
+                            <img class="s-cover" src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADU
                     lEQVQImWNgYGBgAAAABQABh6FO1AAAAABJRU5ErkJggg==" alt="">
-                        <div class="s-bname href"></div>
-                    </div>
-                    <div class="s-right">
-                        {% if session["Uid"] == data["Uid"] %}
-                        <div class="s-unsub center-nowrap" data-a="0"></div>
-                        {% endif %}
-                    </div>
+                            <div class="s-bname href"></div>
+                        </div>
+                        <div class="s-right">
+                            {% if session["Uid"] == data["Uid"] %}
+                                <div class="s-unsub center-nowrap" data-a="0"></div>
+                            {% endif %}
+                        </div>
 
-                </div>
+                    </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
                     <div class="prev-arrow arrow">&#9668Prev</div>
@@ -583,16 +643,16 @@
             </div>
             <div class="history-list content-list">
                 {% for _ in range(8) %}
-                <div class="history content">
-                    <div class="h-top">
-                        <div class="h-title post-title center-nowrap href"></div>
+                    <div class="history content">
+                        <div class="h-top">
+                            <div class="h-title post-title center-nowrap href"></div>
+                        </div>
+                        <div class="h-bottom">
+                            <div class="h-bname board-name center-nowrap href"></div>
+                            <div class="h-poster href"></div>
+                            <div class="h-time timestamp center-nowrap"></div>
+                        </div>
                     </div>
-                    <div class="h-bottom">
-                        <div class="h-bname board-name center-nowrap href"></div>
-                        <div class="h-poster href"></div>
-                        <div class="h-time timestamp center-nowrap"></div>
-                    </div>
-                </div>
                 {% endfor %}
                 <div class="content foot-wrapper">
                     <div class="prev-arrow arrow">&#9668Prev</div>

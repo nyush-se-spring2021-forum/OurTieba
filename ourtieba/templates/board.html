@@ -8,18 +8,22 @@
             max-height: 15vmax;
             max-width: 15vmax;
         }
+
         .preview-img {
             max-height: 15vmax;
             max-width: 15vmax;
             object-fit: contain;
         }
+
         .preview-img:hover {
             cursor: zoom-in;
         }
+
         /* Bootstrap overwrite */
         .btn {
             margin-right: 5px;
         }
+
         /* Other styles */
         .empty-notice {
             margin: 5% auto;
@@ -29,6 +33,7 @@
             font-style: italic;
             text-align: center;
         }
+
         .body {
             padding-top: 10px;
             max-height: 8vmax;
@@ -36,6 +41,7 @@
             overflow: hidden;
             text-align: justify;
         }
+
         .post-wrap {
             display: flex;
             justify-content: space-between;
@@ -44,9 +50,11 @@
             border: 1px solid #d1d2d4;
             margin-bottom: 15px;
         }
+
         .post-wrap:hover {
             background-color: #edeff2;
         }
+
         .post-title {
             display: inline-block;
             max-width: 55vw;
@@ -56,36 +64,42 @@
             line-height: 1.3;
             padding-bottom: 4px;
         }
+
         .word-count {
             text-align: right;
             font-size: 0.9rem;
             color: #aaa;
         }
+
         .board-header {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
         }
+
         .board-info {
             width: 100%;
             display: flex;
             flex-direction: row;
         }
-        .cover-wrap {  /* center the cover */
+
+        .cover-wrap { /* center the cover */
             width: 110px;
             height: 110px;
             background-color: white;
             border: 1px solid #DADCDF;
         }
+
         .board-cover {
             width: 100px;
             height: 100px;
             object-fit: cover;
 
             position: relative;
-            top: 4px;  /* beware of border length */
+            top: 4px; /* beware of border length */
             left: 4px;
         }
+
         .board-des {
             width: 70%;
             margin-top: 30px;
@@ -95,6 +109,7 @@
             word-wrap: break-word;
             text-align: justify;
         }
+
         .after-cover {
             height: 110px;
             margin-left: 1vw;
@@ -102,6 +117,7 @@
             flex-direction: column;
             justify-content: space-between;
         }
+
         .board-name {
             margin-top: 5px;
             font-size: 50px;
@@ -109,19 +125,21 @@
             justify-content: flex-end;
             flex-direction: column;
             text-align: left;
-            line-height: 50px;  /* set as font-size to make text touch bottom */
+            line-height: 50px; /* set as font-size to make text touch bottom */
         }
+
         .subs-wrap {
             height: 50px;
             display: flex;
             align-items: flex-end;
             margin-bottom: 2px;
         }
+
         .subs-btn {
             height: 30px;
             width: 80px;
             border-radius: 5px;
-            margin-left: 2px;  /* compensate for the border */
+            margin-left: 2px; /* compensate for the border */
 
             display: flex;
             flex-direction: column;
@@ -129,22 +147,27 @@
             text-align: center;
             cursor: pointer;
         }
+
         .unsub-btn {
             border: 2px solid black;
             background-color: white;
             color: black;
         }
+
         .unsub-btn:hover {
             background-color: whitesmoke;
         }
+
         .sub-btn {
             border: 2px solid transparent;
             background-color: #ea0027;
             color: white;
         }
+
         .sub-btn:hover {
             background-color: red;
         }
+
         .text-label {
             margin-left: 20px;
             display: flex;
@@ -153,6 +176,7 @@
             color: #aaa;
             font-size: 90%;
         }
+
         .text-num {
             margin-left: 10px;
             color: #ff7f3e;
@@ -184,41 +208,47 @@
     <br>
     <div style="text-align: right">
         Sort by:
-        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=latest_comment">latest comment</a>
+        <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=latest_comment">latest
+            comment</a>
         <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=newest">newest</a>
         <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=comment_count">comments</a>
         <a class="text-decoration-none" href="/board/{{ data['board_info']['Bid'] }}?order=like_count">likes</a>
     </div>
     <hr>
-    {% if data['posts'] | length <= 0  %}
-    <p class="empty-notice">Be the First to Post~</p>
+    {% if data['posts'] | length <= 0 %}
+        <p class="empty-notice">Be the First to Post~</p>
     {% endif %}
 
     {% for post in data['posts'] %}
         <div class="post-wrap">
             <article class="post">
-            <header>
-                <div>
-                    <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none post-title">
-                        {{ post['title'] }}</a></h3>
+                <header>
+                    <div>
+                        <h3><a href="/post/{{ post['Pid'] }}" class="text-decoration-none post-title">
+                            {{ post['title'] }}</a></h3>
 
-                    <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
+                        <div class="blockquote-footer">{{ moment(post['publish_time']).fromNow() }}</div>
 
-                    <div class="btn-group">
-                        <button id="plb-{{ post['Pid'] }}" class="btn btn-sm like-btn btn-outline-danger {% if post['liked_by_user'] %}active{% endif %}">
-                            <i class="bi bi-hand-thumbs-up"></i><span id="pl-{{ post['Pid'] }}"> {{ post['like_count'] }}</span></button>
+                        <div class="btn-group">
+                            <button id="plb-{{ post['Pid'] }}"
+                                    class="btn btn-sm like-btn btn-outline-danger {% if post['liked_by_user'] %}active{% endif %}">
+                                <i class="bi bi-hand-thumbs-up"></i><span
+                                    id="pl-{{ post['Pid'] }}"> {{ post['like_count'] }}</span></button>
 
-                        <button id="pdb-{{ post['Pid'] }}" class="btn btn-sm dislike-btn btn-outline-dark {% if post['disliked_by_user'] %}active{% endif %}">
-                            <i class="bi bi-hand-thumbs-down"></i><span id="pd-{{ post['Pid'] }}"> {{ post['dislike_count'] }}</span></button>
+                            <button id="pdb-{{ post['Pid'] }}"
+                                    class="btn btn-sm dislike-btn btn-outline-dark {% if post['disliked_by_user'] %}active{% endif %}">
+                                <i class="bi bi-hand-thumbs-down"></i><span
+                                    id="pd-{{ post['Pid'] }}"> {{ post['dislike_count'] }}</span></button>
 
-                        <button class="btn btn-sm btn-outline-info disabled" style="margin-left: 10px;border-radius: 0">
-                            <i class="bi bi-chat-left-text"></i>&nbsp;&nbsp;{{ post["comment_count"] + 1}}</button>
+                            <button class="btn btn-sm btn-outline-info disabled"
+                                    style="margin-left: 10px;border-radius: 0">
+                                <i class="bi bi-chat-left-text"></i>&nbsp;&nbsp;{{ post["comment_count"] + 1 }}</button>
+                        </div>
+
                     </div>
-
-                </div>
-            </header>
-            <p class="body">{{ post['summary'] }}</p>
-        </article>
+                </header>
+                <p class="body">{{ post['summary'] }}</p>
+            </article>
             {% if post["preview_type"] == "photo" %}
                 <img class="preview-img preview" data-Pid="{{ post['Pid'] }}" alt=""
                      src="{{ "/cdn/" + post["preview_type"] + "/" + post["preview_src"] }}">
@@ -263,18 +293,21 @@
     <nav {% if data['num_page'] <= 1 %}style="display: none"{% endif %}>
         <ul class="pagination justify-content-center">
             <li class="page-item {% if data['page'] == 1 %}disabled{% endif %}">
-                <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] - 1 }}&order={{ data['board_info']['order'] }}"
+                <a class="page-link"
+                   href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] - 1 }}&order={{ data['board_info']['order'] }}"
                    tabindex="-1">Previous</a>
             </li>
 
             {% for i in range(1, 1 + data['num_page']) %}
                 <li class="page-item{% if i == data['page'] %} active {% endif %}">
-                    <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ i }}&order={{ data['board_info']['order'] }}">{{ i }}</a>
+                    <a class="page-link"
+                       href="/board/{{ data['board_info']['Bid'] }}?page={{ i }}&order={{ data['board_info']['order'] }}">{{ i }}</a>
                 </li>
             {% endfor %}
 
             <li class="page-item {% if data['page'] == data['num_page'] %}disabled{% endif %}">
-                <a class="page-link" href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] + 1 }}&order={{ data['board_info']['order'] }}">Next</a>
+                <a class="page-link"
+                   href="/board/{{ data['board_info']['Bid'] }}?page={{ data['page'] + 1 }}&order={{ data['board_info']['order'] }}">Next</a>
             </li>
         </ul>
     </nav>
@@ -283,7 +316,7 @@
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/ueditor.all.min.js") }}"></script>
     <script charset="UTF-8" src="{{ url_for("static", filename="/ueditor/lang/en/en.js") }}"></script>
 
-    <input type="hidden" id="Uid" value="{{ session["Uid"] or 0}}">
+    <input type="hidden" id="Uid" value="{{ session["Uid"] or 0 }}">
     <script src="{{ url_for("static", filename="/js/board.js") }}"></script>
     <script src="{{ url_for("static", filename="/js/unbind_editor.js") }}"></script>
 {% endblock %}
