@@ -33,8 +33,8 @@ Note: a development server will be running for test with a test database. Defaul
 
 `tests/test_index.py` includes a test that uses Selenium to control a web browser and interact with the web pages.
 To use this test, you need to install and configure Selenium Webdriver. More specifically:
-- Go to this website to find a driver for your browser, and place the executable in PATH: https://www.selenium.dev/downloads/
-- In `setup.cfg`, change the `addopts` line, so that the `--driver` parameter matches your browser.
+- Go to this website to find a driver for your browser: https://www.selenium.dev/downloads/
+- In `setup.cfg`, change the `addopts` line, so that the `--driver` parameter matches your browser, and `--driver-path` parameter matches the path of your driver. If you placed your driver executable in your PATH, you may remove this parameter.
 - If your browser executable is not in a standard location, or if you need to further specify options for your browser, follow this guide and add options to `tests/conftest.py`: https://pytest-selenium.readthedocs.io/en/latest/user_guide.html#specifying-a-browser
 
 In addition, you may want to edit `tests/test_index.py` to change a few parameters, for example, the host name of the app, and extra waiting time to compensate for lag.
