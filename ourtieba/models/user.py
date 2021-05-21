@@ -12,12 +12,15 @@ from ..database import my_db
 
 
 class User(BaseORM, my_db.Base):
+    """
+    Mapping of table "user".
+    """
     __tablename__ = 'user'
 
     Uid = Column(Integer, primary_key=True)
     password = Column(String)
     uname = Column(String, unique=True)
-    nickname = Column(String)
+    nickname = Column(String, nullable=False)
     avatar = Column(String, default=AVATAR_PATH + "default_avatar.jpg")  # retrieved by hashing (Uid + upload timestamp)
     timestamp = Column(DateTime, default=datetime.datetime.utcnow)  # time of account creation
     lastCheck = Column(Integer, default=time.time)  # time the user last check message
@@ -65,7 +68,12 @@ class User(BaseORM, my_db.Base):
         return '<User %r>' % self.Uid
 
     @classmethod
-    def is_banned(cls, Uid):  # will try to unban user before return result
+    def is_banned(cls, Uid):
+        """
+        Return whether user is banned or not. Will try to unban user before returning result.
+        :param Uid: user ID.
+        :return: 0 (not banned) or 1 (banned).
+        """
         user = cls._get(Uid)
         if user.banDuration <= datetime.datetime.utcnow():
             user.banned = 0
@@ -73,6 +81,11 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def get_info(cls, Uid):
+        """
+        Get a user's info by Uid. If user not exists, will return None.
+        :param Uid: user ID.
+        :return: None if user not exists, or user info dict
+        """
         user = cls._get(Uid)
         if not user:
             return None
@@ -84,6 +97,12 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def ban(cls, Uid, days):
+        """
+        Ban a user by Uid for a given days. If user not exists, will return error message.
+        :param Uid: user ID.
+        :param days: the number of days to ban user for.
+        :return: error message on failure, or success message on success.
+        """
         user = cls._get(Uid)
         if not user:
             error = {"error": {"msg": "User not found."}, "status": 0}
@@ -96,6 +115,11 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def unban(cls, Uid):
+        """
+        Unban a user by Uid. If user not exists, will return error message.
+        :param Uid: user ID.
+        :return: error message on failure, or success message on success.
+        """
         user = cls._get(Uid)
         if not user:
             error = {"error": {"msg": "User not found."}, "status": 0}
@@ -106,6 +130,12 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def add_personal_info(cls, Uid, values):
+        """
+        Update user's personal info with a given value dict.
+        :param Uid: user ID.
+        :param values: a dict of values to update.
+        :return: nickname and avatar after update. (Note that they are not nullable)
+        """
         cls.update(Uid, values=values)
         match_user = User._get(Uid)
         nickname = match_user.nickname
@@ -114,6 +144,13 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def register_auth(cls, password, username, nickname):
+        """
+        Register a user with given info. If username already exists, will return failure (0).
+        :param password: user's password in plaintext.
+        :param username: user's username.
+        :param nickname: user's nickname.
+        :return: failure (0), or new user's info dict.
+        """
         match_user = cls._query(cls.uname == username, first=True)
         if match_user:
             return 0
@@ -137,16 +174,32 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def get_avatar(cls, Uid):
+        """
+        Get the avatar of a user.
+        :param Uid: user ID.
+        :return: avatar of Uid.
+        """
         return cls._get(Uid).avatar
 
     @classmethod
     def change_avatar(cls, Uid, new_avatar):
+        """
+        Update a user's avatar.
+        :param Uid: user ID.
+        :param new_avatar: new avatar path.
+        :return: user's nickname and avatar after update.
+        """
         cls.update(cls.Uid == Uid, values={"avatar": new_avatar})
         user = cls._get(Uid)
         return user.nickname, user.avatar
 
     @classmethod
     def get_post_info_list(cls, Uid):
+        """
+        Get info list of a user's posts.
+        :param Uid: user ID.
+        :return: user's post info list.
+        """
         user = cls._get(Uid)
         post_info_list = [{"Pid": p.Pid, "Bid": p.Bid, "bname": p.under.name, "title": p.title,
                            "timestamp": p.timestamp, "status": p.status} for p in user.posts]
@@ -154,6 +207,11 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def get_comment_info_list(cls, Uid):
+        """
+        Get info list of a user's comments.
+        :param Uid: user ID.
+        :return: user's comment info list.
+        """
         user = cls._get(Uid)
         comment_info_list = []
         for c in user.comments:
@@ -165,6 +223,11 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def get_subs_info_list(cls, Uid):
+        """
+        Get info list of a user's subscriptions.
+        :param Uid: user ID.
+        :return: user's subscription info list.
+        """
         user = cls._get(Uid)
         subs_info_list = []
         for s in user.subscriptions:
@@ -176,6 +239,12 @@ class User(BaseORM, my_db.Base):
 
     @classmethod
     def get_history_info_list(cls, Uid, cur_Uid):
+        """
+        Get info list of a user's history. If the post's owner in history is current user, will mark it as by "me".
+        :param Uid: user ID.
+        :param cur_Uid: ID of current user (user that starts this request).
+        :return: user's history info list.
+        """
         user = cls._get(Uid)
         history_info_list = []
         for h in user.view:
@@ -183,6 +252,6 @@ class User(BaseORM, my_db.Base):
             p = h.related_post
             history.update({"title": p.title, "bname": p.under.name, "Bid": p.Bid, "Uid": (u := p.owner).Uid,
                             "nickname": u.nickname, "me": int(u.Uid == cur_Uid),
-                            "status": p.status})  # "me" = whether post by me
+                            "status": p.status})  # "me" = whether post by current user
             history_info_list.append(history)
         return history_info_list

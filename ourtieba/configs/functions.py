@@ -9,6 +9,12 @@ from flask import session, redirect
 # Forgery may be possible, but it's csrf token's lob to find it out
 # (which we haven't implemented yet).
 def login_required(f):
+    """
+    Decorator of view (controller) functions to check whether user is logged in or not. If not, will not execute view
+    function but redirect user to login page.
+    :param f: view function object.
+    :return: decorated view function object.
+    """
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if session.get("Uid"):
@@ -20,6 +26,11 @@ def login_required(f):
 
 
 def admin_login_required(f):
+    """
+    Similar to func login_required. The target is admin not user.
+    :param f: view function object.
+    :return: decorated view function object.
+    """
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
         if session.get("Aid"):
@@ -32,6 +43,12 @@ def admin_login_required(f):
 
 @contextmanager
 def auto_scope(_session):
+    """
+    Generator of self-designed database session that does not throw exceptions but print them (in log, because stdout is
+    implicitly set to logger file). Also, auto-commit and auto-rollback is achieved.
+    :param _session: SQLAlchemy database session
+    :return: scoped session
+    """
     if not _session:
         raise Exception("Please connect to database first!")
     try:
@@ -43,6 +60,12 @@ def auto_scope(_session):
 
 
 def convert_time(ts: datetime.datetime):
+    """
+    Convert datetime object into beautified string that is easy to read on web page. If on the same day, will return
+    "Today" + "hour:minutes"; if in the same year, will return "month-days"; else will return "year-month-days".
+    :param ts: timestamp (not the UNIX one, but datetime object).
+    :return: time string.
+    """
     if ts.strftime("%Y") != datetime.datetime.utcnow().strftime("%Y"):
         return ts.strftime("%Y-%m-%d")
     if (day := ts.strftime("%m-%d")) != datetime.datetime.utcnow().strftime("%m-%d"):

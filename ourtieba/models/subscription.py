@@ -9,6 +9,9 @@ from ..database import my_db
 
 
 class Subscription(BaseORM, my_db.Base):
+    """
+    Mapping of table "subscription".
+    """
     __tablename__ = "subscription"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
@@ -35,6 +38,12 @@ class Subscription(BaseORM, my_db.Base):
 
     @classmethod
     def subs_by_user(cls, Uid, Bid):
+        """
+        Get current subscription status by Uid and Bid. If status not exists, will return 0.
+        :param Uid: user ID.
+        :param Bid: board ID.
+        :return: current status (subscribed).
+        """
         subs = cls._get(Uid, Bid)
         if not subs:
             return 0
@@ -42,11 +51,24 @@ class Subscription(BaseORM, my_db.Base):
 
     @classmethod
     def user_subs_count(cls, Uid):
+        """
+        Get user's valid subscription count. The board must be at normal status to be count as valid.
+        :param Uid: user ID.
+        :return: the number of valid subscriptions.
+        """
         count = cls.join_count(Board, and_(Subscription.Uid == Uid, Subscription.subscribed == 1))
         return count
 
     @classmethod
     def needs_update(cls, Uid, Bid, action):
+        """
+        Indicate whether "subscribed" needs to be updated on user subscription, since the system allows user to
+        subscribe an already subscribed board.
+        :param Uid: user ID.
+        :param Bid: board ID.
+        :param action: 0 (unsubscribe) or 1 (subscribe).
+        :return: the span "subscribed" has to update (0, 1, or -1).
+        """
         subs = cls._get(Uid, Bid)
         if subs and subs.subscribed == action:  # do not update if no subs record or subs matches action
             return 0

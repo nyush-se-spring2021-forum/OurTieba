@@ -9,6 +9,9 @@ from ..database import my_db
 
 
 class Notification(BaseORM, my_db.Base):
+    """
+    Mapping of table "notification". Note: some of the notifications are not implemented.
+    """
     __tablename__ = "notification"
 
     Nid = Column(Integer, primary_key=True)
@@ -35,6 +38,17 @@ class Notification(BaseORM, my_db.Base):
 
     @classmethod
     def compose_ntfs(cls, cls_dict, Uid, order, limit, offset, last_check):
+        """
+        Compose notification messages for display in profile.html. Get the list of them. Unchecked notifications will be
+        marked as "is_new".
+        :param cls_dict: the dict that maps string name to its real class.
+        :param Uid: user ID.
+        :param order: by what order the notifications are sorted.
+        :param limit: number of notifications needed.
+        :param offset: from where to fetch the first one.
+        :param last_check: the time user last checked new notifications.
+        :return: notification info list.
+        """
         action_dict = {"like": "liked", "dislike": "disliked", "comment": "commented on", "reply": "replied to",
                        "delete": "deleted", "restore": "restored"}
         ntfs = cls._query(and_(cls.receiver == "user", cls.Rid == Uid), order, limit=limit, offset=offset)
@@ -63,5 +77,12 @@ class Notification(BaseORM, my_db.Base):
 
     @classmethod
     def get_count_between(cls, Uid, start, end):
+        """
+        Get the number of new notifications within a time period. Mainly used for func get_log.
+        :param Uid: user ID.
+        :param start: start of time period.
+        :param end: end of time period.
+        :return: the number of new notifications between start and end.
+        """
         return Notification.count(and_(Notification.receiver == "user", Notification.Rid == Uid,
                                        Notification.timestamp.between(start, end)))

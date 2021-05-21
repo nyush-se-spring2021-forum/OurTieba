@@ -4,8 +4,10 @@ from .database import *  # must import this line here, otherwise cannot get sqla
 
 
 class Logger:
+    """
+    Logger class used to record logs during runtime.
+    """
     def __init__(self, lg_path):
-        self.engine = my_db.get_engine().name
         logging.basicConfig(filename=lg_path,
                             level=logging.DEBUG,
                             format='%(asctime)s [%(thread)d:%(threadName)s] [%(filename)s:%(module)s:%(funcName)s] '
@@ -19,6 +21,11 @@ class Logger:
 
 
 def init_logger(app):
+    """
+    Initialize logger for Flask app.
+    :param app: Flask app instance.
+    :return: logger instance.
+    """
     lg_path = app.config['LOGGER_PATH']
     logger = Logger(lg_path=lg_path)
     return logger

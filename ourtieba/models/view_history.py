@@ -8,6 +8,9 @@ from ..database import my_db
 
 
 class History(BaseORM, my_db.Base):
+    """
+    Mapping of table "history".
+    """
     __tablename__ = "history"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)

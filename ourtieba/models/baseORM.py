@@ -5,7 +5,10 @@ from ..configs.macros import STATUS_NORMAL, STATUS_DELETED, STATUS_BANNED
 
 
 class BaseORM:
-
+    """
+    Contains methods available for all mapped classes to simplify programming. Most of them assumes fetching objects
+    with normal status so that need not to specify status in query condition in real code.
+    """
     @classmethod
     def _get(cls, *key_value, status=STATUS_NORMAL):
         """

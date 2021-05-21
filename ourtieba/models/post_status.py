@@ -9,6 +9,9 @@ from ..database import my_db
 
 # insert/update on "like" or "dislike" actions
 class PostStatus(BaseORM, my_db.Base):
+    """
+    Mapping of table "post_status".
+    """
     __tablename__ = "post_status"
 
     Uid = Column(Integer, ForeignKey("user.Uid"), primary_key=True)
@@ -34,6 +37,12 @@ class PostStatus(BaseORM, my_db.Base):
 
     @classmethod
     def status_by_user(cls, Uid, Pid):
+        """
+        Get current post status by Uid and Pid. If status not exists, will return 0, 0.
+        :param Uid: user ID.
+        :param Pid: post ID.
+        :return: current status (liked, disliked) in tuple.
+        """
         status = cls._get(Uid, Pid)
         if not status:
             return 0, 0

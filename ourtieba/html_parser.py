@@ -6,6 +6,9 @@ from html.parser import HTMLParser
 
 
 class htmlParser(HTMLParser, ABC):
+    """
+    Html parser class used for parsing unsafe html before inserting into database.
+    """
     allow_tags = ['a', 'img', 'br', 'strong', 'b', 'code', 'pre',
                   'p', 'div', 'em', 'span', 'h1', 'h2', 'h3', 'h4',
                   'h5', 'h6', 'blockquote', 'ul', 'ol', 'tr', 'th', 'td',
@@ -191,6 +194,10 @@ class htmlParser(HTMLParser, ABC):
 class parserFactory:
     @staticmethod
     def produce():
+        """
+        Standard function for production of html parser.
+        :return: a htmlParser instance.
+        """
         return htmlParser()
 
 
@@ -198,6 +205,11 @@ my_parser = parserFactory.produce()
 
 
 def enable_parser(app):
+    """
+    Enable parser for Flask app.
+    :param app: Flask app instance.
+    :return: None.
+    """
     if app.config.get("ENABLE_PARSER"):  # the parser is by default disabled
         my_parser.enable()
 

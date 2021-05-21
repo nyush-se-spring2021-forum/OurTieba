@@ -7,6 +7,11 @@ from ..views.user import *
 
 
 def register_blue(app):
+    """
+    Register routes to app.
+    :param app: Flask app instance.
+    :return: None.
+    """
     app.register_blueprint(user_blue)
     app.register_blueprint(guest)
     app.register_blueprint(api)

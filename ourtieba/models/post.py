@@ -14,6 +14,9 @@ from .notification import Notification
 
 
 class Post(BaseORM, my_db.Base):
+    """
+    Mapping of table "post". Note: "stickyOnTop" not implemented, "viewCount" not reflected on web page.
+    """
     __tablename__ = "post"
 
     Pid = Column(Integer, primary_key=True)
@@ -69,6 +72,15 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def get_info_list_by_page(cls, page_num, page_size, key, order, preview=False):
+        """
+        Get post info list by key Bid and pagination, also add preview info if specified.
+        :param preview: whether to fetch preview info.
+        :param page_num: indicates from which page to fetch.
+        :param page_size: how many results on one page.
+        :param key: Bid.
+        :param order: by what order the posts are sorted.
+        :return: post info list.
+        """
         posts = cls._query(cls.Bid == key, order=order, limit=page_size, offset=(page_num - 1) * page_size)
         post_info_list = []
         for p in posts:
@@ -84,9 +96,16 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def get_info_and_board_info(cls, Pid, increment_view=False):
+        """
+        Get post info by Pid and corresponding board info, also increment view count if specified. If post not exists,
+        will return None.
+        :param Pid: post ID
+        :param increment_view: whether to increment view count.
+        :return: post info dict and board info dict (as a tuple).
+        """
         post = cls._get(Pid)
         if not post:
-            return None
+            return None, None
         if increment_view:
             post.viewCount += 1
         post_info = {"Pid": post.Pid, "Bid": post.Bid, "Uid": post.Uid, "title": post.title, "content": post.content,
@@ -98,13 +117,24 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def get_medias(cls, Pid):
+        """
+        Get media list of post by Pid. If post not exists, will return None.
+        :param Pid: post ID.
+        :return: media list of the post.
+        """
         post = cls._get(Pid)
         if not post:
             return None
         return post.medias
 
     @classmethod
-    def get_comment_medias(cls, Pid):  # Pid is valid because this follows func get_medias
+    def get_comment_medias(cls, Pid):
+        """
+        Get media list of comments in a post by Pid. Pid is for sure valid because this function is called only when
+        func get_medias does not return None.
+        :param Pid: post ID.
+        :return: media list of comments in the post.
+        """
         comments = cls._get(Pid).comments
         comment_medias = []
         for c in comments:
@@ -114,7 +144,13 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def ban_post(cls, Pid):
-        match_post: Post = cls._get(Pid)
+        """
+        Ban a post by Pid, and modify post count. Will also ban all comments under it. If post not exists, will return
+        failure (0).
+        :param Pid: post ID.
+        :return: failure (0), or Uid of post owner.
+        """
+        match_post = cls._get(Pid)
         if not match_post:
             return 0
 
@@ -126,6 +162,12 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def delete_post(cls, Pid):
+        """
+        Delete a post by Pid, and modify comment count. Will also delete all comments under it. If post not exists,
+        will return failure (0).
+        :param Pid: post ID.
+        :return: failure (0), or Uid of post owner.
+        """
         match_post = cls._get(Pid)
         if not match_post:
             return 0
@@ -138,6 +180,13 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def restore_post(cls, Pid, by):
+        """
+        Restore a post by Pid, and modify comment count. Will also restore all comments under it (unless deleted by user
+        ). If post not exists, will return failure (0).
+        :param by: who starts this action. "user" or "admin".
+        :param Pid: post ID.
+        :return: failure (0), or Uid of post owner.
+        """
         query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
         match_post = cls._get(Pid, status=query_status)
         if not match_post:
@@ -151,6 +200,13 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def like(cls, Pid, Uid):
+        """
+        Like a post, and update like/dislike count. This action assumes user perform opposite operation on current
+        status, so whether to like/unlike is automatically decided. If post not exists, return 0.
+        :param Pid: post ID.
+        :param Uid: user ID.
+        :return: 0 if post not exists, or current post status.
+        """
         match_post = cls._get(Pid)
         if not match_post:
             return 0
@@ -175,6 +231,13 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def dislike(cls, Pid, Uid):
+        """
+        Dislike a post, and update like/dislike count. This action assumes user perform opposite operation on current
+        status, so whether to dislike/undislike is automatically decided. If post not exists, return 0.
+        :param Pid: post ID.
+        :param Uid: user ID.
+        :return: 0 if post not exists, or current post status.
+        """
         match_post = cls._get(Pid)
         if not match_post:
             return 0
@@ -199,6 +262,13 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def report(cls, Uid, Pid, reason):
+        """
+        Add report of a post. If post not exists, return error message.
+        :param Uid: reporter ID.
+        :param Pid: post ID.
+        :param reason: reason of report.
+        :return: error message on failure, or success message on success.
+        """
         match_post = cls._get(Pid)
         if not match_post:
             error = {"error": {"msg": "Invalid target ID."}, "status": 0}
@@ -213,6 +283,16 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def add_comment(cls, Pid, Uid, reply_ele, text, medias):
+        """
+        Add comment to database and send necessary notifications. If post not exists, return 0. If reply is empty,
+        return -1.
+        :param Pid: post ID.
+        :param Uid: user ID.
+        :param reply_ele: html element of reply.
+        :param text: comment text.
+        :param medias: list of medias in comment.
+        :return: the floor of comment if add successful else 0 or -1 on failures.
+        """
         match_post = cls._get(Pid)
         if not match_post:
             return 0

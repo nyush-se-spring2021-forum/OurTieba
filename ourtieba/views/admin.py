@@ -245,12 +245,21 @@ def admin_report_resolve():
 @admin_blue.route("/create")
 @admin_login_required
 def create_board_interface():
+    """
+    This function is used to direct admin to board creation page
+    :return: create_board.html
+    """
     return render_template("create_board.html")
 
 
 @admin_blue.route("/board/add", methods=["POST"])
 @admin_login_required
 def add_board_by_admin():
+    """
+    This function is used for admin to add a board to database
+    :return: json information
+    if the ban is successful it will return status 1 otherwise it will return error message
+    """
     name = request.form.get("name")
     description = request.form.get("description")
     cover = request.form.get("cover", "cover/OurTieba.png")
@@ -269,6 +278,11 @@ def add_board_by_admin():
 @admin_blue.route("/upload", methods=["POST"])
 @admin_login_required
 def upload_by_admin():
+    """
+    This function is used to handle upload of cover for a board during creation
+    :return: json information
+    if the ban is successful it will return status 1 otherwise it will return error message
+    """
     action = request.args.get("action")
     if action != "uploadcover":
         return jsonify({"error": {"msg": "Wrong action."}, "status": 0})

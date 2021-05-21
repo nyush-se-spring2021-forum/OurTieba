@@ -9,6 +9,9 @@ from ..database import my_db
 
 
 class Report(BaseORM, my_db.Base):
+    """
+    Mapping of table "report".
+    """
     __tablename__ = "report"
 
     Rid = Column(Integer, primary_key=True)
@@ -36,6 +39,13 @@ class Report(BaseORM, my_db.Base):
 
     @classmethod
     def get_unresolved_reports_info_by_page(cls, page_num, page_size, order):
+        """
+        Get info list of unresolved reports by pagination.
+        :param page_num: indicates from which page to fetch.
+        :param page_size: how many results on one page.
+        :param order: by what order the reports are sorted.
+        :return: report info list.
+        """
         reports = cls._query(cls.resolved == 0, order=order, limit=page_size, offset=(page_num - 1) * page_size)
         report_info_list = []
         for r in reports:
@@ -46,11 +56,20 @@ class Report(BaseORM, my_db.Base):
 
     @classmethod
     def count_unresolved_reports(cls):
+        """
+        Get the number of unresolved (resolved=0) reports.
+        :return: the number of unresolved reports.
+        """
         number = cls.count(cls.resolved == 0)
         return number
 
     @classmethod
     def resolve(cls, Rid):
+        """
+        Resolve a report by Rid. If report not exists, will return error message.
+        :param Rid: report ID.
+        :return: error message on failure, or success message on success.
+        """
         report = cls._get(Rid)
         if not report:
             error = {"error": {"msg": "Report not found."}, "status": 0}

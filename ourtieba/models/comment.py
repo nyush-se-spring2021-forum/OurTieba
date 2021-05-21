@@ -12,6 +12,9 @@ from .user import User
 
 
 class Comment(BaseORM, my_db.Base):
+    """
+    Mapping of table "comment".
+    """
     __tablename__ = "comment"
 
     Cid = Column(Integer, primary_key=True)
@@ -50,6 +53,14 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def get_info_list_by_page(cls, page_num, page_size, key, order):
+        """
+        Get comment info list by key Pid and pagination.
+        :param page_num: indicates from which page to fetch.
+        :param page_size: how many results on one page.
+        :param key: Pid.
+        :param order: by what order the comments are sorted.
+        :return: comment info list.
+        """
         comments = cls._query(cls.Pid == key, order, limit=page_size, offset=(page_num - 1) * page_size)
         comment_info_list = [{"Cid": c.Cid, "Uid": c.Uid, "content": c.content, "publish_time": c.timestamp,
                               "like_count": c.likeCount, "dislike_count": c.dislikeCount,
@@ -59,6 +70,11 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def ban_comment(cls, Cid):
+        """
+        Ban a comment by Cid, and modify comment count. If comment not exists, will return failure (0).
+        :param Cid: comment ID.
+        :return: failure (0), or Uid of comment owner.
+        """
         match_comment: Comment = cls._get(Cid)
         if not match_comment:
             return 0
@@ -69,6 +85,11 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def delete_comment(cls, Cid):
+        """
+        Delete a comment by Cid, and modify comment count. If comment not exists, will return failure (0).
+        :param Cid: comment ID.
+        :return: failure (0), or Uid of comment owner.
+        """
         match_comment = cls._get(Cid)
         if not match_comment:
             return 0
@@ -79,6 +100,13 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def restore_comment(cls, Cid, by):
+        """
+        Restore a comment by Cid, and modify comment count unless it is deleted by user. If comment not exists, will
+        return failure (0).
+        :param by: who starts this action. "user" or "admin".
+        :param Cid: comment ID.
+        :return: failure (0), or Uid of comment owner.
+        """
         query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
         match_comment = cls._get(Cid, status=query_status)
         if not match_comment:
@@ -90,6 +118,13 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def like(cls, Cid, Uid):
+        """
+        Like a comment, and update like/dislike count. This action assumes user perform opposite operation on current
+        status, so whether to like/unlike is automatically decided. If comment not exists, return 0.
+        :param Cid: comment ID.
+        :param Uid: user ID.
+        :return: 0 if post not exists, or current comment status.
+        """
         match_comment = cls._get(Cid)
         if not match_comment:
             return 0
@@ -114,6 +149,13 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def dislike(cls, Cid, Uid):
+        """
+        Dislike a comment, and update like/dislike count. This action assumes user perform opposite operation on current
+        status, so whether to dislike/undislike is automatically decided. If comment not exists, return 0.
+        :param Cid: comment ID.
+        :param Uid: user ID.
+        :return: 0 if post not exists, or current comment status.
+        """
         match_comment = cls._get(Cid)
         if not match_comment:
             return 0
@@ -138,6 +180,13 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def report(cls, Uid, Cid, reason):
+        """
+        Add report of a comment. If comment not exists, return error message.
+        :param Uid: reporter ID.
+        :param Cid: comment ID.
+        :param reason: reason of report.
+        :return: error message on failure, or success message on success.
+        """
         match_comment = cls._get(Cid)
         if not match_comment:
             error = {"error": {"msg": "Invalid target ID."}, "status": 0}

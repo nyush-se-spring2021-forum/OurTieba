@@ -8,6 +8,9 @@ from ..database import my_db
 
 
 class Admin(BaseORM, my_db.Base):
+    """
+    Mapping of table "admin".
+    """
     __tablename__ = 'admin'
 
     Aid = Column(Integer, primary_key=True)
@@ -31,6 +34,11 @@ class Admin(BaseORM, my_db.Base):
 
     @classmethod
     def get_info_by_name(cls, aname):
+        """
+        Get info of admin by admin name. If admin not found, return None.
+        :param aname: admin username.
+        :return: None if admin not found, else admin info dict.
+        """
         admin = cls._query(Admin.aname == aname, first=True)
         if not admin:
             return None

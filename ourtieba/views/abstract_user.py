@@ -230,3 +230,12 @@ def render_dplayer():
         loop = 0  # default is no loop
     data = {"src": src, "autoplay": autoplay, "loop": loop}
     return render_template("dplayer_embed.html", data=data)
+
+
+@a_user.route("/prepare_ueditor")
+def prepare_ueditor_iframe():
+    """
+    Prepare the html for the iframe of ueditor.
+    :return: prepare_ueditor.html
+    """
+    return render_template("prepare_ueditor.html")
