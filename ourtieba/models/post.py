@@ -253,8 +253,8 @@ class Post(BaseORM, my_db.Base):
             disliked = match_status.disliked
             cur_status = 0 if disliked else 1
             PostStatus.merge(Uid, Pid, 0, cur_status, datetime.datetime.utcnow())
-            cur_like = match_post.likeCount - 1 if disliked else 0
-            cur_dislike = match_post.dislikeCount + -1 if liked else 1
+            cur_like = match_post.likeCount - 1 if liked else 0
+            cur_dislike = match_post.dislikeCount + -1 if disliked else 1
 
         cls.update(cls.Pid == Pid, values={"likeCount": cur_like, "dislikeCount": cur_dislike})
         return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
