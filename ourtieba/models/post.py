@@ -171,7 +171,8 @@ class Post(BaseORM, my_db.Base):
             match_post.dislikeCount -= 1 if disliked else 0
 
         cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
-        return [cur_status, cur_like, cur_dislike, match_post.Uid]
+        return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
+                "Rid": match_post.Uid}
 
     @classmethod
     def dislike(cls, Cid, Uid):
@@ -195,7 +196,8 @@ class Post(BaseORM, my_db.Base):
             match_post.likeCount -= 1 if liked else 0
 
         cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
-        return [cur_status, cur_like, cur_dislike, match_post.Uid]
+        return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
+                "Rid": match_post.Uid}
 
     @classmethod
     def report(cls, Uid, Pid, reason):
@@ -221,7 +223,6 @@ class Post(BaseORM, my_db.Base):
             ele_text_length = len(reply_ele.text)
             if len(text) <= ele_text_length and not medias:  # content is empty if not text nor media
                 return -1
-                # return jsonify({"error": {"msg": "Empty reply!"}, "status": 0})
 
             # retrieve receiver ID and target ID from data attributes (added by ourself) in HTML tag
             Rid = reply_ele.attrs["data-uid"]
@@ -229,14 +230,10 @@ class Post(BaseORM, my_db.Base):
             # if sender != receiver, send notification to comment owner
             if Uid != Rid:
                 Notification.new("user", Uid, "user", Rid, "comment", Tid, "reply")
-                # ntf_to_commenter = Notification("user", Uid, "user", Rid, "comment", Tid, "reply")
-                # my_db.add(ntf_to_commenter)
 
         # if sender != receiver, send notification to post owner
         if Uid != (Rid := match_post.owner.Uid):
             Notification.new("user", Uid, "user", Rid, "post", Pid, "comment")
-            # ntf_to_poster = Notification("user", Uid, "user", Rid, "post", Pid, "comment")
-            # my_db.add(ntf_to_poster)
 
         # record current available floor
         floor = match_post.availableFloor

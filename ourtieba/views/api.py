@@ -81,14 +81,13 @@ def like():
     else:
         info = Post.like(target_id, Uid)
     if info == 0:
-        return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
-    if info == -1:
-        return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
+        return jsonify({"error": {"msg": "Target not found."}, "status": 0})
 
     # Check whether the user likes his own target
-    if Uid != info[-1]:
-        Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
-    return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
+    if Uid != (Rid := info["Rid"]):
+        Notification.new("user", Uid, "user", Rid, target, target_id, "like", time.time())
+    return jsonify({"cur_status": info["cur_status"], "like_count": info["like_count"],
+                    "dislike_count": info["dislike_count"], "status": 1})
 
 
 @api.route('/dislike', methods=["POST"])
@@ -111,14 +110,13 @@ def dislike():
     else:
         info = Post.dislike(target_id, Uid)
     if info == 0:
-        return jsonify({"error": {"msg": "Invalid target ID."}, "status": 0})
-    if info == -1:
-        return jsonify({"error": {"msg": "Target not exists."}, "status": 0})
+        return jsonify({"error": {"msg": "Target not found."}, "status": 0})
 
     # Check whether the user is dislike his own target
-    if Uid != info[-1]:
-        Notification.new("user", Uid, "user", info[-1], target, target_id, "like", time.time())
-    return jsonify({"cur_status": info[0], "like_count": info[1], "dislike_count": info[2], "status": 1})
+    if Uid != (Rid := info["Rid"]):
+        Notification.new("user", Uid, "user", Rid, target, target_id, "like", time.time())
+    return jsonify({"cur_status": info["cur_status"], "like_count": info["like_count"],
+                    "dislike_count": info["dislike_count"], "status": 1})
 
 
 @api.route('/report/add', methods=["POST"])
@@ -136,7 +134,7 @@ def add_report():
 
     if User.is_banned(Uid):
         return jsonify({"error": {"msg": "You are banned."}, "status": 0})
-    if target not in ["comment", "post"] or not target_id or not target_id.isnumeric() or not reason:
+    if target not in ("comment", "post") or not target_id or not target_id.isnumeric() or not reason:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     reason = my_parser.clean(reason)
@@ -375,9 +373,10 @@ def register_auth():
     if info == 0:
         return jsonify({"error": {"msg": "User already exists."}, "status": 0})
 
-    session["Uid"] = info[0]
-    session["user_info"] = {"nickname": info[1], "avatar": info[2]}
-    session["last_check"] = info[3]
+    # log user in once registered
+    session["Uid"] = info["Uid"]
+    session["user_info"] = {"nickname": info["nickname"], "avatar": info["avatar"]}
+    session["last_check"] = info["last_check"]
     return jsonify({"status": 1})
 
 
@@ -403,12 +402,12 @@ def login_auth():
         return jsonify({"error": {"msg": "Username does not exist."}, "status": 0})
     if info == 1:
         return jsonify({"error": {"msg": "Incorrect password."}, "status": 0})
-    session["Uid"] = info[0]
-    user_info = {"nickname": info[1], "avatar": info[2]}
-    session["user_info"] = user_info
-    session["last_check"] = info[3]
+
+    session["Uid"] = (new_Uid := info["Uid"])
+    session["user_info"] = {"nickname": info["nickname"], "avatar": info["avatar"]}
+    session["last_check"] = info["last_check"]
     # session.permanent = True
-    return jsonify({"status": 1, "Uid": info[0]})
+    return jsonify({"status": 1, "Uid": new_Uid})
 
 
 @api.route('/auth/logout', methods=["POST"])

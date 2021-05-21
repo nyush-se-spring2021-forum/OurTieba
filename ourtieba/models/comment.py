@@ -90,8 +90,6 @@ class Comment(BaseORM, my_db.Base):
         match_comment = cls._get(Cid)
         if not match_comment:
             return 0
-        if match_comment.status != 0:
-            return -1
 
         match_status = CommentStatus._get(Uid, Cid)
         if not match_status:
@@ -107,15 +105,14 @@ class Comment(BaseORM, my_db.Base):
             match_comment.dislikeCount -= 1 if disliked else 0
 
         cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
-        return [cur_status, cur_like, cur_dislike, match_comment.Uid]
+        return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
+                "Rid": match_comment.Uid}
 
     @classmethod
     def dislike(cls, Cid, Uid):
         match_comment = cls._get(Cid)
         if not match_comment:
             return 0
-        if match_comment.status != 0:
-            return -1
 
         match_status = CommentStatus._get(Uid, Cid)
         if not match_status:
@@ -131,7 +128,8 @@ class Comment(BaseORM, my_db.Base):
             match_comment.likeCount -= 1 if liked else 0
 
         cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
-        return [cur_status, cur_like, cur_dislike, match_comment.Uid]
+        return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
+                "Rid": match_comment.Uid}
 
     @classmethod
     def report(cls, Uid, Cid, reason):

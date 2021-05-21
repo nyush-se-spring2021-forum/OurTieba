@@ -37,15 +37,10 @@ def admin_dashboard():
     page = request.args.get("page", "1")
     order = Report.timestamp.desc()
 
-    match_reports = Report.count_unresolved_reports()
-    #match_reports = my_db.query(Report, Report.resolved == 0, order)
-    num_reports = len(match_reports)
+    num_reports = Report.count_unresolved_reports()
     num_page = (num_reports - 1) // PAGE_SIZE + 1
     page = 1 if not page.isnumeric() or int(page) <= 0 else int(page) if int(page) <= num_page else num_page
     reports = Report.get_unresolved_reports_info_by_page(page, PAGE_SIZE, order)
-    # reports = [{"Rid": r.Rid, "target": r.target, "target_ID": r.targetId, "reason": r.reason,
-    #             "timestamp": r.timestamp, "Uid": r.Uid}
-    #            for r in match_reports[(page - 1) * PAGE_SIZE:page * PAGE_SIZE]]
     data = {"num_match": num_reports, "num_page": num_page, "page": page, "reports": reports}
     return render_template("admin_dashboard.html", data=data)
 
@@ -62,18 +57,17 @@ def admin_auth_login():
     if not aname or not password:
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
-    admin_result = Admin.get_admin_by_name(aname)
-    #admin_result = my_db.query(Admin, Admin.aname == aname, first=True)
-    if not admin_result:
-        return jsonify({"error": {"msg": "Admin name Not Found"}, 'status': 0})
+    admin_info = Admin.get_info_by_name(aname)
+    if not admin_info:
+        return jsonify({"error": {"msg": "Admin not found."}, 'status': 0})
     encoded_password = hashlib.sha3_512(password.encode()).hexdigest()
-    recorded_password = admin_result.password
+    recorded_password = admin_info["password"]
     if encoded_password != recorded_password:
         return jsonify({"error": {"msg": "Incorrect password."}, 'status': 0})
 
-    session["Aid"] = admin_result.Aid
-    admin_info = {"nickname": admin_result.nickname, "avatar": admin_result.avatar}
-    session["admin_info"] = admin_info
+    session["Aid"] = admin_info["Aid"]
+    admin_session = {"nickname": admin_info["nickname"], "avatar": admin_info["avatar"]}
+    session["admin_info"] = admin_session
     # session.permanent = True
     return jsonify({'status': 1})
 
@@ -120,8 +114,7 @@ def admin_post_delete():
     Uid = Post.ban_post(Pid)
     if Uid == 0:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
-    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid,
-                     "delete", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid, "delete", time.time())
     return jsonify({'status': 1})
 
 
@@ -140,8 +133,7 @@ def admin_comment_delete():
     Uid = Comment.ban_comment(Cid)
     if Uid == 0:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
-    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid,
-                     "delete", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid, "delete", time.time())
     return jsonify({'status': 1})
 
 
@@ -176,8 +168,7 @@ def admin_post_restore():
     Uid = Post.restore_post(Pid, "admin")
     if Uid == 0:
         return jsonify({"error": {"msg": "Post not found."}, "status": 0})
-    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid,
-                     "restore", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "post", Pid, "restore", time.time())
     return jsonify({'status': 1})
 
 
@@ -196,8 +187,7 @@ def admin_comment_restore():
     Uid = Comment.restore_comment(Cid, "admin")
     if Uid == 0:
         return jsonify({"error": {"msg": "Comment not found."}, "status": 0})
-    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid,
-                     "restore", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "comment", Cid, "restore", time.time())
     return jsonify({'status': 1})
 
 
@@ -215,8 +205,7 @@ def admin_user_ban():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     message = User.ban(Uid, days)
-    Notification.new("admin", session["Aid"], "user", Uid, "user", int(days),
-                     "ban", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "user", int(days), "ban", time.time())
     return jsonify(message)
 
 
@@ -233,8 +222,7 @@ def admin_user_unban():
         return jsonify({"error": {"msg": "Invalid data."}, "status": 0})
 
     message = User.unban(Uid)
-    Notification.new("admin", session["Aid"], "user", Uid, "user", 0,
-                     "unban", time.time())
+    Notification.new("admin", session["Aid"], "user", Uid, "user", 0, "unban", time.time())
     return jsonify(message)
 
 

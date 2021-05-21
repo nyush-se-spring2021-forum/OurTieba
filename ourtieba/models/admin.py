@@ -30,6 +30,9 @@ class Admin(BaseORM, my_db.Base):
         return '<Admin %r>' % self.Aid
 
     @classmethod
-    def get_admin_by_name(cls, name):
-        admin = Admin._query(Admin.aname == name, first=True)
-        return admin
+    def get_info_by_name(cls, aname):
+        admin = cls._query(Admin.aname == aname, first=True)
+        if not admin:
+            return None
+        admin_info = {"password": admin.password, "Aid": admin.Aid, "nickname": admin.nickname, "avatar": admin.avatar}
+        return admin_info

@@ -120,11 +120,9 @@ class User(BaseORM, my_db.Base):
         cls.new(password, username, nickname)
 
         new_user = cls._query(cls.uname == username, first=True)
-        uid = new_user.Uid
-        n_nickname = new_user.nickname
-        n_avatar = new_user.avatar
-        last_check = new_user.lastCheck
-        return [uid, n_nickname, n_avatar, last_check]
+        user_info = {"Uid": new_user.Uid, "nickname": new_user.nickname, "avatar": new_user.avatar,
+                     "last_check": new_user.lastCheck}
+        return user_info
 
     @classmethod
     def login_auth(cls, username, password):
@@ -133,7 +131,9 @@ class User(BaseORM, my_db.Base):
             return 0
         if hashlib.sha3_512(password.encode()).hexdigest() != match_user.password:
             return 1
-        return [match_user.Uid, match_user.nickname, match_user.avatar, match_user.lastCheck]
+        user_info = {"Uid": match_user.Uid, "nickname": match_user.nickname, "avatar": match_user.avatar,
+                     "last_check": match_user.lastCheck}
+        return user_info
 
     @classmethod
     def get_avatar(cls, Uid):
