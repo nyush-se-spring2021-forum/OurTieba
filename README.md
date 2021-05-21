@@ -4,7 +4,7 @@
 
 This system works as a forum, like in China mainland it looks like Baidu Tieba, and in the foreign network it looks like
 Reddit. This system allows users to view boards, posts and comments that created by other users and also allows users to
-create their own posts and comments. But it is not only a duplicate of these existing forums. We add a new function in
+create their own posts and comments. But it is not only a clone of these existing forums. We add a new function in
 our system: pushing news to the users from outside websites.
 
 ## Contributors:
