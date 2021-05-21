@@ -11,9 +11,9 @@ from .scrapper import *  # import scrapper
 from .views import *  # import all the view
 
 
-def create_app():
+def create_app(env="production"):
     app = Flask(__name__, static_url_path="/")
-    config_app(app, env="development")
+    config_app(app, env=env)
 
     with app.app_context():
         Moment(app)
@@ -21,8 +21,8 @@ def create_app():
         enable_parser(app)
         register_route(app)
         register_blue(app)
-        # init_logger(app)
-        # init_scheduler(app)
+        init_logger(app)
+        init_scheduler(app)
     return app
 
 
