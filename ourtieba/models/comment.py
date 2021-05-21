@@ -59,10 +59,11 @@ class Comment(BaseORM, my_db.Base):
 
     @classmethod
     def ban_comment(cls, Cid):
-        match_comment = cls._get(Cid)
+        match_comment: Comment = cls._get(Cid)
         if not match_comment:
             return 0
 
+        match_comment.comment_in.commentCount -= 1
         cls._ban(cls.Cid == Cid)
         return match_comment.Uid
 
@@ -72,6 +73,7 @@ class Comment(BaseORM, my_db.Base):
         if not match_comment:
             return 0
 
+        match_comment.comment_in.commentCount -= 1
         cls._delete(cls.Cid == Cid)
         return match_comment.Uid
 
@@ -82,6 +84,7 @@ class Comment(BaseORM, my_db.Base):
         if not match_comment:
             return 0
 
+        match_comment.comment_in.commentCount += 1
         cls._restore(cls.Cid == Cid, by=by)
         return match_comment.Uid
 
@@ -95,16 +98,17 @@ class Comment(BaseORM, my_db.Base):
         if not match_status:
             cur_status = 1
             CommentStatus.new(Uid, Cid, cur_status, 0)
-            match_comment.likeCount += 1
+            cur_like = match_comment.likeCount + 1
+            cur_dislike = match_comment.dislikeCount
         else:
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if liked else 1
             CommentStatus.merge(Uid, Cid, cur_status, 0, datetime.datetime.utcnow())
-            match_comment.likeCount += -1 if liked else 1
-            match_comment.dislikeCount -= 1 if disliked else 0
+            cur_like = match_comment.likeCount + -1 if liked else 1
+            cur_dislike = match_comment.dislikeCount - 1 if disliked else 0
 
-        cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
+        cls.update(cls.Cid == Cid, values={"likeCount": cur_like, "dislikeCount": cur_dislike})
         return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
                 "Rid": match_comment.Uid}
 
@@ -118,16 +122,17 @@ class Comment(BaseORM, my_db.Base):
         if not match_status:
             cur_status = 1
             CommentStatus.new(Uid, Cid, 0, cur_status)
-            match_comment.dislikeCount += 1
+            cur_like = match_comment.likeCount
+            cur_dislike = match_comment.dislikeCount + 1
         else:
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if disliked else 1
             CommentStatus.merge(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
-            match_comment.dislikeCount += -1 if disliked else 1
-            match_comment.likeCount -= 1 if liked else 0
+            cur_like = match_comment.likeCount - 1 if disliked else 0
+            cur_dislike = match_comment.dislikeCount + -1 if liked else 1
 
-        cur_like, cur_dislike = match_comment.likeCount, match_comment.dislikeCount
+        cls.update(cls.Cid == Cid, values={"likeCount": cur_like, "dislikeCount": cur_dislike})
         return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
                 "Rid": match_comment.Uid}
 

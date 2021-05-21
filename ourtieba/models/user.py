@@ -89,7 +89,8 @@ class User(BaseORM, my_db.Base):
             error = {"error": {"msg": "User not found."}, "status": 0}
             return error
         cls.update(User.Uid == Uid, values={"banned": 1,
-                                            "banDuration": datetime.datetime.utcnow() + datetime.timedelta(days=int(days))})
+                                            "banDuration": datetime.datetime.utcnow() + datetime.timedelta(
+                                                days=int(days))})
         success = {'status': 1}
         return success
 
@@ -99,8 +100,7 @@ class User(BaseORM, my_db.Base):
         if not user:
             error = {"error": {"msg": "User not found."}, "status": 0}
             return error
-        cls.update(User.Uid == Uid, values={"banned": 0,
-                                            "banDuration": datetime.datetime.utcnow()})
+        cls.update(User.Uid == Uid, values={"banned": 0, "banDuration": datetime.datetime.utcnow()})
         success = {'status': 1}
         return success
 
@@ -171,7 +171,7 @@ class User(BaseORM, my_db.Base):
             if s.subscribed == 1:
                 if (b := s.of_board).status == 0:
                     subs_info_list.append({"Bid": s.Bid, "bname": b.name, "LM": s.lastModified,
-                                      "cover": b.cover, "status": 0})
+                                           "cover": b.cover, "status": 0})
         return subs_info_list
 
     @classmethod

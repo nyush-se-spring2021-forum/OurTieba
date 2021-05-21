@@ -114,88 +114,86 @@ class Post(BaseORM, my_db.Base):
 
     @classmethod
     def ban_post(cls, Pid):
-        match_posts = cls._get(Pid)
-        if not match_posts:
+        match_post: Post = cls._get(Pid)
+        if not match_post:
             return 0
 
-        match_posts.commentCount -= 1
+        match_post.under.postCount -= 1
         cls._ban(cls.Pid == Pid)
-        for c in match_posts.comments:
+        for c in match_post.comments:
             Comment._ban(Comment.Cid == c.Cid)
-        return match_posts.Uid
+        return match_post.Uid
 
     @classmethod
     def delete_post(cls, Pid):
-        match_posts = cls._get(Pid)
-        if not match_posts:
+        match_post = cls._get(Pid)
+        if not match_post:
             return 0
 
-        match_posts.commentCount -= 1
+        match_post.under.postCount -= 1
         cls._delete(cls.Pid == Pid)
-        for c in match_posts.comments:
+        for c in match_post.comments:
             Comment._delete(Comment.Cid == c.Cid)
-        return match_posts.Uid
+        return match_post.Uid
 
     @classmethod
     def restore_post(cls, Pid, by):
         query_status = STATUS_DELETED if by == "user" else STATUS_BANNED
-        match_posts = cls._get(Pid, status=query_status)
-        if not match_posts:
+        match_post = cls._get(Pid, status=query_status)
+        if not match_post:
             return 0
 
-        match_posts.commentCount += 1
+        match_post.under.postCount += 1
         cls._restore(cls.Pid == Pid, by=by)
-        for c in match_posts.comments:
+        for c in match_post.comments:
             Comment._restore(Comment.Cid == c.Cid, by=by)
-        return match_posts.Uid
+        return match_post.Uid
 
     @classmethod
     def like(cls, Pid, Uid):
         match_post = cls._get(Pid)
         if not match_post:
             return 0
-        if match_post.status != 0:
-            return -1
 
         match_status = PostStatus._get(Uid, Pid)
         if not match_status:
             cur_status = 1
             PostStatus.new(Uid, Pid, cur_status, 0)
-            match_post.likeCount += 1
+            cur_like = match_post.likeCount + 1
+            cur_dislike = match_post.dislikeCount
         else:
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if liked else 1
             PostStatus.merge(Uid, Pid, cur_status, 0, datetime.datetime.utcnow())
-            match_post.likeCount += -1 if liked else 1
-            match_post.dislikeCount -= 1 if disliked else 0
+            cur_like = match_post.likeCount + -1 if liked else 1
+            cur_dislike = match_post.dislikeCount - 1 if disliked else 0
 
-        cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
+        cls.update(cls.Pid == Pid, values={"likeCount": cur_like, "dislikeCount": cur_dislike})
         return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
                 "Rid": match_post.Uid}
 
     @classmethod
-    def dislike(cls, Cid, Uid):
-        match_post = cls._get(Cid)
+    def dislike(cls, Pid, Uid):
+        match_post = cls._get(Pid)
         if not match_post:
             return 0
-        if match_post.status != 0:
-            return -1
 
-        match_status = PostStatus._get(Uid, Cid)
+        match_status = PostStatus._get(Uid, Pid)
         if not match_status:
             cur_status = 1
-            PostStatus.new(Uid, Cid, 0, cur_status)
-            match_post.dislikeCount += 1
+            PostStatus.new(Uid, Pid, 0, cur_status)
+            cur_like = match_post.likeCount
+            cur_dislike = match_post.dislikeCount + 1
         else:
             liked = match_status.liked
             disliked = match_status.disliked
             cur_status = 0 if disliked else 1
-            PostStatus.merge(Uid, Cid, 0, cur_status, datetime.datetime.utcnow())
-            match_post.dislikeCount += -1 if disliked else 1
-            match_post.likeCount -= 1 if liked else 0
+            PostStatus.merge(Uid, Pid, 0, cur_status, datetime.datetime.utcnow())
+            cur_like = match_post.likeCount - 1 if disliked else 0
+            cur_dislike = match_post.dislikeCount + -1 if liked else 1
 
-        cur_like, cur_dislike = match_post.likeCount, match_post.dislikeCount
+        cls.update(cls.Pid == Pid, values={"likeCount": cur_like, "dislikeCount": cur_dislike})
         return {"cur_status": cur_status, "like_count": cur_like, "dislike_count": cur_dislike,
                 "Rid": match_post.Uid}
 
@@ -238,9 +236,6 @@ class Post(BaseORM, my_db.Base):
         # record current available floor
         floor = match_post.availableFloor
         # update post statistics
-        match_post.availableFloor += 1
-        match_post.commentCount += 1
-        match_post.latestCommentTime = datetime.datetime.utcnow()
+        cls.update(cls.Pid == Pid, values={"availableFloor": floor + 1, "commentCount": match_post.commentCount,
+                                           "latestCommentTime": datetime.datetime.utcnow()})
         return floor
-
-
