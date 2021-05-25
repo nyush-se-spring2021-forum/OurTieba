@@ -9,7 +9,7 @@ our system: pushing news to the users from outside websites.
 
 ## Contributors:
 
-User670
+User670  
 Juncheng Dong  
 Ruhao Xin  
 Zihang Xia
